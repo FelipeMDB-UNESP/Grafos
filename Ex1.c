@@ -1,3 +1,11 @@
+/*
+Por:
+André Luis Dias Nogueira
+Felipe Melchior de Britto
+Rafael Daiki Kaneko
+Ryan Hideki Tadeo Guimarães
+Vitor Marchini Rolisola
+*/
 #include "stdlib.h"
 #include "stdio.h"
 #include "stdbool.h"
