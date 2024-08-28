@@ -23,7 +23,7 @@ Matriz* inicializar_matriz(int n){
 
 void liberar_matriz(Matriz* matricial){
 
-    for (int i = 0; i < qtd_vertices; i++) {
+    for (int i = 0; i < matricial->n; i++) {
         free(matricial->matriz[i]);
     }
     free(matricial->matriz);
@@ -34,8 +34,8 @@ void liberar_matriz(Matriz* matricial){
 void gerar_grafo(Matriz* matricial, bool orientado, int prob) {
     srand(time(NULL));
     if (!orientado) {   //garante espelhamento 
-        for (i = 0; i < matricial->n; i++) {
-            for (j = i; j < matricial->n; j++) {
+        for (int i = 0; i < matricial->n; i++) {
+            for (int j = i; j < matricial->n; j++) {
                 if (i != j) {                          //evitar ligacoes proprias
                     matricial->matriz[i][j] = (rand() % 100 < prob) ? 1  * (rand() % 10 + 1) : 0;//random de números entre 0 e 99 (resto da divisao por 100)
                     matricial->matriz[j][i] = matricial->matriz[i][j];
@@ -46,8 +46,8 @@ void gerar_grafo(Matriz* matricial, bool orientado, int prob) {
             }
         }
     } else {
-        for (i = 0; i < matricial->n; i++) {
-            for (j = 0; j < matricial->n; j++) {
+        for (int i = 0; i < matricial->n; i++) {
+            for (int j = 0; j < matricial->n; j++) {
                 if (i != j) {                          //evitar ligacoes proprias
                     matricial->matriz[i][j] = (rand() % 100 < prob) ? 1  * (rand() % 10 + 1) : 0;//random de números entre 0 e 99 (resto da divisao por 100)
                 } else {
