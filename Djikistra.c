@@ -71,8 +71,13 @@ int* djikstra(int** matriz_distancias, int qtd_vertices, int origem) {
         // Atualiza as distâncias dos vértices adjacentes
         for (j = 0; j < qtd_vertices; j++) {
 
-            if (!vetor_visitados[j] && matriz_distancias[u][j] && vetor_distancias[u] != INT_MAX &&
-                vetor_distancias[u] + matriz_distancias[u][j] < vetor_distancias[j]) {
+            //se o vértice não foi visitado e a matriz de distanciâs de uj
+            if (!vetor_visitados[j] && 
+                matriz_distancias[u][j] && 
+                vetor_distancias[u] != INT_MAX &&
+                vetor_distancias[u] + matriz_distancias[u][j] < vetor_distancias[j]
+                ) {
+                    
                 vetor_distancias[j] = vetor_distancias[u] + matriz_distancias[u][j];
             }
         }
@@ -90,7 +95,7 @@ int* djikstra(int** matriz_distancias, int qtd_vertices, int origem) {
 int main() {
 
     Grafo g;
-    int qtd_vertices, origem;
+    int qtd_vertices, origem, direcionado;
     printf("Qual a quantidade de vertices?\n");
     scanf("%d", &qtd_vertices);
 
@@ -105,6 +110,17 @@ int main() {
     }
 
     int** matriz_distancias = inicializa_matriz(qtd_vertices);
+    
+    do {
+
+        printf("\nSelecione:\n0 - Grafo NAO direcionado\n1 - Grafo direcionado\n");
+        scanf("%d", &direcionado);
+
+        if (direcionado != 0 && direcionado != 1) {
+            printf("\nOPCAO INVALIDA!!!\n");
+        }
+    } while (direcionado != 0 && direcionado != 1);
+
 
     // Preenche a matriz de distâncias
     printf("Informe as distancias entre os vertices (use -1 para indicar ausencia de aresta):\n");
@@ -112,10 +128,16 @@ int main() {
 
         for (int j = 0; j < qtd_vertices; j++) {
 
-            if(i == j){
+            if (i == j){
 
                 matriz_distancias[i][j] = 0;
-            }else if(i < j){
+            }
+            else if(direcionado) {
+
+                printf("Distancia entre o vertice %d e %d: ", i, j);
+                scanf("%d", &matriz_distancias[i][j]);
+            }
+            else if (i < j && !direcionado){
 
                 printf("Distancia entre o vertice %d e %d: ", i, j);
                 scanf("%d", &matriz_distancias[i][j]);
@@ -133,11 +155,13 @@ int main() {
 
     if (distancias != NULL) {
 
-        printf("\n\n\n-------DISTÂNCIAS-------\n\n");
+        printf("\n\n\n-------DISTANCIAS-------\n\n");
         // Exibe as distâncias da origem para todos os vértices
         for (int i = 0; i < qtd_vertices; i++) {
 
-            printf("Distancia do vertice %d ate %d: %d\n", origem, i, distancias[i]);
+            if(origem != i){
+                printf("Distancia do vertice %d ate %d: %d\n", origem, i, distancias[i]);
+            }
         }
         free(distancias);
     }
