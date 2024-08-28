@@ -101,7 +101,7 @@ int main() {
     int qtd_vertices, prob, orientacao;
     printf("Qual a quantidade de vertices?\n");
     scanf(" %d", &qtd_vertices);
-    printf("Qual a probabilidade de cada aresta?\n");
+    printf("Qual a probabilidade de cada aresta? (inteiros entre 1 e 100)\n");
     scanf(" %d", &prob);
     printf("Eh orientado?\nSIM = Digite [1]\nNAO = Digite [0]\n");
     scanf(" %d", &orientacao);
