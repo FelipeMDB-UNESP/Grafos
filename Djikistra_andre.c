@@ -35,7 +35,6 @@ void liberar_matriz(Matriz* matricial){
         free(matricial->matriz[i]);
     }
     free(matricial->matriz);
-    free(matricial->n);
     free(matricial);
 }
 
