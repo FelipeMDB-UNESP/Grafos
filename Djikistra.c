@@ -97,10 +97,10 @@ int main() {
     Grafo g;
     int qtd_vertices, origem, direcionado;
     printf("Qual a quantidade de vertices?\n");
-    scanf("%d", &qtd_vertices);
+    scanf(" %d", &qtd_vertices);
 
     printf("Qual a origem? O ponto de onde se pretende sair?\n");
-    scanf("%d", &origem);
+    scanf(" %d", &origem);
 
     // Verifica se a origem está dentro do intervalo válido
     if (origem < 0 || origem >= qtd_vertices) {
@@ -114,7 +114,7 @@ int main() {
     do {
 
         printf("\nSelecione:\n0 - Grafo NAO direcionado\n1 - Grafo direcionado\n");
-        scanf("%d", &direcionado);
+        scanf(" %d", &direcionado);
 
         if (direcionado != 0 && direcionado != 1) {
             printf("\nOPCAO INVALIDA!!!\n");
@@ -135,12 +135,12 @@ int main() {
             else if(direcionado) {
 
                 printf("Distancia entre o vertice %d e %d: ", i, j);
-                scanf("%d", &matriz_distancias[i][j]);
+                scanf(" %d", &matriz_distancias[i][j]);
             }
             else if (i < j && !direcionado){
 
                 printf("Distancia entre o vertice %d e %d: ", i, j);
-                scanf("%d", &matriz_distancias[i][j]);
+                scanf(" %d", &matriz_distancias[i][j]);
                 matriz_distancias[j][i] = matriz_distancias[i][j];
             }
 
