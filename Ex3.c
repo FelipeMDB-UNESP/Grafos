@@ -152,11 +152,12 @@ int probabilidade() {
 //função que gera um grafo com arestas aleatorias
 void gerar_grafo(Matriz* matricial, bool orientado, int probabilidade) {
     
-    srand(time(NULL));
+    
     if (!orientado) {   //garante espelhamento 
         for (int i = 0; i < matricial->n; i++) {
             for (int j = i; j < matricial->n; j++) {
                 if (i != j) {                          //evitar ligacoes proprias
+                    srand(time(NULL));
                     matricial->matriz[i][j] = (rand() % 100 < probabilidade) ? 1  * (rand() % 10 + 1) : 0;//random de números entre 0 e 99 (resto da divisao por 100)
                     matricial->matriz[j][i] = matricial->matriz[i][j];
                     
