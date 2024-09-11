@@ -72,11 +72,11 @@ int probabilidade() {
 void gerar_grafo(Matriz* matricial, bool orientado, int probabilidade) {
     
     
-    if (!orientado) {   //garante espelhamento 
+    if (!orientado) {   //garante espelhamento
+        srand(time(NULL)); 
         for (int i = 0; i < matricial->n; i++) {
             for (int j = i; j < matricial->n; j++) {
                 if (i != j) {                          //evitar ligacoes proprias
-                    srand(time(NULL));
                     matricial->matriz[i][j] = (rand() % 100 < probabilidade) ? 1  * (rand() % 10 + 1) : 0;//random de números entre 0 e 99 (resto da divisao por 100)
                     matricial->matriz[j][i] = matricial->matriz[i][j];
                     
@@ -115,79 +115,51 @@ void liberar_vetor_arestas(Aresta* vetor) {
 
 #pragma region kruskal
 
-//quick sort ordena o vetor de arestas
-//arestas[] -> vetor com todas as arestas do grafo
-// peso_esq -> peso do "mais a esquerda"(início)
-//peso_dir -> peso do "mais a direita"(final)
-Aresta* quick_sort_arestas(Aresta *arestas, int esq, int dir) {
-
-    int pivo = esq, i, j;
-
-    for(i=esq+1;i<=dir;i++) {     
-
-        j = i;                      
-        if(arestas[j].peso < arestas[pivo].peso){    
-
-            Aresta ch = arestas[j];               
-            while(j > pivo){           
-                arestas[j] = arestas[j-1];      
-                j--;                    
-            }
-            arestas[j] = ch;               
-            pivo++;                    
+int particiona(Aresta *arestas, int esq, int dir) {
+    Aresta pivo = arestas[dir];
+    int i = esq - 1;
+    for (int j = esq; j < dir; j++) {
+        if (arestas[j].peso < pivo.peso) {
+            i++;
+            Aresta temp = arestas[i];
+            arestas[i] = arestas[j];
+            arestas[j] = temp;
         }
     }
-    if(pivo-1 >= esq) {    
-
-        quick_sort_arestas(arestas,esq,pivo-1);      
-    }
-    if(pivo+1 <= dir) {
-
-        quick_sort_arestas(arestas,pivo+1,dir);      
-    }
-
-    return arestas;
+    Aresta temp = arestas[i + 1];
+    arestas[i + 1] = arestas[dir];
+    arestas[dir] = temp;
+    return i + 1;
 }
 
-bool forma_ciclo(Aresta* arestas, int tam_vetor, Aresta nova_aresta) {
-
-    for(int i = 0; i < tam_vetor; i++) {
-        
-        if(nova_aresta.v_origem == arestas[i].v_destino) {
-
-            return true;
-        }
+void quick_sort_arestas(Aresta *arestas, int esq, int dir) {
+    if (esq < dir) {
+        int pivo = particiona(arestas, esq, dir);
+        quick_sort_arestas(arestas, esq, pivo - 1);
+        quick_sort_arestas(arestas, pivo + 1, dir);
     }
-    return false;
 }
+
+//TODO: UNION-FIND
 
 ArvoreGeradoraMinima kruskal(Aresta *arestas, int num_arestas) {
-
-    bool floresta_geradora = false;
-    Aresta* arestas_arvore = criar_vetor_arestas(num_arestas);
+    ArvoreGeradoraMinima arvore = {criar_vetor_arestas(num_arestas), 0, 0};
     int tam_arvore = 0;
-    int total_peso_arvore = 0;
-    Aresta* arestas_ordenadas = quick_sort_arestas(arestas, 0, num_arestas - 1); //ordena o vetor de arestas por peso (crescente)
-    int *vertices_visitados = (int*) malloc(sizeof(int) * num_arestas + 1); //assim garantimos que teremos um tamanho no mínimo igual a quantidade de vértices existentes
 
-    int i;
-    for (i = 0; i < num_arestas && !floresta_geradora; i++) {
+    quick_sort_arestas(arestas, 0, num_arestas - 1);
 
-        Aresta aresta_menor_peso = arestas_ordenadas[i];
-        if(vertices_visitados[aresta_menor_peso.v_origem] && vertices_visitados[aresta_menor_peso.v_destino]) {
-
+    for (int i = 0; i < num_arestas; i++) {
+        Aresta aresta_menor_peso = arestas[i];
+        if (vertices_visitados[aresta_menor_peso.v_origem] && vertices_visitados[aresta_menor_peso.v_destino]) {
             continue;
-        }else {
-
-            vertices_visitados[aresta_menor_peso.v_destino] = 1; 
-            vertices_visitados[aresta_menor_peso.v_origem] = 1; 
-            arestas_arvore[tam_arvore] = aresta_menor_peso;
-            tam_arvore++;
-            total_peso_arvore += aresta_menor_peso.peso;
         }
+        vertices_visitados[aresta_menor_peso.v_destino] = 1; 
+        vertices_visitados[aresta_menor_peso.v_origem] = 1; 
+        arvore.arestas[tam_arvore++] = aresta_menor_peso;
+        arvore.peso_total += aresta_menor_peso.peso;
     }
 
-    ArvoreGeradoraMinima arvore = {arestas_arvore, tam_arvore, total_peso_arvore};
+    arvore.num_arestas = tam_arvore;
     free(vertices_visitados);
     return arvore;
 }
@@ -203,10 +175,10 @@ void teste_ordenacao_arestas() {
     Aresta d = {4, 1, 7};
 
     Aresta arestas[] = {a, b, c, d};
-    Aresta* arestasB = quick_sort_arestas(arestas, 0, 3);
+    quick_sort_arestas(arestas, 0, 3);
 
     for(int i = 0; i < 4; i++){
-        printf(" %d \n", arestasB[i].peso);
+        printf(" %d \n", arestas[i].peso);
     }
 }
 
