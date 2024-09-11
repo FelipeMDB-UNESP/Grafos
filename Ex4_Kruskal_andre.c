@@ -11,28 +11,41 @@ Vitor Marchini Rolisola
 #include <stdbool.h>
 #include <time.h>
 
-#pragma region matrizes
+#pragma region structs
 
+/*
+carcaça para se utilizar na criação de grafos.
+*/
 typedef struct matriz {
 
     int n;          //linhas
     int **matriz; //ponteiro para matriz, no caso desse exercício é uma matriz de adjacências
 } Matriz;
 
+/*
+estrutura de uma aresta.
+v_origem -> vértice de origem da aresta.
+v_destino -> vértice de destino da aresta.
+peso -> peso da aresta.
+*/
 typedef struct aresta {
     int v_origem;
     int v_destino;
     int peso;
 } Aresta;
+
 /*
+Árvore geradora mínima
+bool *arestas -> vetor com TODAS as arestas do grafo mas as que pertencem à árvore estão marcadas como verdadeiro.
+total_arestas -> total de arestas na árvore mínima.
+peso_total -> soma dos pesos das arestas pertencentes.
+*/
 typedef struct Arvore {
 
-    Aresta *arestas;
-    int num_arestas;
+    int * arestas;
+    int qtd_arestas_arvore_minima;
     int peso_total;
 } ArvoreGeradoraMinima;
-*/
-
 
 Matriz* inicializar_matriz(int qtd_vertices) {
 
@@ -56,42 +69,61 @@ void liberar_matriz(Matriz* matricial) {
 }
 
 
-#pragma endregion matrizes
+#pragma endregion structs
 
 #pragma region grafo_aleatorio
 
-int probabilidade() {
+float probabilidade() {
 
-    int prob;
-    printf("Qual a probabilidade de cada aresta? (inteiros entre 1 e 100)\n");
-    fflush(stdin);
-    scanf(" %d", &prob);
+    float prob;
+    do {
+        
+        printf("Qual a probabilidade de cada aresta? (valores entre 0 e 1)\n");
+        
+        // Lê a probabilidade como um número de ponto flutuante
+        scanf(" %f", &prob);
+        
+        // Validação para garantir que o valor está entre 0 e 1
+        if (prob < 0 || prob > 1) {
+
+            printf("Erro: Valor inválido! Insira um número entre 0 e 1.\n");
+        }
+    }while(prob < 0 || prob > 1);
     return prob;
 }
 
-//função que gera um grafo com arestas aleatorias
+
+
+/*função que gera um grafo com arestas aleatorias*/
 void gerar_grafo(Matriz* matricial, bool orientado, int probabilidade) {
-    
-    
+
     if (!orientado) {   //garante espelhamento
         srand(time(NULL)); 
         for (int i = 0; i < matricial->n; i++) {
+
             for (int j = i; j < matricial->n; j++) {
-                if (i != j) {                          //evitar ligacoes proprias
+
+                if (i != j) {   
+                                           //evitar ligacoes proprias
                     matricial->matriz[i][j] = (rand() % 100 < probabilidade) ? 1  * (rand() % 10 + 1) : 0;//random de números entre 0 e 99 (resto da divisao por 100)
                     matricial->matriz[j][i] = matricial->matriz[i][j];
                     
                 } else {
+
                     matricial->matriz[i][j] = 0;       //falso para quando for a diagonal principal       
                 }
             }
         }
     } else {
+
         for (int i = 0; i < matricial->n; i++) {
+
             for (int j = 0; j < matricial->n; j++) {
-                if (i != j) {                          //evitar ligacoes proprias
+                if (i != j) {     
+                    //evitar ligacoes proprias
                     matricial->matriz[i][j] = (rand() % 100 < probabilidade) ? 1  * (rand() % 10 + 1) : 0;//random de números entre 0 e 99 (resto da divisao por 100)
                 } else {
+
                     matricial->matriz[i][j] = 0;       //falso para quando for a diagonal principal       
                 }
             }
@@ -108,7 +140,7 @@ Aresta* criar_vetor_arestas(int n) {
     return vetor;
 }
 
-void liberar_vetor_arestas(Aresta* vetor) {
+void liberar_vetor_arestas(Aresta * vetor) {
 
     free(vetor);
 }
@@ -116,11 +148,14 @@ void liberar_vetor_arestas(Aresta* vetor) {
 
 #pragma region kruskal
 
-int particiona(Aresta *arestas, int esq, int dir) {
+int particiona(Aresta * arestas, int esq, int dir) {
+
     Aresta pivo = arestas[dir];
     int i = esq - 1;
     for (int j = esq; j < dir; j++) {
+
         if (arestas[j].peso < pivo.peso) {
+
             i++;
             Aresta temp = arestas[i];
             arestas[i] = arestas[j];
@@ -133,95 +168,109 @@ int particiona(Aresta *arestas, int esq, int dir) {
     return i + 1;
 }
 
-void quick_sort_arestas(Aresta *arestas, int esq, int dir) {
+void quick_sort_arestas(Aresta * arestas, int esq, int dir) {
     if (esq < dir) {
+
         int pivo = particiona(arestas, esq, dir);
         quick_sort_arestas(arestas, esq, pivo - 1);
         quick_sort_arestas(arestas, pivo + 1, dir);
     }
 }
 
-//TODO: UNION-FIND
 /*
-ArvoreGeradoraMinima kruskal(Aresta *arestas, int num_arestas) {
-    ArvoreGeradoraMinima arvore = {criar_vetor_arestas(num_arestas), 0, 0};
-    int tam_arvore = 0;
-
-    quick_sort_arestas(arestas, 0, num_arestas - 1);
-
-    for (int i = 0; i < num_arestas; i++) {
-        Aresta aresta_menor_peso = arestas[i];
-        if (vertices_visitados[aresta_menor_peso.v_origem] && vertices_visitados[aresta_menor_peso.v_destino]) {
-            continue;
-        }
-        vertices_visitados[aresta_menor_peso.v_destino] = 1; 
-        vertices_visitados[aresta_menor_peso.v_origem] = 1; 
-        arvore.arestas[tam_arvore++] = aresta_menor_peso;
-        arvore.peso_total += aresta_menor_peso.peso;
-    }
-
-    arvore.num_arestas = tam_arvore;
-    free(vertices_visitados);
-    return arvore;
-}
+Encontrar o vértice que representa a compononente conexa do grafo.
+pais -> vetor que cada posição é um dos vértices.
+pos -> posição do "pai" da componente conexa.
 */
-int pai_verdadeiro(int* pai, int pos) {
+int pai_verdadeiro(int* pais, int pos) {
+
     int aux = pos;
-    while (pai[aux] != aux) {
-        aux = pai[aux];
+    while (pais[aux] != aux) {
+        
+        aux = pais[aux];
     }
     return aux;
 }
 
-int * kruskal(Aresta *aresta, int qtd_arestas, int qtd_vertices) {
+/*
+Kruskal gera uma árvore de custo mínimo. Um caminho que passa por todos os vértices escolhendo as arestas de menor valor possível (sem formar ciclos).
+arestas -> vetor de arestas do grafo.
+qtd_arestas -> quantidade de arestas.
+qtd_vertices -> quantidade de vértices.
+*/
+ArvoreGeradoraMinima kruskal(Aresta * arestas, int qtd_arestas, int qtd_vertices) {
 
-    int * marcador_aresta = (int*) calloc(qtd_arestas,sizeof(int));
-    int * visitado = (int*) calloc(qtd_vertices,sizeof(int));
-    int * pai = (int*) malloc(sizeof(int)*qtd_vertices);
-    bool ocorrencia = true;
-    
+    int peso_total = 0, quantidade_arestas = 0;
+    int * arestas_registradas = (int*) calloc(qtd_arestas,sizeof(int));
+    int * vertices_visitados = (int*) calloc(qtd_vertices,sizeof(int));
+    int * pais_vertices = (int*) malloc(sizeof(int)*qtd_vertices);    
 
-    quick_sort_arestas(aresta, 0, qtd_arestas-1);
+    quick_sort_arestas(arestas, 0, qtd_arestas-1);
 
-    int aux, temp;
+    for(int aux, temp, i = 0; i < qtd_arestas; i++) {
+        //checa se ambos foram visitados. Caso sim verifica seus pais verdadeiros para descobrir se forma componente conexa.
+        if (vertices_visitados[arestas[i].v_origem] && vertices_visitados[arestas[i].v_destino]) {
 
-    for(int i = 0; i<qtd_arestas;i++) {
-
-        if (visitado[aresta[i].v_origem] && visitado[aresta[i].v_destino]) {
-            temp = pai_verdadeiro(pai,aresta[i].v_origem);
-            aux = pai_verdadeiro(pai, aresta[i].v_destino);
+            temp = pai_verdadeiro(pais_vertices,arestas[i].v_origem);
+            aux = pai_verdadeiro(pais_vertices, arestas[i].v_destino);
             if (temp != aux) {
-                pai[aux] = temp;
-                marcador_aresta[i]=1;
+                
+                pais_vertices[aux] = temp;
+                arestas_registradas[i]=1;
+                peso_total += arestas[i].peso;
+                quantidade_arestas++;
             }
             continue;
         }
 
-        if (!visitado[aresta[i].v_origem] && !visitado[aresta[i].v_destino]) {
-            pai[aresta[i].v_origem] = aresta[i].v_origem;
-            pai[aresta[i].v_destino] = aresta[i].v_origem;
+        //Caso ambos não foram visitados, ou seja, nova componente conexa.
+        if (!vertices_visitados[arestas[i].v_origem] && !vertices_visitados[arestas[i].v_destino]) {
+
+            pais_vertices[arestas[i].v_origem] = arestas[i].v_origem;
+            pais_vertices[arestas[i].v_destino] = arestas[i].v_origem;
         } else {
-            if (visitado[aresta[i].v_origem]) {
-                pai[aresta[i].v_destino] = pai[aresta[i].v_origem];
+
+            if (vertices_visitados[arestas[i].v_origem]) {
+
+                pais_vertices[arestas[i].v_destino] = pais_vertices[arestas[i].v_origem];
             } else {
-                pai[aresta[i].v_origem] = pai[aresta[i].v_destino];
+
+                pais_vertices[arestas[i].v_origem] = pais_vertices[arestas[i].v_destino];
             }
         }
 
-        visitado[aresta[i].v_origem] = 1;
-        visitado[aresta[i].v_destino] = 1;
-        marcador_aresta[i]=1;
+        vertices_visitados[arestas[i].v_origem] = 1;
+        vertices_visitados[arestas[i].v_destino] = 1;
+        arestas_registradas[i]=1;
+        peso_total += arestas[i].peso;
+        quantidade_arestas++;
     }
-    free(visitado);
-    free(pai);
-    return marcador_aresta;
+    free(vertices_visitados);
+    free(pais_vertices);
+    ArvoreGeradoraMinima arvore_minima = {arestas_registradas, quantidade_arestas, peso_total};
+    return arvore_minima;
 }
 
-void leitura_kruskal(Aresta* aresta, int * marcador_aresta, int qtd_arestas) {
+/*Printa o resultado das arestas que compõem a árvore mínima.*/
+void leitura_kruskal(Aresta * aresta, int qtd_arestas, ArvoreGeradoraMinima arvore) {
+
+    printf("Quantidade de arestas na arvore minima: %d\nPeso total: %d\n", arvore.qtd_arestas_arvore_minima, arvore.peso_total);
     for(int i = 0; i < qtd_arestas; i++) {
-        if (marcador_aresta[i])
+        if (arvore.arestas[i])
             printf(" Origem: %d, Destino: %d, Peso: %d\n", aresta[i].v_origem, aresta[i].v_destino, aresta[i].peso);
     }
+}
+
+/*
+Toda árvore mínima possui o número de arestas igual a (n° de vértices - 1).
+Obviamente, para isso ser verdade, o grafo deve ser conexo.
+*/
+bool conexo(ArvoreGeradoraMinima arvore, int qtd_vertices) {
+
+    if(arvore.qtd_arestas_arvore_minima != qtd_vertices - 1)
+        return false;
+
+    return true;
 }
 
 #pragma endregion kruskal
@@ -250,8 +299,6 @@ int main() {
     printf("Qual a quantidade de vertices?\n");
     scanf(" %d", &qtd_vertices);
 
-
-
     //verifica se eh direcionado ou nao
     do {
 
@@ -273,13 +320,15 @@ int main() {
         scanf(" %d", &aux);
 
         if (aux != 0 && aux != 1) {
+
             printf("\nOPCAO INVALIDA!!!\n");
         }
     } while (aux != 0 && aux != 1);
 
     if (aux) {
-        prob = probabilidade();
-        gerar_grafo(grafo, direcionado, prob);
+        
+        gerar_grafo(grafo, direcionado, (int)(probabilidade() * 100));
+        
     } else {
 
         // Preenche a matriz de distâncias
@@ -311,42 +360,37 @@ int main() {
             }
         }
     }
-
     
     Aresta *arestas = criar_vetor_arestas(qtd_vertices * (qtd_vertices-1));
-    int qtd_arestas = 0;
+    int qtd_total_arestas = 0;
     for(int i = 0; i < qtd_vertices; i++) {
         for(int j = 0; j < qtd_vertices; j++) {
 
             if(grafo->matriz[i][j]) {
 
                 //printf("Peso: %d, Origem: %d, Destino: %d\n", grafo->matriz[i][j], i, j);
-                arestas[qtd_arestas].peso = grafo->matriz[i][j];
-                arestas[qtd_arestas].v_origem = i;
-                arestas[qtd_arestas].v_destino = j;
-                qtd_arestas++;
+                arestas[qtd_total_arestas].peso = grafo->matriz[i][j];
+                arestas[qtd_total_arestas].v_origem = i;
+                arestas[qtd_total_arestas].v_destino = j;
+                qtd_total_arestas++;
             }
         }
     }
-    
-    /*
-    // kruskal
-    ArvoreGeradoraMinima arvore = kruskal(arestas, qtd_arestas, qtd_vertices);
 
-    // Exibe o resultado de kruskal
+    ArvoreGeradoraMinima arvore = kruskal(arestas, qtd_total_arestas, qtd_vertices);
+    if(conexo(arvore, qtd_vertices)) {
 
-    for(int i = 0; i < arvore.num_arestas; i++) {
-        printf(" Origem: %d, Destino: %d, Peso: %d\n", arvore.arestas[i].v_origem, arvore.arestas[i].v_destino, arvore.arestas[i].peso);
+        leitura_kruskal(arestas, qtd_total_arestas, arvore);
     }
-    */
+    else{
 
-    int * marcador = kruskal(arestas, qtd_arestas, qtd_vertices);
-
-    leitura_kruskal(arestas, marcador, qtd_arestas);
+        printf("O grafo fornecido nao se trata de um grafo conexo");
+    }
 
     // Libera a memória utilizada
     liberar_matriz(grafo);
     liberar_vetor_arestas(arestas);
-    free(marcador);
+    free(arvore.arestas);
+
     return 0;
 }
