@@ -293,20 +293,20 @@ void teste_ordenacao_arestas() {
 
 #pragma endregion testes
 
-Aresta *grafo_to_arestas(int qtd_vertices, Matriz *grafo, int *qtd_total_arestas) {
+Aresta *grafo_to_arestas(int qtd_vertices, Matriz *grafo) {
 
     Aresta *arestas = criar_vetor_arestas(qtd_vertices * (qtd_vertices-1));
-    *qtd_total_arestas = 0;
+    int qtd_total_arestas = 0;
     for(int i = 0; i < qtd_vertices; i++) {
         for(int j = 0; j < qtd_vertices; j++) {
 
             if(grafo->matriz[i][j]) {
 
                 //printf("Peso: %d, Origem: %d, Destino: %d\n", grafo->matriz[i][j], i, j);
-                arestas[*qtd_total_arestas].peso = grafo->matriz[i][j];
-                arestas[*qtd_total_arestas].v_origem = i;
-                arestas[*qtd_total_arestas].v_destino = j;
-                *qtd_total_arestas++;
+                arestas[qtd_total_arestas].peso = grafo->matriz[i][j];
+                arestas[qtd_total_arestas].v_origem = i;
+                arestas[qtd_total_arestas].v_destino = j;
+                qtd_total_arestas++;
             }
         }
     }
@@ -354,7 +354,21 @@ int main() {
         do {
             gerar_grafo(grafo, direcionado, (int)(probabilidade() * 100));
 
-            arestas = grafo_to_arestas(qtd_vertices, grafo, &qtd_total_arestas);
+            arestas = grafo_to_arestas(qtd_vertices, grafo);
+            qtd_total_arestas = 0;
+            for(int i = 0; i < qtd_vertices; i++) {
+                for(int j = 0; j < qtd_vertices; j++) {
+
+                    if(grafo->matriz[i][j]) {
+
+                        //printf("Peso: %d, Origem: %d, Destino: %d\n", grafo->matriz[i][j], i, j);
+                        arestas[qtd_total_arestas].peso = grafo->matriz[i][j];
+                        arestas[qtd_total_arestas].v_origem = i;
+                        arestas[qtd_total_arestas].v_destino = j;
+                        qtd_total_arestas++;
+                    }
+                }
+            }
 
             arvore = kruskal(arestas, qtd_total_arestas, qtd_vertices);
                 
@@ -392,8 +406,20 @@ int main() {
             }
         }
 
-        arestas = grafo_to_arestas(qtd_vertices, grafo, &qtd_total_arestas);
+        arestas = grafo_to_arestas(qtd_vertices, grafo);
+        qtd_total_arestas = 0;
+        for(int i = 0; i < qtd_vertices; i++) {
+            for(int j = 0; j < qtd_vertices; j++) {
 
+                if(grafo->matriz[i][j]) {
+
+                    //printf("Peso: %d, Origem: %d, Destino: %d\n", grafo->matriz[i][j], i, j);
+                    arestas[qtd_total_arestas].peso = grafo->matriz[i][j];
+                    arestas[qtd_total_arestas].v_origem = i;
+                    arestas[qtd_total_arestas].v_destino = j;
+                    qtd_total_arestas++;
+                }
+            }
         }
         arvore = kruskal(arestas, qtd_total_arestas, qtd_vertices);
         if(conexo(arvore, qtd_vertices)) {
@@ -402,7 +428,7 @@ int main() {
         }
         else{
 
-            printf("\nO grafo fornecido nao se trata de um grafo conexo.\n");
+            printf("O grafo fornecido nao se trata de um grafo conexo");
         }
     }
 
