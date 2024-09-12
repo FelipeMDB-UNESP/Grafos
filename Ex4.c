@@ -402,7 +402,7 @@ int main() {
         }
         else{
 
-            printf("O grafo fornecido nao se trata de um grafo conexo");
+            printf("\nO grafo fornecido nao se trata de um grafo conexo.\n");
         }
     }
 
