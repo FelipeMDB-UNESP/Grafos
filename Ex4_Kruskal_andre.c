@@ -293,9 +293,33 @@ void teste_ordenacao_arestas() {
 
 #pragma endregion testes
 
+Aresta *grafo_to_arestas(int qtd_vertices, Matriz *grafo) {
+
+    Aresta *arestas = criar_vetor_arestas(qtd_vertices * (qtd_vertices-1));
+    int qtd_total_arestas = 0;
+    for(int i = 0; i < qtd_vertices; i++) {
+        for(int j = 0; j < qtd_vertices; j++) {
+
+            if(grafo->matriz[i][j]) {
+
+                //printf("Peso: %d, Origem: %d, Destino: %d\n", grafo->matriz[i][j], i, j);
+                arestas[qtd_total_arestas].peso = grafo->matriz[i][j];
+                arestas[qtd_total_arestas].v_origem = i;
+                arestas[qtd_total_arestas].v_destino = j;
+                qtd_total_arestas++;
+            }
+        }
+    }
+    return arestas;
+}
+
 int main() {
 
     int qtd_vertices, origem, direcionado, prob;
+    int qtd_total_arestas = 0;
+    Aresta *arestas;
+    ArvoreGeradoraMinima arvore;
+    
     printf("Qual a quantidade de vertices?\n");
     scanf(" %d", &qtd_vertices);
 
@@ -327,8 +351,30 @@ int main() {
 
     if (aux) {
         
-        gerar_grafo(grafo, direcionado, (int)(probabilidade() * 100));
+        do {
+            gerar_grafo(grafo, direcionado, (int)(probabilidade() * 100));
+
+            arestas = grafo_to_arestas(qtd_vertices, grafo);
+            qtd_total_arestas = 0;
+            for(int i = 0; i < qtd_vertices; i++) {
+                for(int j = 0; j < qtd_vertices; j++) {
+
+                    if(grafo->matriz[i][j]) {
+
+                        //printf("Peso: %d, Origem: %d, Destino: %d\n", grafo->matriz[i][j], i, j);
+                        arestas[qtd_total_arestas].peso = grafo->matriz[i][j];
+                        arestas[qtd_total_arestas].v_origem = i;
+                        arestas[qtd_total_arestas].v_destino = j;
+                        qtd_total_arestas++;
+                    }
+                }
+            }
+
+            arvore = kruskal(arestas, qtd_total_arestas, qtd_vertices);
+                
+        } while (!conexo(arvore, qtd_vertices));
         
+        leitura_kruskal(arestas, qtd_total_arestas, arvore);
     } else {
 
         // Preenche a matriz de distâncias
@@ -359,32 +405,31 @@ int main() {
                 }
             }
         }
-    }
-    
-    Aresta *arestas = criar_vetor_arestas(qtd_vertices * (qtd_vertices-1));
-    int qtd_total_arestas = 0;
-    for(int i = 0; i < qtd_vertices; i++) {
-        for(int j = 0; j < qtd_vertices; j++) {
 
-            if(grafo->matriz[i][j]) {
+        arestas = grafo_to_arestas(qtd_vertices, grafo);
+        qtd_total_arestas = 0;
+        for(int i = 0; i < qtd_vertices; i++) {
+            for(int j = 0; j < qtd_vertices; j++) {
 
-                //printf("Peso: %d, Origem: %d, Destino: %d\n", grafo->matriz[i][j], i, j);
-                arestas[qtd_total_arestas].peso = grafo->matriz[i][j];
-                arestas[qtd_total_arestas].v_origem = i;
-                arestas[qtd_total_arestas].v_destino = j;
-                qtd_total_arestas++;
+                if(grafo->matriz[i][j]) {
+
+                    //printf("Peso: %d, Origem: %d, Destino: %d\n", grafo->matriz[i][j], i, j);
+                    arestas[qtd_total_arestas].peso = grafo->matriz[i][j];
+                    arestas[qtd_total_arestas].v_origem = i;
+                    arestas[qtd_total_arestas].v_destino = j;
+                    qtd_total_arestas++;
+                }
             }
         }
-    }
+        arvore = kruskal(arestas, qtd_total_arestas, qtd_vertices);
+        if(conexo(arvore, qtd_vertices)) {
 
-    ArvoreGeradoraMinima arvore = kruskal(arestas, qtd_total_arestas, qtd_vertices);
-    if(conexo(arvore, qtd_vertices)) {
+            leitura_kruskal(arestas, qtd_total_arestas, arvore);
+        }
+        else{
 
-        leitura_kruskal(arestas, qtd_total_arestas, arvore);
-    }
-    else{
-
-        printf("O grafo fornecido nao se trata de um grafo conexo");
+            printf("O grafo fornecido nao se trata de um grafo conexo");
+        }
     }
 
     // Libera a memória utilizada
