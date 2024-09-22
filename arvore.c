@@ -14,12 +14,29 @@ Vitor Marchini Rolisola
 #include <limits.h>
 
 #pragma region vetores
+/*
+Função responsável por criar dinamincamente um vetor.
+
+Parâmetros:
+int n -> tamanho do vetor
+
+Retorno:
+int* vetor -> vetor dinamicamente alocado
+*/
 int* criar_vetor(int n) {
 
     int* vetor = (int*)malloc(sizeof(int) * n);
     return vetor;
 }
 
+/*
+Função responsável por liberar o espaço alocado a um vetor.
+
+Parâmetros:
+int* vetor -> ponteiro do vetor a ser liberado
+
+Retorno: void
+*/
 void liberar_vetor(int* vetor) {
 
     free(vetor);
@@ -27,12 +44,24 @@ void liberar_vetor(int* vetor) {
 #pragma endregion vetores
 
 #pragma region filas
+/*
+Estrutura de um dado idealmente a ser utilizado em filas.
+
+int dado -> inteiro que representa o valor dessa estrutura.
+struct dado* proximo -> ponteiro para o próximo dado.
+*/
 typedef struct dado {
 
     int dado;
     struct dado* proximo;
 } DADO;
 
+/*
+Estrutura de fila (FIFO).
+
+DADO* entrada -> Entrada na fila, ou seja, última posição da fila.
+DADO* saida -> Saída da fila, ou seja, o elemento que se encontra em primeiro.
+*/
 typedef struct {
 
     DADO* entrada;
@@ -131,7 +160,8 @@ int estimar_nos(int qtd_filhos, float prob, int depth) {
 /*
 Inicializa a arvore vetorizada:
 qtd_filhos -> quantidade de filhos que um vertice pode ter
-qtd_vertices -> quantidade maxima de vertices da arvore a ser criada*/
+qtd_vertices -> quantidade maxima de vertices da arvore a ser criada
+*/
 int* inicializar_arvore(int qtd_filhos, float prob, int depth) {
     int* arvore = (int*) malloc(((qtd_filhos+1)* estimar_nos(qtd_filhos, prob, depth) + 1) * sizeof(int));
     arvore[0] = qtd_filhos;
@@ -141,7 +171,8 @@ int* inicializar_arvore(int qtd_filhos, float prob, int depth) {
 }
 
 /*
-Realiza a liberacao da memoria separada para a arvore*/
+Realiza a liberacao da memoria separada para a arvore
+*/
 void liberar_arvore(int* arvore) {
     free(arvore);
 }
@@ -159,7 +190,8 @@ int abstracao(int valor_real, int qtd_filhos) {
 /*
 Desfaz a camada de abstracao, convertendo para o valor real na posicao do vetor
 valor_abstrato -> valor abstraido da posicao dos vertices no vetor
-qtd_filhos -> quantidade de filhos que um vertice pode ter*/
+qtd_filhos -> quantidade de filhos que um vertice pode ter
+*/
 int concretizacao(int valor_abstrato, int qtd_filhos) {
     int valor_real = 1 + (valor_abstrato-1)*(qtd_filhos+1);
     return valor_real;
@@ -168,7 +200,8 @@ int concretizacao(int valor_abstrato, int qtd_filhos) {
 /*
 Retorna o pai do vertice inserido (ja abstraido)
 arvore -> vetor de inteiros que estamos usando para trabalhar com uma arvore
-vertice -> valor abstraido da posicao real dos dados do vertice no vetor*/
+vertice -> valor abstraido da posicao real dos dados do vertice no vetor
+*/
 int pai(int* arvore, int vertice) {
     int valor_real = concretizacao(vertice, arvore[0]);
     return abstracao(arvore[valor_real],arvore[0]);
