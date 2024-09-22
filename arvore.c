@@ -115,7 +115,7 @@ int desenfileirar(p_fila f) {
 
 int estimar_nos(int qtd_filhos, float prob, int depth) {
     
-    float qtd_vertices = 0;
+    int qtd_vertices = 0;
     float constante = qtd_filhos * prob;
     
     if (constante < 1)
@@ -124,7 +124,6 @@ int estimar_nos(int qtd_filhos, float prob, int depth) {
 
     for (int x = 0; x<=depth; x++) {
         qtd_vertices += pow(qtd_filhos, x*(x+1)/2);
-        printf("\nqtd_vertices: %.2f\n", qtd_vertices);
     }
     return ceil(qtd_vertices);
 }
