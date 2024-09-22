@@ -9,6 +9,7 @@ Vitor Marchini Rolisola
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 #include <time.h>
 #include <limits.h>
 
@@ -112,13 +113,31 @@ int desenfileirar(p_fila f) {
 
 #pragma region arvore
 
+int estimar_nos(int qtd_filhos, float prob, int depth) {
+    
+    float qtd_vertices = 0;
+    float constante = qtd_filhos * prob;
+    
+    if (constante < 1)
+        return ceil(1 / (1 - constante));
+
+
+    for (int x = 0; x<=depth; x++) {
+        qtd_vertices += pow(qtd_filhos, x*(x+1)/2);
+        printf("\nqtd_vertices: %.2f\n", qtd_vertices);
+    }
+    return ceil(qtd_vertices);
+}
+
 /*
 Inicializa a arvore vetorizada:
 qtd_filhos -> quantidade de filhos que um vertice pode ter
 qtd_vertices -> quantidade maxima de vertices da arvore a ser criada*/
-int* inicializar_arvore(int qtd_filhos, int qtd_vertices) {
-    int* arvore = (int*) malloc((qtd_filhos+1)* sizeof(int)* qtd_vertices + sizeof(int));
+int* inicializar_arvore(int qtd_filhos, float prob, int depth) {
+    int* arvore = (int*) malloc(((qtd_filhos+1)* estimar_nos(qtd_filhos, prob, depth) + 1) * sizeof(int));
     arvore[0] = qtd_filhos;
+    for (int i = 1; i<((qtd_filhos+1)* estimar_nos(qtd_filhos, prob, depth) + 1); i++)
+        arvore[i] = 0;
     return arvore;
 }
 
@@ -167,6 +186,34 @@ int filho(int* arvore, int vertice, int filho) {
     return abstracao(arvore[valor_real + filho],arvore[0]);
 }
 
+// BIG RYAN NOTES
+int* gerar_arvore(int* arvore, int qtd_filhos_max, int prob_filho, int profundidade, int max_noh_possivel){
+    int i = 1;
+    int j = 1;
+    int qtd_noh = 1;
+    bool criou = false;
+    int indice;
+    arvore[i] = 1; 
+    for(i = 2; i < max_noh_possivel; i++){
+        if (i != 1 + ((qtd_filhos_max + 1) * qtd_noh)){
+            j = 1;
+            printf("|Pai %d", arvore[i]);
+            continue;
+        }
+        criou = rand() % 100 < prob_filho ? true : false;
+        if (criou){
+            indice = 1 + ((qtd_filhos_max + 1) * qtd_noh);
+            arvore[i] = indice;
+            arvore[indice] = i;
+            qtd_noh ++;
+            printf("|%d", arvore[i]);
+        }
+        j++;
+    }
+    //(i/(qtd_filhos+1))*(qtd_filhos+1) + 1
+}
+
+
 #pragma endregion arvore
 
 #pragma region matrizes
@@ -199,12 +246,22 @@ void liberar_matriz(Matriz* matricial){
 #pragma endregion matrizes
 
 #pragma region grafo_aleatorio
-int probabilidade() {
+float probabilidade() {
 
-    int prob;
-    printf("Qual a probabilidade de cada aresta? (inteiros entre 1 e 100)\n");
-    fflush(stdin);
-    scanf(" %d", &prob);
+    float prob;
+    do {
+        
+        printf("Qual a probabilidade de cada aresta? (valores entre 0 e 1)\n");
+        
+        // Lê a probabilidade como um número de ponto flutuante
+        scanf(" %f", &prob);
+        
+        // Validação para garantir que o valor está entre 0 e 1
+        if (prob < 0 || prob > 1) {
+
+            printf("Erro: Valor inválido! Insira um número entre 0 e 1.\n");
+        }
+    }while(prob < 0 || prob > 1);
     return prob;
 }
 
@@ -273,93 +330,101 @@ int* busca_em_largura(Matriz* grafo, int origem) {
 
 int main() {
 
-    int qtd_vertices, origem, direcionado, prob;
-    printf("Qual a quantidade de vertices?\n");
-    scanf(" %d", &qtd_vertices);
+    // int qtd_vertices, origem, direcionado, prob;
+    // printf("Qual a quantidade de vertices?\n");
+    // scanf(" %d", &qtd_vertices);
 
-    printf("Qual o vertice de origem?\n");
-    scanf(" %d", &origem);
+    // printf("Qual o vertice de origem?\n");
+    // scanf(" %d", &origem);
 
-    // Verifica se a origem está dentro do intervalo válido
-    if (origem < 0 || origem >= qtd_vertices) {
+    // // Verifica se a origem está dentro do intervalo válido
+    // if (origem < 0 || origem >= qtd_vertices) {
 
-        printf("Origem invalida.\n");
-        return 1;
-    }
+    //     printf("Origem invalida.\n");
+    //     return 1;
+    // }
 
-    //verifica se eh direcionado ou nao
-    do {
+    // //verifica se eh direcionado ou nao
+    // do {
 
-        printf("\nSelecione:\n0 - Grafo NAO direcionado\n1 - Grafo direcionado\n");
-        scanf(" %d", &direcionado);
+    //     printf("\nSelecione:\n0 - Grafo NAO direcionado\n1 - Grafo direcionado\n");
+    //     scanf(" %d", &direcionado);
 
-        if (direcionado != 0 && direcionado != 1) {
-            printf("\nOPCAO INVALIDA!!!\n");
-        }
-    } while (direcionado != 0 && direcionado != 1);
-
-
-    Matriz* grafo = inicializar_matriz(qtd_vertices);
+    //     if (direcionado != 0 && direcionado != 1) {
+    //         printf("\nOPCAO INVALIDA!!!\n");
+    //     }
+    // } while (direcionado != 0 && direcionado != 1);
 
 
-    int aux;
-    do {
+    // Matriz* grafo = inicializar_matriz(qtd_vertices);
 
-        printf("\nDeseja um grafo aleatorio? [1=SIM/0=NAO]\n");
-        scanf(" %d", &aux);
 
-        if (aux != 0 && aux != 1) {
-            printf("\nOPCAO INVALIDA!!!\n");
-        }
-    } while (aux != 0 && aux != 1);
+    // int aux;
+    // do {
 
-    if (aux) {
-        prob = probabilidade();
-        gerar_grafo(grafo, direcionado, prob);
-    } else {
+    //     printf("\nDeseja um grafo aleatorio? [1=SIM/0=NAO]\n");
+    //     scanf(" %d", &aux);
 
-        // Preenche a matriz de distâncias
-        printf("Informe as distancias entre os vertices (use -1 para indicar ausencia de aresta):\n");
-        for (int i = 0; i < grafo->n; i++) {
+    //     if (aux != 0 && aux != 1) {
+    //         printf("\nOPCAO INVALIDA!!!\n");
+    //     }
+    // } while (aux != 0 && aux != 1);
 
-            for (int j = 0; j < grafo->n; j++) {
+    // if (aux) {
+    //     prob = probabilidade();
+    //     gerar_grafo(grafo, direcionado, (int)(probabilidade() * 100));
+    // } else {
 
-                if (i == j){
+    //     // Preenche a matriz de distâncias
+    //     printf("Informe as distancias entre os vertices (use -1 para indicar ausencia de aresta):\n");
+    //     for (int i = 0; i < grafo->n; i++) {
 
-                    grafo->matriz[i][j] = 0;
-                }
-                else if(direcionado) {
+    //         for (int j = 0; j < grafo->n; j++) {
 
-                    printf("Distancia entre o vertice %d e %d: ", i, j);
-                    scanf(" %d", &grafo->matriz[i][j]);
-                }
-                else if (i < j && !direcionado){
+    //             if (i == j){
 
-                    printf("Distancia entre o vertice %d e %d: ", i, j);
-                    scanf(" %d", &grafo->matriz[i][j]);
-                    grafo->matriz[j][i] = grafo->matriz[i][j];
-                }
+    //                 grafo->matriz[i][j] = 0;
+    //             }
+    //             else if(direcionado) {
 
-                if (grafo->matriz[i][j] == -1) {
+    //                 printf("Distancia entre o vertice %d e %d: ", i, j);
+    //                 scanf(" %d", &grafo->matriz[i][j]);
+    //             }
+    //             else if (i < j && !direcionado){
 
-                    grafo->matriz[i][j] = 0; // Considerando 0 para ausência de aresta
-                }
-            }
-        }
-    }
+    //                 printf("Distancia entre o vertice %d e %d: ", i, j);
+    //                 scanf(" %d", &grafo->matriz[i][j]);
+    //                 grafo->matriz[j][i] = grafo->matriz[i][j];
+    //             }
 
-    // Realiza a busca em largura
-    int* resultado = busca_em_largura(grafo, origem);
+    //             if (grafo->matriz[i][j] == -1) {
 
-    // Exibe o vetor de pais retornado pela busca em largura
-    printf("\nVetor de pais na busca em largura a partir do vertice %d:\n", origem);
-    for (int i = 0; i < grafo->n; i++) {
-        printf("Vertice %d: Pai = %d\n", i, resultado[i]);
-    }
+    //                 grafo->matriz[i][j] = 0; // Considerando 0 para ausência de aresta
+    //             }
+    //         }
+    //     }
+    // }
+
+    // // Realiza a busca em largura
+    // int* resultado = busca_em_largura(grafo, origem);
+
+    // // Exibe o vetor de pais retornado pela busca em largura
+    // printf("\nVetor de pais na busca em largura a partir do vertice %d:\n", origem);
+    // for (int i = 0; i < grafo->n; i++) {
+    //     printf("Vertice %d: Pai = %d\n", i, resultado[i]);
+    // }
 
     // Libera a memória utilizada
-    liberar_vetor(resultado);
-    liberar_matriz(grafo);
+    // liberar_vetor(resultado);
+    // liberar_matriz(grafo);
+
+    int* arvore_testes = inicializar_arvore(4, 0.5, 4);
+
+    for(int i = 0; i<estimar_nos(4, 0.5, 4);i++) {
+        printf("%d\n",arvore_testes[i]);
+    }
+
+    //gerar_arvore(arvore_testes, 4, 50, 4, 2500);
 
     return 0;
 }
