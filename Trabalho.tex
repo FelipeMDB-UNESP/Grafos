@@ -1,0 +1,63 @@
+\documentclass[12pt, a4paper]{scrreprt}
+
+% Pacotes básicos
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{helvet} % Similar à Arial
+\renewcommand{\familydefault}{\sfdefault} % Sans-serif
+
+% Configurações de margens
+\geometry{left=2cm, right=2cm, top=2cm, bottom=2cm}
+
+% Configurações de cabeçalhos e rodapés
+\usepackage{scrlayer-scrpage}
+\pagestyle{scrheadings}
+
+% Definições de cabeçalhos e rodapés
+\ihead{Árvores}
+\chead{Confidencial}
+\ohead{\pagemark}
+
+% Início do documento
+\begin{document}
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    \Huge\textbf{Árvores}\\[1.5cm]
+    \Large\textbf{Grafos e Aplicações}\\[1.5cm]
+    \textbf{Grupo:}\\
+    André Luis Dias Nogueira \\
+    Felipe Melchior de Britto \\
+    Rafael Daiki Kaneko \\
+    Ryan Hideki Tadeo Guimarães \\
+    Vitor Marchini Rolisola \\[2.5cm]
+    \textbf{Data:}\\
+    01/08/2024\\
+    \vfill
+\end{titlepage}
+
+% Sumário
+\tableofcontents
+\newpage
+
+% Resumo
+\chapter{Resumo}
+
+% Introdução
+\chapter{Introdução}
+
+% Implementação
+\chapter{Implementação}
+
+% Resultados e discussão
+\chapter{Resultados e discussão}
+
+% Conclusão
+\chapter{Conclusão}
+
+% Referências bibliográficas
+\chapter{Referências bibliográficas}
+
+\end{document}
