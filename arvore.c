@@ -185,31 +185,42 @@ int filho(int* arvore, int vertice, int filho) {
     return abstracao(arvore[valor_real + filho],arvore[0]);
 }
 
-// BIG RYAN NOTES
+
+// BIG RYAN NOTES 2.0
 int* gerar_arvore(int* arvore, int qtd_filhos_max, int prob_filho, int profundidade, int max_noh_possivel){
+    srand(time(NULL));
     int i = 1;
     int j = 1;
     int qtd_noh = 1;
     bool criou = false;
     int indice;
     arvore[i] = 1; 
+    printf("prob do filho: %d\n", prob_filho);
+    printf("|Pai %d", arvore[i]);
     for(i = 2; i < max_noh_possivel; i++){
-        if (i != 1 + ((qtd_filhos_max + 1) * qtd_noh)){
-            j = 1;
-            printf("|Pai %d", arvore[i]);
+        // if (i == 1 + ((qtd_filhos_max + 1) * qtd_noh)){
+        if (i == (i/(qtd_filhos_max+1))*(qtd_filhos_max+1) + 1){
+            if (arvore[i] == 0){
+                printf("\nFim da linhagem!");
+                break;
+            }
+            j = j + 5;
+            printf("\n|Pai %d", i);
             continue;
         }
+        int range_teste = rand();
         criou = rand() % 100 < prob_filho ? true : false;
         if (criou){
             indice = 1 + ((qtd_filhos_max + 1) * qtd_noh);
             arvore[i] = indice;
-            arvore[indice] = i;
-            qtd_noh ++;
-            printf("|%d", arvore[i]);
+            arvore[indice] = j;
+            qtd_noh++;
+            
         }
+        printf("|%d", arvore[i]);
         j++;
     }
-    //(i/(qtd_filhos+1))*(qtd_filhos+1) + 1
+    //Isso é um easter egg! +10 pontos //(i/(qtd_filhos+1))*(qtd_filhos+1) + 1
 }
 
 
@@ -417,13 +428,8 @@ int main() {
     // liberar_vetor(resultado);
     // liberar_matriz(grafo);
 
-    int* arvore_testes = inicializar_arvore(4, 0.5, 4);
-
-    for(int i = 0; i<estimar_nos(4, 0.5, 4);i++) {
-        printf("%d\n",arvore_testes[i]);
-    }
-
-    //gerar_arvore(arvore_testes, 4, 50, 4, 2500);
+    int* arvore_testes = inicializar_arvore(4, 0.32, 4);
+    gerar_arvore(arvore_testes, 4, 32, 4, 100); // USANDO 100 TEMPORÁRIAMENTE!
 
     return 0;
 }
