@@ -70,6 +70,12 @@ typedef struct {
 
 typedef Fila* p_fila;
 
+/*
+Função que aloca espaço dinamicamente para uma fila.
+
+Retorno:
+p_fila -> ponteiro para uma estrutura Fila.
+*/
 p_fila criar_fila() {
 
     p_fila f = malloc(sizeof(Fila));
@@ -78,11 +84,24 @@ p_fila criar_fila() {
     return f;
 }
 
+/*
+Função booleana para verificar se uma fila é vazia.
+Retorna 1 se a fila está vazia e 0 caso contrário.
+
+Parâmetros:
+p_fila f -> ponteiro de fila
+*/
 int fila_vazia(p_fila f){
 
     return (f->saida == NULL);
 }
 
+/*
+Função responsável por liberar todo o espaço dentro da fila. Sem liberar o espaço alocado para a fila em si.
+
+Parâmetros:
+p_fila f -> ponteiro de fila
+*/
 void esvaziar_fila(p_fila f){
 
     DADO* aux;
@@ -94,6 +113,12 @@ void esvaziar_fila(p_fila f){
     f->entrada = NULL;
 }
 
+/*
+Função que além de esvaziar a fila libera o espaço alocado para o ponteiro da fila em si.
+
+Parâmetros:
+p_fila f -> ponteiro para a fila
+*/
 void liberar_fila(p_fila f){
 
     DADO* aux;
@@ -105,6 +130,16 @@ void liberar_fila(p_fila f){
     free(f);
 }
 
+/*
+Função para adicionar algo na fila.
+
+Parâmetros:
+p_fila f -> ponteiro da fila
+int k -> dado a ser adicionado na fila
+
+Retorno:
+Vazio
+*/
 void enfileirar(p_fila f, int k) {
 
     DADO* aux = malloc(sizeof(DADO));
@@ -120,6 +155,15 @@ void enfileirar(p_fila f, int k) {
     }
 }
 
+/*
+Função responsável por remover o elemento em primeiro lugar na fila.
+
+Parâmetros: 
+p_fila f -> ponteiro para a fila para remover o dado.
+
+Retorno:
+retorna o dado removido caso exista dado. Caso contrário retorna INT_MIN.
+*/
 int desenfileirar(p_fila f) {
 
     DADO* aux;
@@ -142,7 +186,18 @@ int desenfileirar(p_fila f) {
 
 #pragma region arvore
 
-int estimar_nos(int qtd_filhos, float prob, int depth) {
+/*
+Estima a quantidade de vértices(nós) existentes em uma árvore.
+
+Parâmetros:
+int qtd_filhos -> quantidade de filhos na árvore.
+float prob -> probabilidade associada a cada nó.
+int profundidade -> profundidade da árvore.
+
+Retorno: 
+número estimado de vértices arredondado para cima.
+*/
+int estimar_nos(int qtd_filhos, float prob, int profundidade) {
     
     int qtd_vertices = 0;
     float constante = qtd_filhos * prob;
@@ -151,7 +206,7 @@ int estimar_nos(int qtd_filhos, float prob, int depth) {
         return ceil(1 / (1 - constante));
 
 
-    for (int x = 0; x<=depth; x++) {
+    for (int x = 0; x<=profundidade; x++) {
         qtd_vertices += pow(qtd_filhos, x*(x+1)/2);
     }
     return ceil(qtd_vertices);
@@ -159,28 +214,45 @@ int estimar_nos(int qtd_filhos, float prob, int depth) {
 
 /*
 Inicializa a arvore vetorizada:
-qtd_filhos -> quantidade de filhos que um vertice pode ter
-qtd_vertices -> quantidade maxima de vertices da arvore a ser criada
+
+Parâmetros: 
+int qtd_filhos -> quantidade de filhos por vértice(nó).
+float prob -> probabilidade de cada filho existir.
+int profundidade -> profundidade da árvore.
+
+Retorno:
+ponteiro para árvore inicializada.
 */
-int* inicializar_arvore(int qtd_filhos, float prob, int depth) {
-    int* arvore = (int*) malloc(((qtd_filhos+1)* estimar_nos(qtd_filhos, prob, depth) + 1) * sizeof(int));
+int* inicializar_arvore(int qtd_filhos, float prob, int profundidade) {
+    int* arvore = (int*) malloc(((qtd_filhos+1)* estimar_nos(qtd_filhos, prob, profundidade) + 1) * sizeof(int));
     arvore[0] = qtd_filhos;
-    for (int i = 1; i<((qtd_filhos+1)* estimar_nos(qtd_filhos, prob, depth) + 1); i++)
+    for (int i = 1; i<((qtd_filhos+1)* estimar_nos(qtd_filhos, prob, profundidade) + 1); i++)
         arvore[i] = 0;
     return arvore;
 }
 
 /*
-Realiza a liberacao da memoria separada para a arvore
+Libera a memória alocada para a árvore.
+
+Parâmetros:
+int* arvore -> ponteiro para a árvore a ser liberada
 */
 void liberar_arvore(int* arvore) {
     free(arvore);
 }
 
+// TODO: Averiguar a necessidade de implementar função para esvaziar a árvore.
+
 /*
-Cria uma camada de abstracao, para que o usuario nao se preocupe com o manejo dos indices do vetor
-valor_real -> valor original da posicao do vetor
-qtd_filhos -> quantidade de filhos que um vertice pode ter
+Cria uma camada de abstração, para que o usuario nao se preocupe com o manejo dos índices do vetor.
+
+Parâmetros:
+valor_real -> valor original da posicao do vetor.
+qtd_filhos -> quantidade de filhos que um vertice pode ter.
+
+Retorno:
+inteiro abstraído.
+
 */
 int abstracao(int valor_real, int qtd_filhos) {
     int valor_abstrato = 1 + (valor_real-1)/(qtd_filhos+1);
@@ -189,8 +261,13 @@ int abstracao(int valor_real, int qtd_filhos) {
 
 /*
 Desfaz a camada de abstracao, convertendo para o valor real na posicao do vetor
+
+Parâmetros:
 valor_abstrato -> valor abstraido da posicao dos vertices no vetor
 qtd_filhos -> quantidade de filhos que um vertice pode ter
+
+Retorno:
+valor inteiro após defazer a abstração.
 */
 int concretizacao(int valor_abstrato, int qtd_filhos) {
     int valor_real = 1 + (valor_abstrato-1)*(qtd_filhos+1);
@@ -199,6 +276,8 @@ int concretizacao(int valor_abstrato, int qtd_filhos) {
 
 /*
 Retorna o pai do vertice inserido (ja abstraido)
+
+Parâmetros:
 arvore -> vetor de inteiros que estamos usando para trabalhar com uma arvore
 vertice -> valor abstraido da posicao real dos dados do vertice no vetor
 */
@@ -209,6 +288,8 @@ int pai(int* arvore, int vertice) {
 
 /*
 Retorna o filho do vertice inserido (ja abstraido)
+
+Parâmetros:
 arvore -> vetor de inteiros que estamos usando para trabalhar com uma arvore
 vertice -> valor abstraido da posicao real dos dados do vertice no vetor
 filho -> numero do filho em questao
@@ -260,12 +341,30 @@ int* gerar_arvore(int* arvore, int qtd_filhos_max, int prob_filho, int profundid
 #pragma endregion arvore
 
 #pragma region matrizes
+
+/*
+Estrutura genérica de matriz. Criada com o intuito de construir um grafo.
+
+Objetos da estrutura:
+int n -> linhas.
+int ** matriz -> ponteiro para matriz.
+*/
 typedef struct matricial {
 
     int n;          //linhas
     int **matriz; //ponteiro para matriz
 }Matriz;
 
+
+/*
+Função que inicializa uma matriz para grafos.
+
+Parâmetros:
+int qtd_vertices -> quantidade de vértices desejados.
+
+Retorno 
+ponteiro para a matriz inicializada.
+*/
 Matriz* inicializar_matriz(int qtd_vertices){
 
     Matriz* matricial = (Matriz*) malloc(sizeof(Matriz));
@@ -278,6 +377,12 @@ Matriz* inicializar_matriz(int qtd_vertices){
     return matricial;
 }
 
+/*
+Função que libera o espaço dinamicamente alocado para uma matriz, incluindo todos os dados armazenados nela.
+
+Parâmetros:
+Matriz* matricial -> ponteiro para a matriz a ser liberada.
+*/
 void liberar_matriz(Matriz* matricial){
 
     for (int i = 0; i < matricial->n; i++) {
@@ -289,6 +394,13 @@ void liberar_matriz(Matriz* matricial){
 #pragma endregion matrizes
 
 #pragma region grafo_aleatorio
+
+/*
+Função que solicita ao usuário a inserção de um valor para uma probabilidade (por linhas de comando). O valor deve ser um número entre 0 e 1
+
+Retorno:
+retorna um float para a probabilidade inserida pelo usuário.
+*/
 float probabilidade() {
 
     float prob;
@@ -308,7 +420,14 @@ float probabilidade() {
     return prob;
 }
 
-//função que gera um grafo com arestas aleatorias
+/*
+Função para gerar um grafo com arestas aleatórias.
+
+Parâmetros:
+Matriz* matricial -> ponteiro de matriz para se gerar as arestas.
+bool orientado -> booleano que informa se a matriz é orientada ou não.
+int probabilidade -> probabilidade de cada aresta.
+*/
 void gerar_grafo(Matriz* matricial, bool orientado, int probabilidade) {
     
     
