@@ -13,7 +13,7 @@ Vitor Marchini Rolisola
 #include <time.h>
 #include <limits.h>
 
-#define INTERACOES 10
+#define ITERACOES 10
 
 #pragma region vetores
 /*
@@ -304,6 +304,7 @@ int filho(int* arvore, int vertice, int filho) {
 
 
 // BIG RYAN NOTES 2.0
+// TODO: adicionar verificação de caso o int* arvore não possua memória alocada, alocar memória.
 int gerar_arvore(int* arvore, float prob, int profundidade){
 
     int qtd_noh = 1;
@@ -404,32 +405,6 @@ void liberar_matriz(Matriz* matricial){
 #pragma endregion matrizes
 
 #pragma region grafo_aleatorio
-
-/*
-Função que solicita ao usuário a inserção de um valor para uma probabilidade (por linhas de comando). O valor deve ser um número entre 0 e 1
-
-Retorno:
-retorna um float para a probabilidade inserida pelo usuário.
-*/
-float probabilidade() {
-
-    float prob;
-    do {
-        
-        printf("Qual a probabilidade de cada aresta? (valores entre 0 e 1)\n");
-        
-        // Lê a probabilidade como um número de ponto flutuante
-        scanf(" %f", &prob);
-        
-        // Validação para garantir que o valor está entre 0 e 1
-        if (prob < 0 || prob > 1) {
-
-            printf("Erro: Valor inválido! Insira um número entre 0 e 1.\n");
-        }
-    }while(prob < 0 || prob > 1);
-    return prob;
-}
-
 /*
 Função para gerar um grafo com arestas aleatórias.
 
@@ -469,37 +444,18 @@ void gerar_grafo(Matriz* matricial, bool orientado, int probabilidade) {
 
 #pragma endregion
 
-// int* busca_em_largura(Matriz* grafo, int origem) {
+/*
+Função de sobrecarga da busca em largura recursiva. 
 
-//     int i, j;
-//     int* pai = criar_vetor(grafo->n);
-//     int* visitado = criar_vetor(grafo->n);
-//     p_fila f = criar_fila();
+Parâmetros:
+int* arvore -> árvore para busca em largura.
+int no_atual -> nó atual, índice.
+int profundidade -> profundidade atual.
+int no_anterior -> índice para o nó anterior.
 
-//     for (i=0; i < grafo->n; i++) {
-//         pai[i]= -1;
-//         visitado[i] = 0;
-//     }
-    
-//     enfileirar(f,origem);
-//     pai[origem] = origem;
-//     visitado[origem] = 1;
-
-//     while (!fila_vazia(f)) {
-//         for (i = desenfileirar(f), j = 0; j < grafo->n; j++) {
-//             if (grafo->matriz[i][j] && !visitado[j]) {
-//                 visitado[j] = 1;
-//                 pai[j] = i;
-//                 enfileirar(f, j);
-//             }
-//         }
-//     }
-
-//     liberar_fila(f);
-//     liberar_vetor(visitado);
-//     return pai;
-// }
-
+Retorno
+inteiro que representa a profundidade.
+*/
 int busca_em_largura_recursiva(int* arvore, int no_atual, int profundidade, int no_anterior) {
 
     int maior_global = profundidade;
@@ -528,10 +484,30 @@ int busca_em_largura_recursiva(int* arvore, int no_atual, int profundidade, int 
     return profundidade;
 }
 
+/*
+Função que realiza recursivamente a busca em largura da árvore
+
+Parâmetros:
+int* arvore -> vetor da árvore para busca em largura.
+int no_atual -> nó atual para busca em largura (índice) .
+
+Retorno:
+inteiro que representa a profundidade.
+*/
 int busca_em_largura(int* arvore, int no_atual) {
     return busca_em_largura_recursiva(arvore, no_atual, 0, 0);
 }
 
+/*
+Função que obtém a média da profundidade de uma árvore.
+
+Parâmetros: 
+int* arvore -> vetor da árvore a ser calculada.
+int qtd_noh -> quantidade de nós (tamanho do vetor de árvore).
+
+Retorno: 
+float que representa a média da profundidade.
+*/
 float media_busca_em_largura(int* arvore, int qtd_noh) {
 
     int soma = 0;
@@ -541,24 +517,87 @@ float media_busca_em_largura(int* arvore, int qtd_noh) {
     return (1.0 * soma)/(qtd_noh * 1.0);
 }
 
+/*
+Função que cria diferentes árvores e obtém a média geral da profundidade delas. A quantidade de árvores criadas é baseada em um typdef ITERACOES.
+
+Parâmetros
+int qtd_filhos -> quantidade de filhos na árvore
+float prob -> probabilidade de cada nó
+int profundidade -> profundidade da árvore
+
+Retorno
+float que representa a média geral da profundidade na busca em largura das árvores geradas.
+*/
 float media_geral_parametros(int qtd_filhos, float prob, int profundidade) {
 
     int* arvore = inicializar_arvore(qtd_filhos, prob, profundidade);
-    int qtd_noh;
     float media_geral = 0.0;
 
-    for (int i = 0; i<INTERACOES; i++) {
+    for (int i = 0; i<ITERACOES; i++) {
 
         media_geral += media_busca_em_largura(arvore, gerar_arvore(arvore, prob, profundidade));
     }
 
     liberar_arvore(arvore);
-    return media_geral/INTERACOES;
+    return media_geral/ITERACOES;
+}
+
+/*
+Função que solicita ao usuário o preenchimento de certas informações via prompt
+
+Parâmetros:
+int *qtd_filhos -> ponteiro para se armazenar a quantidade de filhos na árvore.
+float *prob -> ponteiro para se armazenar a probabilidade de cada filho.
+int *profundidade -> ponteiro para se armazenar a profundidade da árvore.
+*/
+void solicitar_ao_usuario(int *qtd_filhos, float *prob, int *profundidade) {
+
+    do{
+        printf("\nDigite a quantidade de filhos na arvore: ");
+        scanf(" %d", qtd_filhos);
+        if((*qtd_filhos) > 8 || (*qtd_filhos) < 1) {
+            printf("\nDigite uma quantidade de filhos valida.\n");
+        }
+        
+    }while((*qtd_filhos > 8 || *qtd_filhos < 1));
+
+    do{
+
+        printf("\nDigite a probabilidade da existencia dos filhos: ");
+        scanf(" %f", prob);
+        
+        if((*profundidade) < 0 || (*profundidade) > 4) {
+            printf("\nDigite uma profundidade valida.\n");
+        }
+        
+    }while((*profundidade < 0 || *profundidade > 4));
+
+    do{
+
+        printf("\nDigite qual a profundidade maxima da arvore: ");
+        scanf(" %d", profundidade);
+
+        if((*prob) < 0 || (*prob) > 1){
+            printf("\nDigite uma probabilidade valida\n");
+        }
+
+    }while((*prob < 0 || *prob > 1));
 }
 
 int main() {
 
-    // int qtd_vertices, origem, direcionado, prob;
+    int qtd_filhos, profundidade;
+    float prob;
+    solicitar_ao_usuario(&qtd_filhos, &prob, &profundidade);
+
+    int* arvore_testes = inicializar_arvore(qtd_filhos, prob, profundidade);
+    gerar_arvore(arvore_testes, prob, profundidade);
+
+    return 0;
+}
+
+
+// int qtd_vertices, origem, direcionado, prob;
     // printf("Qual a quantidade de vertices?\n");
     // scanf(" %d", &qtd_vertices);
 
@@ -645,12 +684,3 @@ int main() {
     // Libera a memória utilizada
     // liberar_vetor(resultado);
     // liberar_matriz(grafo);
-
-    int qtd_filhos;
-    int prob;
-    int profundidade;
-    int* arvore_testes = inicializar_arvore(4, 0.32, 4);
-    gerar_arvore(arvore_testes, 4, 0.32, 4);
-
-    return 0;
-}
