@@ -490,6 +490,52 @@ int* busca_em_largura(Matriz* grafo, int origem) {
     return pai;
 }
 
+/*
+Função para realizar BFS e calcular a média das profundidades.
+
+Parâmetros:
+int* arvore -> ponteiro para a árvore 
+int tamanho -> tamanho do vetor de árvore, ou seja, quantos nós existem na árvore.
+*/
+double bfs_media_profundidade(int* arvore, int tamanho) {
+    if (tamanho == 0) 
+        return 0.0;
+
+    int profundidade = 0;
+    int num_nos = 0;
+    double soma_profundidades = 0.0;
+
+    // Fila para BFS usando vetor
+    int* fila = (int*)malloc(tamanho * sizeof(int));
+    int saida = 0, entrada = 0;
+
+    // Começa com a raiz (índice 0)
+    fila[entrada++] = 0;
+
+    while (saida < entrada) {
+        int nivel_atual = entrada - saida; // Número de nós no nível atual
+
+        // Processa todos os nós do nível atual
+        for (int i = 0; i < nivel_atual; i++) {
+            int indice_atual = fila[saida++];
+
+            soma_profundidades += profundidade;
+            num_nos++;
+
+            // Adiciona os filhos à fila
+            for (int j = 1; j <= arvore[indice_atual] && indice_atual + j < tamanho; j++) {
+                fila[entrada++] = indice_atual + j; // A posição dos filhos
+            }
+        }
+        profundidade++; // Aumenta a profundidade ao passar para o próximo nível
+    }
+
+    free(fila); // Libera a memória da fila
+
+    // Calcula a média das profundidades
+    return soma_profundidades / num_nos;
+}
+
 int main() {
 
     // int qtd_vertices, origem, direcionado, prob;
