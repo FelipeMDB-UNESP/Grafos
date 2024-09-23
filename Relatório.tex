@@ -5,6 +5,7 @@
 \usepackage[portuguese]{babel}
 \usepackage{geometry}
 \usepackage{hyperref}
+\usepackage{graphicx}
 \usepackage{helvet} % Similar à Arial
 \renewcommand{\familydefault}{\sfdefault} % Sans-serif
 
@@ -17,25 +18,32 @@
 
 % Definições de cabeçalhos e rodapés
 \ihead{Árvores}
-\chead{Confidencial}
+\chead{\leftmark}
 \ohead{\pagemark}
 
 % Início do documento
 \begin{document}
 \begin{titlepage}
     \centering
-    \vspace*{2cm}
-    \Huge\textbf{Árvores}\\[1.5cm]
-    \Large\textbf{Grafos e Aplicações}\\[1.5cm]
-    \textbf{Grupo:}\\
-    André Luis Dias Nogueira \\
-    Felipe Melchior de Britto \\
-    Rafael Daiki Kaneko \\
-    Ryan Hideki Tadeo Guimarães \\
-    Vitor Marchini Rolisola \\[2.5cm]
-    \textbf{Data:}\\
-    01/08/2024\\
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=.75\textwidth]{src/logo_unesp.jpg}
+        \label{fig:logo_unesp}
+    \end{figure}
     \vfill
+    \Huge\textbf{Relatório de estudo sobre grafos do \\ tipo árvore}\\[1.5cm]
+    \Large\textbf{Grafos e Aplicações}\\[1.5cm]
+    \vfill
+    \begin{flushleft}
+        \textbf{Equipe:}\\
+        \hspace{1.5cm}André Luis Dias Nogueira \\ 
+        \hspace{1.5cm}Felipe Melchior de Britto \\
+        \hspace{1.5cm}Rafael Daiki Kaneko \\
+        \hspace{1.5cm}Ryan Hideki Tadeo Guimarães \\
+        \hspace{1.5cm}Vitor Marchini Rolisola \\
+    \end{flushleft}
+    \vfill
+    01/08/2024\\
 \end{titlepage}
 
 % Sumário
