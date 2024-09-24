@@ -19,40 +19,40 @@ Vitor Marchini Rolisola
 #pragma region fila
 
 typedef struct {
-    int* data;
-    int entrada, saida, tamanho;
+    long int* data;
+    long int entrada, saida, tamanho;
 } Fila;
 
-Fila* inicializarFila(int max_size) {
+Fila* inicializarFila(long int max_size) {
     Fila* f = (Fila*)malloc(sizeof(Fila));
-    f->data = (int*)malloc(max_size * sizeof(int));
+    f->data = (long int*)malloc(max_size * sizeof(long int));
     f->entrada = 0;
     f->saida = 0;
     f->tamanho = max_size;
     return f;
 }
 
-void enfileirar(Fila* f, int value) {
+void enfileirar(Fila* f, long int value) {
     if (f->saida < f->tamanho) {
         f->data[f->saida++] = value;
     }
 }
 
-int desenfileirar(Fila* f) {
+long int desenfileirar(Fila* f) {
     if (f->entrada < f->saida) {
         return f->data[f->entrada++];
     }
     return -1; // Fila vazia
 }
 
-int estaVazia(Fila* f) {
+long int estaVazia(Fila* f) {
     return f->entrada == f->saida;
 }
 
 #pragma endregion fila
 
 #pragma region log
-int contador_logs = 1;
+long int contador_logs = 1;
 
 FILE* abrir_log() {
     char buffer[32];
@@ -65,10 +65,10 @@ void fechar_log(FILE* log) {
     fclose(log);
 }
 
-void cabecalho_log(FILE* log, int max_noh_possivel, int qtd_filhos, float prob) {
+void cabecalho_log(FILE* log, long int max_noh_possivel, long int qtd_filhos, float prob) {
 
     char buffer[32];
-    int margem;
+    long int margem;
 
     fprintf(log,"+-------------------------+\n");
 
@@ -76,7 +76,7 @@ void cabecalho_log(FILE* log, int max_noh_possivel, int qtd_filhos, float prob) 
 
     sprintf(buffer, "%d", max_noh_possivel);
     margem = strlen("-------------------------") -strlen("Espaço Alocado: ") -strlen(buffer);
-    for (int i=0; i<=margem; i++) {
+    for (long int i=0; i<=margem; i++) {
         fputc(' ', log);
     }
     fputc('|', log);
@@ -87,7 +87,7 @@ void cabecalho_log(FILE* log, int max_noh_possivel, int qtd_filhos, float prob) 
 
     sprintf(buffer, "%d", qtd_filhos);
     margem = strlen("-------------------------") -strlen("qtd de filhos: ") -strlen(buffer);
-    for (int i=0; i<margem; i++) {
+    for (long int i=0; i<margem; i++) {
         fputc(' ', log);
     }
     fputc('|', log);
@@ -97,7 +97,7 @@ void cabecalho_log(FILE* log, int max_noh_possivel, int qtd_filhos, float prob) 
 
     sprintf(buffer, "%.2f", prob);
     margem = strlen("-------------------------") -strlen("prob do filho: ") -strlen(buffer);
-    for (int i=0; i<margem; i++) {
+    for (long int i=0; i<margem; i++) {
         fputc(' ', log);
     }
     fputc('|', log);
@@ -113,23 +113,23 @@ void cabecalho_log(FILE* log, int max_noh_possivel, int qtd_filhos, float prob) 
 Estima a quantidade de vértices(nós) existentes em uma árvore.
 
 Parâmetros:
-int qtd_filhos -> quantidade de filhos na árvore.
+long int qtd_filhos -> quantidade de filhos na árvore.
 float prob -> probabilidade associada a cada nó.
-int profundidade -> profundidade da árvore.
+long int profundidade -> profundidade da árvore.
 
 Retorno: 
 número estimado de vértices arredondado para cima.
 */
-int estimar_nos(int qtd_filhos, float prob, int profundidade) {
+long int estimar_nos(long int qtd_filhos, float prob, long int profundidade) {
     
-    int qtd_vertices = 0;
+    long int qtd_vertices = 0;
     float constante = qtd_filhos * prob;
     
     if (constante < 1)
         return ceil(1 / (1 - constante));
 
 
-    for (int x = 0; x<=profundidade; x++) {
+    for (long int x = 0; x<=profundidade; x++) {
         qtd_vertices += pow(qtd_filhos, x*(x+1)/2);
     }
     return ceil(qtd_vertices);
@@ -139,16 +139,16 @@ int estimar_nos(int qtd_filhos, float prob, int profundidade) {
 Inicializa a arvore vetorizada:
 
 Parâmetros: 
-int qtd_filhos -> quantidade de filhos por vértice(nó).
+long int qtd_filhos -> quantidade de filhos por vértice(nó).
 float prob -> probabilidade de cada filho existir.
-int profundidade -> profundidade da árvore.
+long int profundidade -> profundidade da árvore.
 
 Retorno:
 ponteiro para árvore inicializada.
 */
-int* inicializar_arvore(int qtd_filhos, float prob, int profundidade) {
+long int* inicializar_arvore(long int qtd_filhos, float prob, long int profundidade) {
 
-    int* arvore = (int*) calloc(((qtd_filhos+1)* estimar_nos(qtd_filhos, prob, profundidade) + 1), sizeof(int));
+    long int* arvore = (long int*) calloc(((qtd_filhos+1)* estimar_nos(qtd_filhos, prob, profundidade) + 1), sizeof(long int));
     arvore[0] = qtd_filhos;
     return arvore;
 }
@@ -157,9 +157,9 @@ int* inicializar_arvore(int qtd_filhos, float prob, int profundidade) {
 Libera a memória alocada para a árvore.
 
 Parâmetros:
-int* arvore -> ponteiro para a árvore a ser liberada
+long int* arvore -> ponteiro para a árvore a ser liberada
 */
-void liberar_arvore(int* arvore) {
+void liberar_arvore(long int* arvore) {
     free(arvore);
 }
 
@@ -176,10 +176,10 @@ Retorno:
 inteiro abstraído.
 
 */
-int abstracao(int valor_real, int qtd_filhos) {
+long int abstracao(long int valor_real, long int qtd_filhos) {
     if (valor_real==0)
         return 0;
-    int valor_abstrato = 1 + (valor_real-1)/(qtd_filhos+1);
+    long int valor_abstrato = 1 + (valor_real-1)/(qtd_filhos+1);
     return valor_abstrato;
 }
 
@@ -193,8 +193,8 @@ qtd_filhos -> quantidade de filhos que um vertice pode ter
 Retorno:
 valor inteiro após defazer a abstração.
 */
-int concretizacao(int valor_abstrato, int qtd_filhos) {
-    int valor_real = 1 + (valor_abstrato-1)*(qtd_filhos+1);
+long int concretizacao(long int valor_abstrato, long int qtd_filhos) {
+    long int valor_real = 1 + (valor_abstrato-1)*(qtd_filhos+1);
     return valor_real;
 }
 
@@ -205,8 +205,8 @@ Parâmetros:
 arvore -> vetor de inteiros que estamos usando para trabalhar com uma arvore
 vertice -> valor abstraido da posicao real dos dados do vertice no vetor
 */
-int pai(int* arvore, int vertice) {
-    int valor_real = concretizacao(vertice, arvore[0]);
+long int pai(long int* arvore, long int vertice) {
+    long int valor_real = concretizacao(vertice, arvore[0]);
     return abstracao(arvore[valor_real],arvore[0]);
 }
 
@@ -218,25 +218,25 @@ arvore -> vetor de inteiros que estamos usando para trabalhar com uma arvore
 vertice -> valor abstraido da posicao real dos dados do vertice no vetor
 filho -> numero do filho em questao
 */
-int filho(int* arvore, int vertice, int filho) {
-    int valor_real = concretizacao(vertice, arvore[0]);
+long int filho(long int* arvore, long int vertice, long int filho) {
+    long int valor_real = concretizacao(vertice, arvore[0]);
     return abstracao(arvore[valor_real + filho],arvore[0]);
 }
 
 
 // BIG RYAN NOTES 2.0
-// TODO: adicionar verificação de caso o int* arvore não possua memória alocada, alocar memória.
-int gerar_arvore(int* arvore, float prob, int profundidade) {
+// TODO: adicionar verificação de caso o long int* arvore não possua memória alocada, alocar memória.
+long int gerar_arvore(long int* arvore, float prob, long int profundidade) {
 
 
-    int qtd_noh = 1;
-    int qtd_filhos = arvore[0];
-    int camada = 0;
-    int ultimo_gerado = 0;
+    long int qtd_noh = 1;
+    long int qtd_filhos = arvore[0];
+    long int camada = 0;
+    long int ultimo_gerado = 0;
     bool fim_geracao;
-    int max_noh_possivel = estimar_nos(arvore[0], prob, profundidade);
+    long int max_noh_possivel = estimar_nos(arvore[0], prob, profundidade);
 
-    for(int i = 1; i<((qtd_filhos+1)* max_noh_possivel + 1); i++) {
+    for(long int i = 1; i<((qtd_filhos+1)* max_noh_possivel + 1); i++) {
          arvore[i] = 0;
     }
     arvore[1] = 1;
@@ -246,7 +246,7 @@ int gerar_arvore(int* arvore, float prob, int profundidade) {
     fprintf(log,"|Pai %d", arvore[1]);
 
     srand(time(NULL));
-    for(int indice = 0, i = 2; camada <= profundidade; i++){
+    for(long int indice = 0, i = 2; camada <= profundidade; i++){
 
         if (i == (i/(qtd_filhos+1))*(qtd_filhos+1) + 1){
             if (arvore[i] == 0){
@@ -267,7 +267,7 @@ int gerar_arvore(int* arvore, float prob, int profundidade) {
         }
 
         if (camada < profundidade) {
-            if (rand() % 100 < (int)(prob*100) ? true : false){
+            if (rand() % 100 < (long int)(prob*100) ? true : false){
 
                 indice = 1 + ((qtd_filhos + 1) * qtd_noh);
                 arvore[i] = indice;
@@ -283,123 +283,26 @@ int gerar_arvore(int* arvore, float prob, int profundidade) {
     return qtd_noh;
 }
 
-
 #pragma endregion arvore
 
-/*
-Função de sobrecarga da busca em largura recursiva. 
 
-Parâmetros:
-int* arvore -> árvore para busca em largura.
-int no_atual -> nó atual, índice.
-int profundidade -> profundidade atual.
-int no_anterior -> índice para o nó anterior.
-
-Retorno
-inteiro que representa a profundidade.
-*/
-int busca_em_largura_recursiva(int* arvore, int no_atual, int profundidade, int no_anterior) {
-
-    int maior_global = profundidade;
-    int maior_local = 0;
-
-    if (pai(arvore, no_atual) != no_atual && pai(arvore, no_atual) != no_anterior) {
-
-        maior_local = busca_em_largura_recursiva(arvore, pai(arvore, no_atual), profundidade + 1, no_atual);
-
-        if (maior_global<maior_local)
-            maior_global = maior_local;
-    }
-
-    for (int i=1; i<= arvore[0]; i++) {
-
-        if(filho(arvore,no_atual,i) != 0 && filho(arvore,no_atual,i) != no_anterior) {
-
-            maior_local = busca_em_largura_recursiva(arvore, filho(arvore,no_atual,i), profundidade + 1, no_atual);
-            if (maior_global<maior_local)
-                maior_global = maior_local;
-        }
-    }
-
-    if(maior_global > profundidade)
-        return maior_global;
-    return profundidade;
-}
-
-/*
-Função que realiza recursivamente a busca em largura da árvore
-
-Parâmetros:
-int* arvore -> vetor da árvore para busca em largura.
-int no_atual -> nó atual para busca em largura (índice) .
-
-Retorno:
-inteiro que representa a profundidade.
-*/
-int busca_em_largura(int* arvore, int no_atual) {
-    return busca_em_largura_recursiva(arvore, no_atual, 0, 0);
-}
-
-/*
-Função que obtém a média da profundidade de uma árvore.
-
-Parâmetros: 
-int* arvore -> vetor da árvore a ser calculada.
-int qtd_noh -> quantidade de nós (tamanho do vetor de árvore).
-
-Retorno: 
-float que representa a média da profundidade.
-*/
-float media_busca_em_largura(int* arvore, int qtd_noh) {
-
-    int soma = 0;
-    for (int i = 1; i<=qtd_noh; i++) {
-        soma += busca_em_largura(arvore, i);
-    }
-    return (1.0 * soma)/(qtd_noh * 1.0);
-}
-
-/*
-Função que cria diferentes árvores e obtém a média geral da profundidade delas. A quantidade de árvores criadas é baseada em um typdef ITERACOES.
-
-Parâmetros
-int qtd_filhos -> quantidade de filhos na árvore
-float prob -> probabilidade de cada nó
-int profundidade -> profundidade da árvore
-
-Retorno
-float que representa a média geral da profundidade na busca em largura das árvores geradas.
-*/
-float media_geral_parametros(int qtd_filhos, float prob, int profundidade) {
-
-    int* arvore = inicializar_arvore(qtd_filhos, prob, profundidade);
-    float media_geral = 0.0;
-
-    for (int i = 0; i<ITERACOES; i++) {
-
-        media_geral += media_busca_em_largura(arvore, gerar_arvore(arvore, prob, profundidade));
-    }
-
-    liberar_arvore(arvore);
-    return media_geral/ITERACOES;
-}
 
 #pragma region bfs_iterativa
-int bfs_arvore_binomial (int *arvore, int raiz, int qtd_nos) {
+long int bfs_arvore_binomial (long int *arvore, long int raiz, long int qtd_nos) {
 
     // Vetor para armazenar as profundidades de cada nó
     float *profundidades = (float *) malloc(qtd_nos * sizeof(float));
     //precisávamos iterar em profundidades de forma sequencial, essa é a maneira mais simples;
-    int pos_profundidades = 0;
+    long int pos_profundidades = 0;
     //Marca os nós visitados
-    int *visitados = (int *) calloc(qtd_nos, sizeof(int));
+    long int *visitados = (long int *) calloc(qtd_nos, sizeof(long int));
     // Inicializa todas as profundidades com 0
-    for (int i = 0; i < qtd_nos; i++) {
+    for (long int i = 0; i < qtd_nos; i++) {
         profundidades[i] = 0;
     }
 
     //um bloco é representado pelo pai + filhos. Ou seja podemos iterar sobre os nós do vetor da árvore indo de bloco em bloco. 
-    int bloco = arvore[0] + 1;
+    long int bloco = arvore[0] + 1;
     //fila de índices
     Fila *fila = inicializarFila(qtd_nos);
 
@@ -408,10 +311,10 @@ int bfs_arvore_binomial (int *arvore, int raiz, int qtd_nos) {
     enfileirar(fila, raiz);
     visitados[(raiz / bloco)] = 1;
 
-    int no_anterior;
+    long int no_anterior;
     while(!estaVazia(fila)) {
 
-        int no_atual = desenfileirar(fila);
+        long int no_atual = desenfileirar(fila);
         visitados[no_atual / 4] = 1;
         // printf("Visitando no: %d\n", (no_atual / bloco) + 1); // Visita o nó atual
 
@@ -419,8 +322,8 @@ int bfs_arvore_binomial (int *arvore, int raiz, int qtd_nos) {
         //no_atual - 1 -> para posicionarmos no começo das informações do nó, não em seu fim.
         //multiplicamos por bloco pois cada bloco representa um nó de forma abstrata.
         //soma-se i+1 no final pois queremos salvar os dados dos filhos. A primeira posição do bloco sempre armazena o índice de onde começa o bloco do pai do nó atual.
-        int pai_ou_filho;
-        for(int i = 0; i < bloco; i++) {
+        long int pai_ou_filho;
+        for(long int i = 0; i < bloco; i++) {
 
             pai_ou_filho = arvore[no_atual + i];
             if (pai_ou_filho != 0 && !visitados[(pai_ou_filho / bloco)]) {
@@ -432,8 +335,8 @@ int bfs_arvore_binomial (int *arvore, int raiz, int qtd_nos) {
     } 
 
     // Calcula a média das profundidades
-    int maior_profundidade = 0;
-    for(int i = 0; i < qtd_nos; i++) {
+    long int maior_profundidade = 0;
+    for(long int i = 0; i < qtd_nos; i++) {
         if(profundidades[i] > maior_profundidade)
             maior_profundidade = profundidades[i];
     }
@@ -446,14 +349,14 @@ int bfs_arvore_binomial (int *arvore, int raiz, int qtd_nos) {
     return maior_profundidade;
 }
 
-float media_bfs_iterativa (int *arvore, int raiz, int qtd_nos, int bloco) {
+float media_bfs_iterativa (long int *arvore, long int raiz, long int qtd_nos, long int bloco) {
 
-    float soma_profundidades;
+    float soma_profundidades = 0;
     // Chama a função para cada nó como raiz
     //quantidade de filhos + 1 é como se fôssemos de índice a índice.
     // no meio do for é bloco - 1
-    for (int raiz = 1; raiz <= ((qtd_nos-1) * bloco) + 1; raiz  = raiz + bloco) {
-        int profundidade = bfs_arvore_binomial(arvore, raiz, qtd_nos);
+    for (long int raiz = 1; raiz <= ((qtd_nos-1) * bloco) + 1; raiz  = raiz + bloco) {
+        long int profundidade = bfs_arvore_binomial(arvore, raiz, qtd_nos);
         printf("Profundidade da arvore com raiz = noh %d: %d\n", (raiz/bloco)+1, profundidade);
         soma_profundidades += (float)profundidade; // Acumula a soma das profundidades
     }
@@ -461,13 +364,13 @@ float media_bfs_iterativa (int *arvore, int raiz, int qtd_nos, int bloco) {
     return soma_profundidades / qtd_nos;
 }
 
-float britto_media_geral_parametros(int qtd_filhos, float prob, int profundidade) {
+float britto_media_geral_parametros(long int qtd_filhos, float prob, long int profundidade) {
 
-    int* arvore = inicializar_arvore(qtd_filhos, prob, profundidade);
+    long int* arvore = inicializar_arvore(qtd_filhos, prob, profundidade);
     float media_geral = 0.0;
 
-    for (int i = 0; i<ITERACOES; i++) {
-        int qtd_nos = gerar_arvore(arvore, prob, profundidade);
+    for (long int i = 0; i<ITERACOES; i++) {
+        long int qtd_nos = gerar_arvore(arvore, prob, profundidade);
         media_geral += media_bfs_iterativa(arvore, 1, qtd_nos, qtd_filhos+1);
     }
 
@@ -480,11 +383,11 @@ float britto_media_geral_parametros(int qtd_filhos, float prob, int profundidade
 Função que solicita ao usuário o preenchimento de certas informações via prompt
 
 Parâmetros:
-int *qtd_filhos -> ponteiro para se armazenar a quantidade de filhos na árvore.
+long int *qtd_filhos -> ponteiro para se armazenar a quantidade de filhos na árvore.
 float *prob -> ponteiro para se armazenar a probabilidade de cada filho.
-int *profundidade -> ponteiro para se armazenar a profundidade da árvore.
+long int *profundidade -> ponteiro para se armazenar a profundidade da árvore.
 */
-void solicitar_ao_usuario(int *qtd_filhos, float *prob, int *profundidade) {
+void solicitar_ao_usuario(long int *qtd_filhos, float *prob, long int *profundidade) {
 
     do{
         printf("\nDigite a quantidade de filhos na arvore (entre 1 e 8): ");
@@ -518,7 +421,7 @@ void solicitar_ao_usuario(int *qtd_filhos, float *prob, int *profundidade) {
     }while((*profundidade < 0 || *profundidade > 4));
 }
 
-void solicitar_ao_arquivo(int *qtd_filhos, float *prob, int *profundidade) {
+void solicitar_ao_arquivo(long int *qtd_filhos, float *prob, long int *profundidade) {
 
     char buffer[16];
 
@@ -539,8 +442,8 @@ void solicitar_ao_arquivo(int *qtd_filhos, float *prob, int *profundidade) {
     fclose(teste);
 }
 
-int menu() {
-    int opcao;
+long int menu() {
+    long int opcao;
 
     do {
         printf("\n\n+-------------------Menu---------------------+\n|1 - Inserir dados                           |\n|2 - Carregar dados                          |\n|3 - Ver media de profundidade dos parametros|\n|4 - Sair                                    |\n+--------------------------------------------+\n");
@@ -550,12 +453,12 @@ int menu() {
     return opcao;
 }
 
-int main() {
+long int main() {
 
-    int qtd_filhos = -1;
-    int profundidade = -1;
+    long int qtd_filhos = -1;
+    long int profundidade = -1;
     float prob = -1.0;
-    int caso;
+    long int caso;
 
     while (true) {
 
@@ -570,7 +473,7 @@ int main() {
             break;
         case 3:
             if (qtd_filhos != -1) {
-                printf("\nA media geral dos parametros eh: %.2f", britto_media_geral_parametros(qtd_filhos, prob, profundidade));
+                printf("\nA media geral dos parametros eh: %f", britto_media_geral_parametros(qtd_filhos, prob, profundidade));
             } else {
                 printf("\nAdicione dados primeiro.\n");
             }
