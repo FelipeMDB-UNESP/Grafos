@@ -88,7 +88,7 @@ Por exemplo, na representação de uma rede social, os vértices podem represent
 
 Um tipo especial de grafo, conhecido como árvore, apresenta propriedades únicas que tornam essa classe particularmente interessante para estudo.
 
-Uma árvore é definida como um grafo não-orientado, conexo e acíclico, o que significa que não possui ciclos e, além disso, qualquer remoção de uma de suas arestas resulta em um grafo desconexo.\textsuperscript{\cite{definicaoarvore}} Então suas características são:
+Uma árvore é definida como um grafo não-orientado, conexo e acíclico, o que significa que não possui ciclos e, além disso, qualquer remoção de uma de suas arestas resulta em um grafo desconexo.\textsuperscript{\cite{definicaoarvore} \cite{emilio2024arvores}} Então suas características são:
 
 \begin{itemize}
         \item \textbf{Conectividade}: Para qualquer par de vértices \( u \) e \( v \), existe exatamente um caminho que conecta \( u \) e \( v \).
@@ -143,7 +143,7 @@ Para cada tripla de parâmetros, são geradas pelo menos 10 árvores aleatórias
 
 Durante a execução do BFS, são registrados a profundidade de cada nó e a profundidade total das árvores. Ao final de cada execução, é calculada a profundidade média da árvore, que será utilizada para gerar tabelas ou gráficos que mostram como essa profundidade varia de acordo com as diferentes combinações de \( n_{\text{max}} \), \( p \), e \( d_{\text{max}} \).
 
-Além disso, o código precisa lidar com a transição de fase do modelo, que ocorre quando nmax multiplicado por p é menor que 1, indicando que, em algum ponto, a geração de novos filhos para a árvore vai parar, resultando em níveis sem descendentes. Caso \( n_{\text{max}} \cdot p \) seja maior que 1, a geração de nós continuará até atingir o limite imposto por \( d_{\text{max}} \).
+Além disso, o código precisa lidar com a transição de fase do modelo, que ocorre quando \( n_{\text{max}} \) multiplicado por \( p \) é menor que 1, indicando que, em algum ponto, a geração de novos filhos para a árvore vai parar, resultando em níveis sem descendentes. Caso \( n_{\text{max}} \cdot p \) seja maior que 1, a geração de nós continuará até atingir o limite imposto por \( d_{\text{max}} \).
 
 Portanto, a implementação é construída de maneira a não apenas gerar as árvores e calcular as profundidades, mas também simular a dinâmica de crescimento dessas árvores binomiais sob diferentes condições, explorando a variação desses parâmetros.
 
@@ -152,6 +152,11 @@ Portanto, a implementação é construída de maneira a não apenas gerar as ár
 
 % Conclusão
 \chapter{Conclusão}
+Os resultados obtidos neste trabalho demonstram que, embora o problema das árvores binomiais apresente desafios consideráveis, fomos capazes de obter resultados positivos em situações que não extrapolavam os limites máximos dos parâmetros. Para combinações de \( n_{\text{max}} \), \( p \), e \( d_{\text{max}} \) que mantiveram o crescimento da árvore controlado, nosso algoritmo de Busca em Largura (BFS) foi bem-sucedido, fornecendo medições precisas das profundidades médias das árvores geradas.
+
+No entanto, verificamos que, quando os parâmetros se aproximavam de seus valores máxi\-mos, o algoritmo encontrou dificuldades em lidar com a complexidade crescente, principalmente em cenários onde \( n_{\text{max}} \cdot p > 1 \), e a árvore se expandia rapidamente. Nessas situações, a BFS, que foi implementada para operar de maneira eficiente no caso médio, demonstrou limitações ao lidar com grandes quantidades de nós em profundidades elevadas, indicando a necessidade de otimizações para tratar casos extremos.
+
+Apesar dessas dificuldades, nosso algoritmo se comportou de forma esperada em cenários moderados e foi capaz de capturar a dinâmica do modelo de árvores binomiais com precisão. As transições de fase observadas foram de acordo com as expectativas teóricas, e os resultados médios mostram correlação entre os parâmetros e a profundidade das árvores geradas. A implementação oferece uma base rica para futuros estudos e melhorias, especialmente no que tange a otimizações para lidar com grandes árvores e parâmetros no limite superior.
 
 % Referências bibliográficas
 \printbibliography % Para imprimir a bibliografia
