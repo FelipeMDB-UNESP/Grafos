@@ -12,179 +12,65 @@ Vitor Marchini Rolisola
 #include <math.h>
 #include <time.h>
 #include <limits.h>
+#include <string.h>
 
 #define ITERACOES 10
 
-#pragma region vetores
-/*
-Função responsável por criar dinamincamente um vetor.
+#pragma region log
+int contador_logs = 1;
 
-Parâmetros:
-int n -> tamanho do vetor
-
-Retorno:
-int* vetor -> vetor dinamicamente alocado
-*/
-int* criar_vetor(int n) {
-
-    int* vetor = (int*)malloc(sizeof(int) * n);
-    return vetor;
+FILE* abrir_log() {
+    char buffer[32];
+    sprintf(buffer, "log%d.txt", contador_logs++);
+    FILE* log = fopen(buffer,"w");
+    return log;
 }
 
-/*
-Função responsável por liberar o espaço alocado a um vetor.
-
-Parâmetros:
-int* vetor -> ponteiro do vetor a ser liberado
-
-Retorno: void
-*/
-void liberar_vetor(int* vetor) {
-
-    free(vetor);
-}
-#pragma endregion vetores
-
-#pragma region filas
-/*
-Estrutura de um dado idealmente a ser utilizado em filas.
-
-int dado -> inteiro que representa o valor dessa estrutura.
-struct dado* proximo -> ponteiro para o próximo dado.
-*/
-typedef struct dado {
-
-    int dado;
-    struct dado* proximo;
-} DADO;
-
-/*
-Estrutura de fila (FIFO).
-
-DADO* entrada -> Entrada na fila, ou seja, última posição da fila.
-DADO* saida -> Saída da fila, ou seja, o elemento que se encontra em primeiro.
-*/
-typedef struct {
-
-    DADO* entrada;
-    DADO* saida;
-} Fila;
-
-typedef Fila* p_fila;
-
-/*
-Função que aloca espaço dinamicamente para uma fila.
-
-Retorno:
-p_fila -> ponteiro para uma estrutura Fila.
-*/
-p_fila criar_fila() {
-
-    p_fila f = malloc(sizeof(Fila));
-    f->entrada = NULL;
-    f->saida = NULL;
-    return f;
+void fechar_log(FILE* log) {
+    fclose(log);
 }
 
-/*
-Função booleana para verificar se uma fila é vazia.
-Retorna 1 se a fila está vazia e 0 caso contrário.
+void cabecalho_log(FILE* log, int max_noh_possivel, int qtd_filhos, float prob) {
 
-Parâmetros:
-p_fila f -> ponteiro de fila
-*/
-int fila_vazia(p_fila f){
+    char buffer[32];
+    int margem;
 
-    return (f->saida == NULL);
-}
+    fprintf(log,"+-------------------------+\n");
 
-/*
-Função responsável por liberar todo o espaço dentro da fila. Sem liberar o espaço alocado para a fila em si.
+    fprintf(log,"|Espaço Alocado: %d", max_noh_possivel);
 
-Parâmetros:
-p_fila f -> ponteiro de fila
-*/
-void esvaziar_fila(p_fila f){
-
-    DADO* aux;
-    while(!fila_vazia(f)) {
-        aux = f->saida;
-        f->saida = f->saida->proximo;
-        free(aux);
+    sprintf(buffer, "%d", max_noh_possivel);
+    margem = strlen("-------------------------") -strlen("Espaço Alocado: ") -strlen(buffer);
+    for (int i=0; i<=margem; i++) {
+        fputc(' ', log);
     }
-    f->entrada = NULL;
-}
+    fputc('|', log);
+    fputc('\n', log);
 
-/*
-Função que além de esvaziar a fila libera o espaço alocado para o ponteiro da fila em si.
 
-Parâmetros:
-p_fila f -> ponteiro para a fila
-*/
-void liberar_fila(p_fila f){
+    fprintf(log,"|qtd de filhos: %d", qtd_filhos);
 
-    DADO* aux;
-    while(!fila_vazia(f)) {
-        aux = f->saida;
-        f->saida = f->saida->proximo;
-        free(aux);
+    sprintf(buffer, "%d", qtd_filhos);
+    margem = strlen("-------------------------") -strlen("qtd de filhos: ") -strlen(buffer);
+    for (int i=0; i<margem; i++) {
+        fputc(' ', log);
     }
-    free(f);
-}
+    fputc('|', log);
+    fputc('\n', log);
 
-/*
-Função para adicionar algo na fila.
+    fprintf(log,"|prob do filho: %.2f", prob);
 
-Parâmetros:
-p_fila f -> ponteiro da fila
-int k -> dado a ser adicionado na fila
-
-Retorno:
-Vazio
-*/
-void enfileirar(p_fila f, int k) {
-
-    DADO* aux = malloc(sizeof(DADO));
-    aux->dado = k;
-    aux->proximo = NULL;
-
-    if (!fila_vazia(f)) {
-        f->entrada->proximo = aux;
-        f->entrada = aux;
-    } else {
-        f->entrada = aux;
-        f->saida = aux;
+    sprintf(buffer, "%.2f", prob);
+    margem = strlen("-------------------------") -strlen("prob do filho: ") -strlen(buffer);
+    for (int i=0; i<margem; i++) {
+        fputc(' ', log);
     }
+    fputc('|', log);
+    fputc('\n', log);
+
+    fprintf(log,"+-------------------------+\n");
 }
-
-/*
-Função responsável por remover o elemento em primeiro lugar na fila.
-
-Parâmetros: 
-p_fila f -> ponteiro para a fila para remover o dado.
-
-Retorno:
-retorna o dado removido caso exista dado. Caso contrário retorna INT_MIN.
-*/
-int desenfileirar(p_fila f) {
-
-    DADO* aux;
-    int i;
-    if (!fila_vazia(f)) {
-        aux = f->saida;
-        if (f->entrada != f->saida) {
-            f->saida = f->saida->proximo;
-        } else {
-            f->entrada = NULL;
-            f->saida = NULL;
-        }
-        i = aux->dado;
-        free(aux);
-        return i;
-    }
-    return INT_MIN;
-}
-#pragma endregion filas
+#pragma endregion log
 
 #pragma region arvore
 
@@ -227,7 +113,7 @@ ponteiro para árvore inicializada.
 */
 int* inicializar_arvore(int qtd_filhos, float prob, int profundidade) {
 
-    int* arvore = (int*) malloc(((qtd_filhos+1)* estimar_nos(qtd_filhos, prob, profundidade) + 1) * sizeof(int));
+    int* arvore = (int*) calloc(((qtd_filhos+1)* estimar_nos(qtd_filhos, prob, profundidade) + 1), sizeof(int));
     arvore[0] = qtd_filhos;
     return arvore;
 }
@@ -307,142 +193,60 @@ int filho(int* arvore, int vertice, int filho) {
 // TODO: adicionar verificação de caso o int* arvore não possua memória alocada, alocar memória.
 int gerar_arvore(int* arvore, float prob, int profundidade) {
 
+
     int qtd_noh = 1;
-    int qtd_filhos_max = arvore[0];
+    int qtd_filhos = arvore[0];
+    int camada = 0;
+    int ultimo_gerado = 0;
+    bool fim_geracao;
     int max_noh_possivel = estimar_nos(arvore[0], prob, profundidade);
 
-    for(int i = 1; i<max_noh_possivel; i++) {
-        arvore[i] = 0;
+    for(int i = 1; i<((qtd_filhos+1)* max_noh_possivel + 1); i++) {
+         arvore[i] = 0;
     }
+    arvore[1] = 1;
 
-    arvore[1] = 1; 
-    // printf("prob do filho: %.2f\n", prob);
-    // printf("|Pai %d", arvore[1]);
+    FILE* log = abrir_log();
+    cabecalho_log(log, max_noh_possivel, arvore[0], prob);
+    fprintf(log,"|Pai %d", arvore[1]);
 
-    for(int indice = 0, i = 2; i < max_noh_possivel; i++){
+    srand(time(NULL));
+    for(int indice = 0, i = 2; camada <= profundidade; i++){
 
-        if (i == (i/(qtd_filhos_max+1))*(qtd_filhos_max+1) + 1){
+        if (i == (i/(qtd_filhos+1))*(qtd_filhos+1) + 1){
             if (arvore[i] == 0){
-                // printf("\nFim da linhagem!");
+                fprintf(log,"\nFim da linhagem!");
                 break;
             }
-            // printf("\n|Pai %d", i);
+
+            if (camada == 0 || fim_geracao) {
+                camada++;
+                ultimo_gerado = indice;
+                fim_geracao = false;
+            }
+            if (ultimo_gerado == i)
+                fim_geracao = true;
+            if (camada <= profundidade)
+                fprintf(log,"\n|Pai %d", i);
             continue;
         }
 
-        srand(time(NULL));
-
         if (rand() % 100 < (int)(prob*100) ? true : false){
 
-            indice = 1 + ((qtd_filhos_max + 1) * qtd_noh);
+            indice = 1 + ((qtd_filhos + 1) * qtd_noh);
             arvore[i] = indice;
-            arvore[indice] = (i/(qtd_filhos_max+1))*(qtd_filhos_max+1) + 1;
+            arvore[indice] = (i/(qtd_filhos+1))*(qtd_filhos+1) + 1;
             qtd_noh++;
         }
 
-        // printf("|%d", arvore[i]);
+        fprintf(log,"|%d", arvore[i]);
     }
 
+    fechar_log(log);
     return qtd_noh;
 }
-//Isso é um easter egg! +10 pontos //(i/(qtd_filhos+1))*(qtd_filhos+1) + 1
-// i == 1 + ((qtd_filhos_max + 1) * qtd_noh)
-
 
 #pragma endregion arvore
-
-#pragma region matrizes
-
-/*
-Estrutura genérica de matriz. Criada com o intuito de construir um grafo.
-
-Objetos da estrutura:
-int n -> linhas.
-int ** matriz -> ponteiro para matriz.
-*/
-typedef struct matricial {
-
-    int n;          //linhas
-    int **matriz; //ponteiro para matriz
-}Matriz;
-
-
-/*
-Função que inicializa uma matriz para grafos.
-
-Parâmetros:
-int qtd_vertices -> quantidade de vértices desejados.
-
-Retorno 
-ponteiro para a matriz inicializada.
-*/
-Matriz* inicializar_matriz(int qtd_vertices){
-
-    Matriz* matricial = (Matriz*) malloc(sizeof(Matriz));
-    int** matriz_adjascencia = (int**) malloc(qtd_vertices * sizeof(int*));
-    for (int i = 0; i < qtd_vertices; i++) {
-        matriz_adjascencia[i] = (int*)malloc(qtd_vertices * sizeof(int));
-    }
-    matricial->n = qtd_vertices;
-    matricial->matriz = matriz_adjascencia;
-    return matricial;
-}
-
-/*
-Função que libera o espaço dinamicamente alocado para uma matriz, incluindo todos os dados armazenados nela.
-
-Parâmetros:
-Matriz* matricial -> ponteiro para a matriz a ser liberada.
-*/
-void liberar_matriz(Matriz* matricial){
-
-    for (int i = 0; i < matricial->n; i++) {
-        free(matricial->matriz[i]);
-    }
-    free(matricial->matriz);
-    free(matricial);
-}
-#pragma endregion matrizes
-
-#pragma region grafo_aleatorio
-/*
-Função para gerar um grafo com arestas aleatórias.
-
-Parâmetros:
-Matriz* matricial -> ponteiro de matriz para se gerar as arestas.
-bool orientado -> booleano que informa se a matriz é orientada ou não.
-int probabilidade -> probabilidade de cada aresta.
-*/
-void gerar_grafo(Matriz* matricial, bool orientado, int probabilidade) {
-    
-    
-    if (!orientado) {   //garante espelhamento 
-        for (int i = 0; i < matricial->n; i++) {
-            for (int j = i; j < matricial->n; j++) {
-                if (i != j) {                          //evitar ligacoes proprias
-                    srand(time(NULL));
-                    matricial->matriz[i][j] = (rand() % 100 < probabilidade) ? (rand() % 10 + 1) : 0;//random de números entre 0 e 99 (resto da divisao por 100)
-                    matricial->matriz[j][i] = matricial->matriz[i][j];
-                    
-                } else {
-                    matricial->matriz[i][j] = 0;       //falso para quando for a diagonal principal       
-                }
-            }
-        }
-    } else {
-        for (int i = 0; i < matricial->n; i++) {
-            for (int j = 0; j < matricial->n; j++) {
-                if (i != j) {                          //evitar ligacoes proprias
-                    matricial->matriz[i][j] = (rand() % 100 < probabilidade) ? 1  * (rand() % 10 + 1) : 0;//random de números entre 0 e 99 (resto da divisao por 100)
-                } else {
-                    matricial->matriz[i][j] = 0;       //falso para quando for a diagonal principal       
-                }
-            }
-        }
-    }
-}
-
-#pragma endregion
 
 /*
 Função de sobrecarga da busca em largura recursiva. 
@@ -461,22 +265,22 @@ int busca_em_largura_recursiva(int* arvore, int no_atual, int profundidade, int 
     int maior_global = profundidade;
     int maior_local = 0;
 
+    if (pai(arvore, no_atual) != no_atual && pai(arvore, no_atual) != no_anterior) {
+
+        maior_local = busca_em_largura_recursiva(arvore, pai(arvore, no_atual), profundidade + 1, no_atual);
+
+        if (maior_global<maior_local)
+            maior_global = maior_local;
+    }
+
     for (int i=1; i<= arvore[0]; i++) {
 
         if(filho(arvore,no_atual,i) != 0 && filho(arvore,no_atual,i) != no_anterior) {
 
-            maior_local = busca_em_largura_recursiva(arvore, filho(arvore,no_atual,i), maior_global + 1, no_atual);
+            maior_local = busca_em_largura_recursiva(arvore, filho(arvore,no_atual,i), profundidade + 1, no_atual);
             if (maior_global<maior_local)
                 maior_global = maior_local;
         }
-    }
-
-    if (pai(arvore, no_atual) != no_atual && pai(arvore, no_atual) != no_anterior) {
-
-        maior_local = busca_em_largura_recursiva(arvore, pai(arvore, no_atual), maior_global + 1, no_atual);
-
-        if (maior_global<maior_local)
-            maior_global = maior_local;
     }
 
     if(maior_global > profundidade)
@@ -553,7 +357,7 @@ int *profundidade -> ponteiro para se armazenar a profundidade da árvore.
 void solicitar_ao_usuario(int *qtd_filhos, float *prob, int *profundidade) {
 
     do{
-        printf("\nDigite a quantidade de filhos na arvore: ");
+        printf("\nDigite a quantidade de filhos na arvore (entre 1 e 8): ");
         scanf(" %d", qtd_filhos);
         if((*qtd_filhos) > 8 || (*qtd_filhos) < 1) {
             printf("\nDigite uma quantidade de filhos valida.\n");
@@ -563,7 +367,7 @@ void solicitar_ao_usuario(int *qtd_filhos, float *prob, int *profundidade) {
 
     do{
 
-        printf("\nDigite a probabilidade da existencia dos filhos: ");
+        printf("\nDigite a probabilidade da existencia dos filhos (entre 0 e 1): ");
         scanf(" %f", prob);
 
         if((*prob) < 0 || (*prob) > 1){
@@ -574,7 +378,7 @@ void solicitar_ao_usuario(int *qtd_filhos, float *prob, int *profundidade) {
 
     do{
 
-        printf("\nDigite qual a profundidade maxima da arvore: ");
+        printf("\nDigite qual a profundidade maxima da arvore (entre 0 e 4): ");
         scanf(" %d", profundidade);
 
         if((*profundidade) < 0 || (*profundidade) > 4) {
@@ -584,20 +388,68 @@ void solicitar_ao_usuario(int *qtd_filhos, float *prob, int *profundidade) {
     }while((*profundidade < 0 || *profundidade > 4));
 }
 
+void solicitar_ao_arquivo(int *qtd_filhos, float *prob, int *profundidade) {
+
+    char buffer[16];
+
+    printf("\nDigite o nome do arquivo texto a extrair os dados:\n");
+    scanf(" %s",buffer);
+
+    FILE* teste = fopen(buffer,"r+");
+
+    fgets(buffer, 16, teste);
+    *qtd_filhos = atoi(buffer);
+
+    fgets(buffer, 16, teste);
+    *prob = atof(buffer);
+
+    fgets(buffer, 16, teste);
+    *profundidade = atoi(buffer);
+
+    fclose(teste);
+}
+
+int menu() {
+    int opcao;
+
+    do {
+        printf("\n\n+-------------------Menu---------------------+\n|1 - Inserir dados                           |\n|2 - Carregar dados                          |\n|3 - Ver média de profundidade dos parâmetros|\n|4 - Sair                                    |\n+--------------------------------------------+\n");
+        scanf(" %d", &opcao);
+    } while (opcao <1 || opcao > 4);
+
+    return opcao;
+}
+
 int main() {
 
-    int qtd_filhos, profundidade;
-    float prob;
-    solicitar_ao_usuario(&qtd_filhos, &prob, &profundidade);
+    int qtd_filhos = -1;
+    int profundidade = -1;
+    float prob = -1.0;
+    int caso;
 
-    int* arvore_testes = inicializar_arvore(qtd_filhos, prob, profundidade);
-    int qtd_nos = gerar_arvore(arvore_testes, prob, profundidade);
+    while (true) {
 
-    float media_profundidade_busca_em_largura = media_busca_em_largura(arvore_testes, qtd_nos);
+        caso = menu();
 
-    printf("TESTE");
-    printf("A profundidade média da quantidade de nós é: %.2f", media_profundidade_busca_em_largura);
-
+        switch (caso) {
+        case 1:
+            solicitar_ao_usuario(&qtd_filhos, &prob, &profundidade);
+            break;
+        case 2:
+            solicitar_ao_arquivo(&qtd_filhos, &prob, &profundidade);
+            break;
+        case 3:
+            if (qtd_filhos != -1) {
+                printf("\nA média geral dos parâmetros é: %.2f", media_geral_parametros(qtd_filhos, prob, profundidade));
+            } else {
+                printf("\nAdicione dados primeiro.\n");
+            }
+            break;
+        case 4:
+            exit(0);
+            break;
+        }
+    }
     return 0;
 }
 
