@@ -570,7 +570,7 @@ int main() {
             break;
         case 3:
             if (qtd_filhos != -1) {
-                printf("\nA media geral dos parametros é: %.2f", britto_media_geral_parametros(qtd_filhos, prob, profundidade));
+                printf("\nA media geral dos parametros eh: %.2f", britto_media_geral_parametros(qtd_filhos, prob, profundidade));
             } else {
                 printf("\nAdicione dados primeiro.\n");
             }
@@ -582,92 +582,3 @@ int main() {
     }
     return 0;
 }
-
-
-// int qtd_vertices, origem, direcionado, prob;
-    // printf("Qual a quantidade de vertices?\n");
-    // scanf(" %d", &qtd_vertices);
-
-    // printf("Qual o vertice de origem?\n");
-    // scanf(" %d", &origem);
-
-    // // Verifica se a origem está dentro do intervalo válido
-    // if (origem < 0 || origem >= qtd_vertices) {
-
-    //     printf("Origem invalida.\n");
-    //     return 1;
-    // }
-
-    // //verifica se eh direcionado ou nao
-    // do {
-
-    //     printf("\nSelecione:\n0 - Grafo NAO direcionado\n1 - Grafo direcionado\n");
-    //     scanf(" %d", &direcionado);
-
-    //     if (direcionado != 0 && direcionado != 1) {
-    //         printf("\nOPCAO INVALIDA!!!\n");
-    //     }
-    // } while (direcionado != 0 && direcionado != 1);
-
-
-    // Matriz* grafo = inicializar_matriz(qtd_vertices);
-
-
-    // int aux;
-    // do {
-
-    //     printf("\nDeseja um grafo aleatorio? [1=SIM/0=NAO]\n");
-    //     scanf(" %d", &aux);
-
-    //     if (aux != 0 && aux != 1) {
-    //         printf("\nOPCAO INVALIDA!!!\n");
-    //     }
-    // } while (aux != 0 && aux != 1);
-
-    // if (aux) {
-    //     prob = probabilidade();
-    //     gerar_grafo(grafo, direcionado, (int)(probabilidade() * 100));
-    // } else {
-
-    //     // Preenche a matriz de distâncias
-    //     printf("Informe as distancias entre os vertices (use -1 para indicar ausencia de aresta):\n");
-    //     for (int i = 0; i < grafo->n; i++) {
-
-    //         for (int j = 0; j < grafo->n; j++) {
-
-    //             if (i == j){
-
-    //                 grafo->matriz[i][j] = 0;
-    //             }
-    //             else if(direcionado) {
-
-    //                 printf("Distancia entre o vertice %d e %d: ", i, j);
-    //                 scanf(" %d", &grafo->matriz[i][j]);
-    //             }
-    //             else if (i < j && !direcionado){
-
-    //                 printf("Distancia entre o vertice %d e %d: ", i, j);
-    //                 scanf(" %d", &grafo->matriz[i][j]);
-    //                 grafo->matriz[j][i] = grafo->matriz[i][j];
-    //             }
-
-    //             if (grafo->matriz[i][j] == -1) {
-
-    //                 grafo->matriz[i][j] = 0; // Considerando 0 para ausência de aresta
-    //             }
-    //         }
-    //     }
-    // }
-
-    // // Realiza a busca em largura
-    // int* resultado = busca_em_largura(grafo, origem);
-
-    // // Exibe o vetor de pais retornado pela busca em largura
-    // printf("\nVetor de pais na busca em largura a partir do vertice %d:\n", origem);
-    // for (int i = 0; i < grafo->n; i++) {
-    //     printf("Vertice %d: Pai = %d\n", i, resultado[i]);
-    // }
-
-    // Libera a memória utilizada
-    // liberar_vetor(resultado);
-    // liberar_matriz(grafo);
