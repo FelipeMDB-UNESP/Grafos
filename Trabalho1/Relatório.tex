@@ -7,6 +7,7 @@
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{svg}
+\usepackage{amsmath}
 
 % Pacotes para citações
 \usepackage{csquotes}
@@ -63,6 +64,12 @@
 
 % Resumo
 \chapter{Resumo}
+
+Este trabalho tem como objetivo aplicar o algoritmo de Busca em Largura (BFS) em árvores binomiais geradas aleatoriamente, calculando a média das profundidades das ordenações geradas para todos os nós. O número de filhos por nó segue uma distribuição binomial com parâmetros \( n_{\text{max}} \) (número máximo de filhos) e \( p\) (probabilidade de ter filhos), sendo a geração de descendentes limitada pela profundidade \( d_{\text{max}} \).
+
+Realizamos experimentos variando os parâmetros \( n_{\text{max}} \), \( p \), e \( d_{\text{max}} \), gerando ao menos 10 árvores aleatórias para cada combinação de valores. Os resultados obtidos foram apresentados em tabelas e gráficos, permitindo a análise das profundidades médias.
+
+Um dos interesses do estudo era almejar a transição de fase esperada no modelo: para \( n_{\text{max}} \cdot p < 1 \), as árvores atingem no geral níveis sem descendentes enquanto para \( n_{\text{max}} \cdot p > 1 \), as árvores se expandem até o limite de profundidade \( d_{\text{max}} \). Esse comportamente fornece uma visão mais detalhada sobre a estrutura de crescimento das árvores binomias conforme variamos seus parâmetros.
 
 % Introdução
 \chapter{Introdução}
@@ -130,6 +137,15 @@ A introdução a essas ideias será contextualizada com base nas propriedades da
 
 % Implementação
 \chapter{Implementação}
+A implementação do trabalho envolve a criação de um algoritmo que gera árvores binomiais com base nos parâmetros fornecidos: \( n_{\text{max}} \) (número máximo de filhos por nó), \( p \) (probabilidade de um nó gerar filhos) e \( d_{\text{max}} \) (profundidade máxima da árvore). Cada nó é representado por um conjunto de quatro posições em um vetor. A primeira posição do vetor, exclusivamente, armazena o número máximo de filhos do nó, enquanto as outras três posições armazenam o índice do pai e dos filhos, respectivamente, conforme o modelo que você está utilizando.
+
+Para cada tripla de parâmetros, são geradas pelo menos 10 árvores aleatórias, utilizando a distribuição binomial para decidir quantos filhos cada nó terá. O algoritmo segue uma abordagem de Busca em Largura (BFS) para explorar os nós da árvore. A BFS percorre a árvore começando da raiz, explorando todos os nós em cada nível antes de passar para o próximo. Essa busca é gerenciada por uma fila que armazena os nós a serem explorados, garantindo que os nós sejam processados em ordem de nível.
+
+Durante a execução do BFS, são registrados a profundidade de cada nó e a profundidade total das árvores. Ao final de cada execução, é calculada a profundidade média da árvore, que será utilizada para gerar tabelas ou gráficos que mostram como essa profundidade varia de acordo com as diferentes combinações de \( n_{\text{max}} \), \( p \), e \( d_{\text{max}} \).
+
+Além disso, o código precisa lidar com a transição de fase do modelo, que ocorre quando nmax multiplicado por p é menor que 1, indicando que, em algum ponto, a geração de novos filhos para a árvore vai parar, resultando em níveis sem descendentes. Caso \( n_{\text{max}} \cdot p \) seja maior que 1, a geração de nós continuará até atingir o limite imposto por \( d_{\text{max}} \).
+
+Portanto, a implementação é construída de maneira a não apenas gerar as árvores e calcular as profundidades, mas também simular a dinâmica de crescimento dessas árvores binomiais sob diferentes condições, explorando a variação desses parâmetros.
 
 % Resultados e discussão
 \chapter{Resultados e discussão}
@@ -139,5 +155,8 @@ A introdução a essas ideias será contextualizada com base nas propriedades da
 
 % Referências bibliográficas
 \printbibliography % Para imprimir a bibliografia
+
+
+%Imagens da Introdução: Geradas com código no repositório: \href{https://github.com/FelipeMDB-UNESP/Grafos.git}{\cite{felipemdb2024}}.
 
 \end{document}
