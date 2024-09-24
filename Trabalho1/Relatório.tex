@@ -6,8 +6,11 @@
 \usepackage{geometry}
 \usepackage{hyperref}
 \usepackage{graphicx}
+\usepackage{svg}
 
-\usepackage[style=authoryear]{biblatex}
+% Pacotes para citações
+\usepackage{csquotes}
+\usepackage[backend=biber,style=numeric]{biblatex} 
 \addbibresource{referencias.bib} % Nome do arquivo .bib
 
 \usepackage{helvet} % Similar à Arial
@@ -66,15 +69,66 @@
 
 Grafos são estruturas fundamentais em teoria dos grafos, utilizadas para modelar uma variedade de problemas em diferentes áreas, desde redes de computadores até genética.
 
-Um grafo é uma estrutura matemática usada para modelar relações entre objetos de um conjunto. Ele é composto por dois conjuntos: um conjunto de vértices (ou nós) e um conjunto de arestas (ou arcos) que conectam esses vértices. Os vértices representam os objetos e as arestas representam as relações entre esses objetos.\cite{emilio2024grafos}
+Um grafo é uma estrutura matemática usada para modelar relações entre objetos de um conjunto. Ele é composto por dois conjuntos: um conjunto de vértices (ou nós) e um conjunto de arestas (ou arcos) que conectam esses vértices. Os vértices representam os objetos e as arestas representam as relações entre esses objetos. \textsuperscript{\cite{emilio2024grafos}}
 
-Por exemplo, na representação de uma rede social, os vértices podem representar pessoas e as arestas podem representar as conexões de amizade entre elas.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.75\textwidth]{src/exemplo_simples_grafo.png}
+    \label{fig:exemplo de grafo simples}
+\end{figure}
 
-Um tipo especial de grafo, conhecido como árvore, apresenta propriedades únicas que tornam essa classe particularmente interessante para estudo. Uma árvore é definida como um grafo não-orientado, conexo e acíclico, o que significa que não possui ciclos e, além disso, qualquer remoção de uma de suas arestas resulta em um grafo desconexo. Essas características permitem que árvores sejam a estrutura mínima necessária para garantir a conectividade entre os vértices de um grafo com o menor número de arestas possíveis, um aspecto crucial para a otimização de recursos em diversos cenários práticos.
+Por exemplo, na representação de uma rede social, os vértices podem representar pessoas e as arestas representam as conexões de amizade entre elas.
 
-A análise de árvores em grafos tem implicações diretas em problemas de interligação, como o fornecimento de redes elétricas, onde o objetivo é minimizar o custo de conexão ao garantir que todas as unidades estejam conectadas. Além disso, árvores também desempenham um papel importante na computação, particularmente em algoritmos de ordenação, como o Heapsort, e na modelagem de genealogias e redes hierárquicas. O presente relatório visa explorar as propriedades matemáticas e aplicativas das árvores, abordando tanto sua definição formal quanto suas extensões, como arborescências e a aplicação em algoritmos de busca.
+Um tipo especial de grafo, conhecido como árvore, apresenta propriedades únicas que tornam essa classe particularmente interessante para estudo.
+Uma árvore é definida como um grafo não-orientado, conexo e acíclico, o que significa que não possui ciclos e, além disso, qualquer remoção de uma de suas arestas resulta em um grafo desconexo.\textsuperscript{\cite{definicaoarvore}} Então suas características são:
 
-A introdução a essas ideias será contextualizada com base nas propriedades da conectividade e da aciclicidade, discutindo ainda como árvores podem ser vistas como estruturas mínimas e otimizadas para representação de relações complexas, ao mesmo tempo que mantêm a simplicidade computacional.
+\begin{itemize}
+        \item \textbf{Conectividade}: Para qualquer par de vértices \( u \) e \( v \), existe exatamente um caminho que conecta \( u \) e \( v \).
+        \item \textbf{Aciclicidade}: O grafo não contém ciclos; ou seja; não é possivel iniciar em im vértice, seguir arestas e retornar ao mesmo vértice sem atravessar arestas repetidamente.
+        \item \textbf{Número de arestas}: Se uma árvore possui \( n \) vértices, então ela possui exatamente \( n - 1 \) arestas.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.75\textwidth]{src/arvore_exemplo.png}
+    \label{fig:exemplo de árvore}
+\end{figure}
+
+Essas características permitem que árvores sejam a estrutura mínima necessária para garantir a conectividade entre os vértices de um grafo com o menor número de arestas possíveis, um aspecto crucial para a otimização de recursos em diversos cenários práticos.
+
+A análise de árvores em grafos tem implicações diretas em problemas de interligação, como o fornecimento de redes elétricas, onde o objetivo é minimizar o custo de conexão ao garantir que todas as unidades estejam conectadas. Além disso, árvores desempenham um papel importante na computação, particularmente em algoritmos de ordenação, como o Heapsort, e na modelagem de genealogias e redes hierárquicas.
+
+
+Uma \textbf{árvore binomial} é uma estrutura de dados que representa uma coleção de árvores binomiais. A definição formal de uma árvore binomial é a seguinte\textsuperscript{\cite{definicaoarvorebinomialEllis} \cite{definicaoarvorebinomialTarjan}}:
+
+Uma \textbf{árvore binomial} \( B_k \) é uma árvore que possui as seguintes propriedades:
+
+\begin{itemize}
+    \item \textbf{Estrutura Recursiva}: Uma árvore binomial \( B_k \) é composta por \( 2^k \) nós e tem exatamente \( k \) árvores binomiais \( B_{k-1}, B_{k-2}, \ldots, B_0 \) como subárvores. A árvore \( B_k \) é obtida ao unir duas árvores \( B_{k-1} \).
+    
+    \item \textbf{Propriedades dos Nós}: 
+    \begin{itemize}
+        \item O nó na raiz de \( B_k \) tem um grau de \( k \) (ou seja, ele possui \( k \) filhos).
+        \item A altura de \( B_k \) é \( k \).
+        \item A árvore \( B_k \) possui \( 2^k \) folhas.
+    \end{itemize}
+    
+    \item \textbf{Organização dos Nós}: Os nós são organizados de tal forma que os valores dos nós na subárvore esquerda são menores ou iguais ao valor do nó pai, e os valores dos nós na subárvore direita são maiores.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.75\textwidth]{src/arvore_binomial_ordem_3.png}
+    \label{fig:exemplo de árvore binomial}
+\end{figure}
+
+As árvores binomiais são particularmente úteis em algoritmos de estrutura de dados, como em filas de prioridade.
+
+m grafo do tipo árvore binomial, que foi implementado para este relatório, é uma estrutura de dados que representa uma coleção de árvores binomiais. A definição formal de uma árvore binomial é a seguinte:
+
+O presente relatório tem o objetivo de explorar as propriedades matemáticas e aplicativas das árvores binomiais, abordando tanto sua definição formal quanto suas extensões, como arborescências e a aplicação em algoritmos de busca.
+
+A introdução a essas ideias será contextualizada com base nas propriedades da conectividade e da aciclicidade, discutindo ainda como árvores binomiais podem ser vistas como estruturas mínimas e otimizadas para representação de relações complexas, ao mesmo tempo que mantêm a simplicidade computacional.
 
 % Implementação
 \chapter{Implementação}

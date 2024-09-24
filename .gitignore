@@ -10,3 +10,6 @@
 *.bbl
 *.xml
 *.bcf
+*.bbl
+*.code-workspace
+.venv
