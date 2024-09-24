@@ -471,7 +471,7 @@ int busca_em_largura_recursiva(int* arvore, int no_atual, int profundidade, int 
         }
     }
 
-    if (pai(arvore, no_atual) != no_atual) {
+    if (pai(arvore, no_atual) != no_atual && pai(arvore, no_atual) != no_anterior) {
 
         maior_local = busca_em_largura_recursiva(arvore, pai(arvore, no_atual), maior_global + 1, no_atual);
 
