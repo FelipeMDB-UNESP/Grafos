@@ -305,7 +305,7 @@ int filho(int* arvore, int vertice, int filho) {
 
 // BIG RYAN NOTES 2.0
 // TODO: adicionar verificação de caso o int* arvore não possua memória alocada, alocar memória.
-int gerar_arvore(int* arvore, float prob, int profundidade){
+int gerar_arvore(int* arvore, float prob, int profundidade) {
 
     int qtd_noh = 1;
     int qtd_filhos_max = arvore[0];
@@ -316,17 +316,17 @@ int gerar_arvore(int* arvore, float prob, int profundidade){
     }
 
     arvore[1] = 1; 
-    printf("prob do filho: %.2f\n", prob);
-    printf("|Pai %d", arvore[1]);
+    // printf("prob do filho: %.2f\n", prob);
+    // printf("|Pai %d", arvore[1]);
 
     for(int indice = 0, i = 2; i < max_noh_possivel; i++){
 
         if (i == (i/(qtd_filhos_max+1))*(qtd_filhos_max+1) + 1){
             if (arvore[i] == 0){
-                printf("\nFim da linhagem!");
+                // printf("\nFim da linhagem!");
                 break;
             }
-            printf("\n|Pai %d", i);
+            // printf("\n|Pai %d", i);
             continue;
         }
 
@@ -340,7 +340,7 @@ int gerar_arvore(int* arvore, float prob, int profundidade){
             qtd_noh++;
         }
 
-        printf("|%d", arvore[i]);
+        // printf("|%d", arvore[i]);
     }
 
     return qtd_noh;
@@ -565,23 +565,23 @@ void solicitar_ao_usuario(int *qtd_filhos, float *prob, int *profundidade) {
 
         printf("\nDigite a probabilidade da existencia dos filhos: ");
         scanf(" %f", prob);
-        
-        if((*profundidade) < 0 || (*profundidade) > 4) {
-            printf("\nDigite uma profundidade valida.\n");
+
+        if((*prob) < 0 || (*prob) > 1){
+            printf("\nDigite uma probabilidade valida\n");
         }
         
-    }while((*profundidade < 0 || *profundidade > 4));
+    }while((*prob < 0 || *prob > 1));
 
     do{
 
         printf("\nDigite qual a profundidade maxima da arvore: ");
         scanf(" %d", profundidade);
 
-        if((*prob) < 0 || (*prob) > 1){
-            printf("\nDigite uma probabilidade valida\n");
+        if((*profundidade) < 0 || (*profundidade) > 4) {
+            printf("\nDigite uma profundidade valida.\n");
         }
 
-    }while((*prob < 0 || *prob > 1));
+    }while((*profundidade < 0 || *profundidade > 4));
 }
 
 int main() {
@@ -591,7 +591,12 @@ int main() {
     solicitar_ao_usuario(&qtd_filhos, &prob, &profundidade);
 
     int* arvore_testes = inicializar_arvore(qtd_filhos, prob, profundidade);
-    gerar_arvore(arvore_testes, prob, profundidade);
+    int qtd_nos = gerar_arvore(arvore_testes, prob, profundidade);
+
+    float media_profundidade_busca_em_largura = media_busca_em_largura(arvore_testes, qtd_nos);
+
+    printf("TESTE");
+    printf("A profundidade média da quantidade de nós é: %.2f", media_profundidade_busca_em_largura);
 
     return 0;
 }
