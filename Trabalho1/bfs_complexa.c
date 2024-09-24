@@ -33,68 +33,66 @@ int estaVazia(Fila* f) {
     return f->entrada == f->saida;
 }
 
-float bfs_arvore_binomial (int *arvore, int raiz, int qtd_nos) {
+int bfs_arvore_binomial (int *arvore, int raiz, int qtd_nos) {
 
     // Vetor para armazenar as profundidades de cada nó
     float *profundidades = (float *) malloc(qtd_nos * sizeof(float));
+    //precisávamos iterar em profundidades de forma sequencial, essa é a maneira mais simples;
     int pos_profundidades = 0;
+    //Marca os nós visitados
+    int *visitados = (int *) calloc(qtd_nos, sizeof(int));
     // Inicializa todas as profundidades com 0
     for (int i = 0; i < qtd_nos; i++) {
         profundidades[i] = 0;
     }
 
-    //quantidade máxima de filhos por nó
-    int max_filhos_por_no = arvore[0];
-
     //um bloco é representado pelo pai + filhos. Ou seja podemos iterar sobre os nós do vetor da árvore indo de bloco em bloco. 
-    int bloco = max_filhos_por_no + 1;
-
+    int bloco = arvore[0] + 1;
     //fila de índices
     Fila *fila = inicializarFila(qtd_nos);
 
-    profundidades[0] = 0;
-    pos_profundidades++;
+    //profundidade inicial é zero
+    profundidades[raiz / bloco] = 0;
     enfileirar(fila, raiz);
-    int grupos_dos_filhos[max_filhos_por_no];
+    visitados[(raiz / bloco)] = 1;
+
+    int no_anterior;
     while(!estaVazia(fila)) {
 
         int no_atual = desenfileirar(fila);
+        visitados[no_atual / 4] = 1;
         // printf("Visitando no: %d\n", (no_atual / bloco) + 1); // Visita o nó atual
 
         //i começa em 1 para podermos usar essa variável para encontrarmos o filho na posição correta, ignorando a info do pai.
         //no_atual - 1 -> para posicionarmos no começo das informações do nó, não em seu fim.
         //multiplicamos por bloco pois cada bloco representa um nó de forma abstrata.
         //soma-se i+1 no final pois queremos salvar os dados dos filhos. A primeira posição do bloco sempre armazena o índice de onde começa o bloco do pai do nó atual.
-        bool tem_filho = false;
-        for(int i = 0; i < max_filhos_por_no; i++) {
+        int pai_ou_filho;
+        for(int i = 0; i < bloco; i++) {
 
-            grupos_dos_filhos[i] = arvore[no_atual + (i+1)];
-            if (grupos_dos_filhos[i] != 0) {
-                enfileirar(fila, grupos_dos_filhos[i]);
+            pai_ou_filho = arvore[no_atual + i];
+            if (pai_ou_filho != 0 && !visitados[(pai_ou_filho / bloco)]) {
+                enfileirar(fila, pai_ou_filho);
 
-                profundidades[pos_profundidades] = profundidades[no_atual / bloco] + 1;
-                pos_profundidades ++;
+                profundidades[pai_ou_filho / bloco] = profundidades[no_atual / bloco] + 1;
             }
         }
     } 
-    
-    int soma_profundidades = 0;
-    for (int i = 0; i < qtd_nos; i++) {
-        soma_profundidades += profundidades[i];
-    }
 
     // Calcula a média das profundidades
-    float media_profundidade = (float) soma_profundidades / qtd_nos;
+    int maior_profundidade = 0;
+    for(int i = 0; i < qtd_nos; i++) {
+        if(profundidades[i] > maior_profundidade)
+            maior_profundidade = profundidades[i];
+    }
 
     // Libera a memória da fila e do vetor de profundidades
     free(fila->data);
     free(fila);
     free(profundidades);
-    free(grupos_dos_filhos);
     // Retorna a profundidade média
-    return media_profundidade;
+    return maior_profundidade;
 }
-
 
 int main() {
     // Exemplo de uma árvore binomial representada como vetor
@@ -103,23 +101,25 @@ int main() {
                     1, 17, 0, 0, 
                     1, 0, 0, 0, 
                     5, 0, 0, 0, 
-                    6, 0, 0, 0};
+                    6, 21, 0, 0,
+                    17, 0, 0, 0};
 
-    int qtd_nos = 5; // Número de nós
+    int qtd_nos = 6; // Número de nós
+    int bloco = 4;
 
     float soma_profundidades = 0.0;
-    int quantidade_de_raizes = 0;
 
     // Chama a função para cada nó como raiz
-    for (int raiz = 1; raiz <= qtd_nos; raiz  = raiz + 4) {
-        float profundidade_media = bfs_arvore_binomial(arvore, raiz, qtd_nos);
-        printf("Profundidade media para a arvore com raiz = noh %d: %.2f\n", (raiz/4)+1, profundidade_media);
-        soma_profundidades += profundidade_media; // Acumula a soma das profundidades
-        quantidade_de_raizes++;
+    //quantidade de filhos + 1 é como se fôssemos de índice a índice.
+    // no meio do for é bloco - 1
+    for (int raiz = 1; raiz <= ((qtd_nos-1) * bloco) + 1; raiz  = raiz + bloco) {
+        int profundidade = bfs_arvore_binomial(arvore, raiz, qtd_nos);
+        printf("Profundidade da arvore com raiz = noh %d: %d\n", (raiz/bloco)+1, profundidade);
+        soma_profundidades += (float)profundidade; // Acumula a soma das profundidades
     }
 
     // Calcula a média das profundidades
-    float media_total = soma_profundidades / quantidade_de_raizes;
+    float media_total = soma_profundidades / qtd_nos;
     printf("Media total das profundidades: %.2f\n", media_total);
 
     return 0;
