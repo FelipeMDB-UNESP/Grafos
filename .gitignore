@@ -6,3 +6,7 @@
 *.synctex(busy)
 *.toc
 *.vscode
+*.blg
+*.bbl
+*.xml
+*.bcf
