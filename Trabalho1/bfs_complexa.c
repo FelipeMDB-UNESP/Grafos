@@ -72,7 +72,7 @@ float bfs_arvore_binomial (int *arvore, int raiz, int qtd_nos) {
             if (grupos_dos_filhos[i] != 0) {
                 enfileirar(fila, grupos_dos_filhos[i]);
 
-                profundidades[pos_profundidades] = profundidades[pos_profundidades -(i+1)] + 1;
+                profundidades[pos_profundidades] = profundidades[no_atual / bloco] + 1;
                 pos_profundidades ++;
             }
         }
