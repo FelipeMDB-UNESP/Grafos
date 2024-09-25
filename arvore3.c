@@ -223,9 +223,6 @@ int filho(int* arvore, int vertice, int filho) {
     return abstracao(arvore[valor_real + filho],arvore[0]);
 }
 
-
-// BIG RYAN NOTES 2.0
-// TODO: adicionar verificação de caso o int* arvore não possua memória alocada, alocar memória.
 int gerar_arvore(int* arvore, float prob, int profundidade) {
 
 
