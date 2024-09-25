@@ -226,7 +226,14 @@ Provar: Uma árvore binomial \( B_k \) tem \( 2^k \) nós.
 
 Portanto, a propriedade é válida para \( n+1 \), e a indução está concluída.
 
-Então temos, \[ a_0 = 1 \]\[ a_{n-1} = a_n \cdot (qtd.filho \cdot prob)^n \] \[ qtd_{filhos} = n_{max} \] \[ C = qtd_{filhos} \cdot prob \] \[ prob = p \] \[ profundidade = d_{max} \]
+Então temos,
+\[ a_0 = 1 \]
+\[ qtd_{filhos} = n_{max} \]
+\[ prob = p \]
+\[ a_{n-1} = a_n \cdot (qtd_{filhos} \cdot prob)^n \]
+\[ C = qtd_{filhos} \cdot prob \]
+\[ profundidade = d_{max} \]
+
 Usando Indução Finita: \[ a_n = C^{\frac{n(n+1)}{2}} \]
 
 % Resultados e discussão
