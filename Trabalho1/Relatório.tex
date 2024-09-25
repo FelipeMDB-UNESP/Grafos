@@ -55,7 +55,7 @@
         \hspace{1.5cm}Vitor Marchini Rolisola \\
     \end{flushleft}
     \vfill
-    01/08/2024\\
+    24/09/2024\\
 \end{titlepage}
 
 % Sumário
@@ -81,6 +81,7 @@ Um grafo é uma estrutura matemática usada para modelar relações entre objeto
 \begin{figure}[h]
     \centering
     \includegraphics[width=.75\textwidth]{src/exemplo_simples_grafo.png}
+    \caption{Exemplo de um grafo não orientado e sem peso}
     \label{fig:exemplo de grafo simples}
 \end{figure}
 
@@ -99,6 +100,7 @@ Uma árvore é definida como um grafo não-orientado, conexo e acíclico, o que 
 \begin{figure}[h]
     \centering
     \includegraphics[width=.65\textwidth]{src/arvore_exemplo.png}
+    \caption{Exemplo de um grafo do tipo árvore}
     \label{fig:exemplo de árvore}
 \end{figure}
 
@@ -126,6 +128,7 @@ Uma \textbf{árvore binomial} \( B_k \) é uma árvore que possui as seguintes p
 \begin{figure}[h]
     \centering
     \includegraphics[width=.72\textwidth]{src/arvore_binomial_ordem_3.png}
+    \caption{Grafo de uma árvore binomial}
     \label{fig:exemplo de árvore binomial}
 \end{figure}
 
@@ -137,18 +140,106 @@ A introdução a essas ideias será contextualizada com base nas propriedades da
 
 % Implementação
 \chapter{Implementação}
+\subsection*{Programa}
+
 A implementação do trabalho envolve a criação de um algoritmo que gera árvores binomiais com base nos parâmetros fornecidos: \( n_{\text{max}} \) (número máximo de filhos por nó), \( p \) (probabilidade de um nó gerar filhos) e \( d_{\text{max}} \) (profundidade máxima da árvore). Cada nó é representado por um conjunto de quatro posições em um vetor. A primeira posição do vetor, exclusivamente, armazena o número máximo de filhos do nó, enquanto as outras três posições armazenam o índice do pai e dos filhos, respectivamente, conforme o modelo que você está utilizando.
 
 Para cada tripla de parâmetros, são geradas pelo menos 10 árvores aleatórias, utilizando a distribuição binomial para decidir quantos filhos cada nó terá. O algoritmo segue uma abordagem de Busca em Largura (BFS) para explorar os nós da árvore. A BFS percorre a árvore começando da raiz, explorando todos os nós em cada nível antes de passar para o próximo. Essa busca é gerenciada por uma fila que armazena os nós a serem explorados, garantindo que os nós sejam processados em ordem de nível.
 
+\vfill
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.75\textwidth]{src/BFS.png}
+    \caption{Exemplo da ordem de pesquisa do BFS}
+    \label{fig:BFS}
+\end{figure}
+\vfill
+
+\newpage
+
 Durante a execução do BFS, são registrados a profundidade de cada nó e a profundidade total das árvores. Ao final de cada execução, é calculada a profundidade média da árvore, que será utilizada para gerar tabelas ou gráficos que mostram como essa profundidade varia de acordo com as diferentes combinações de \( n_{\text{max}} \), \( p \), e \( d_{\text{max}} \).
 
-Além disso, o código precisa lidar com a transição de fase do modelo, que ocorre quando \( n_{\text{max}} \) multiplicado por \( p \) é menor que 1, indicando que, em algum ponto, a geração de novos filhos para a árvore vai parar, resultando em níveis sem descendentes. Caso \( n_{\text{max}} \cdot p \) seja maior que 1, a geração de nós continuará até atingir o limite imposto por \( d_{\text{max}} \).
+\vfill
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.5\textwidth]{src/profundidade_BFS.png}
+    \caption{Exemplo do nível de profundidade do BFS}
+    \label{fig:profundidade BFS}
+\end{figure}
+
+\vfill
+
+Além disso, o código precisa lidar com a transição de fase do modelo, que ocorre quando \( n_{\text{max}} \cdot p < 1\), indicando que, em algum ponto, a geração de novos filhos para a árvore vai parar, resultando em níveis sem descendentes. Caso \( n_{\text{max}} \cdot p > 1 \), a geração de nós continuará até atingir o limite imposto por \( d_{\text{max}} \).
+
+\vfill
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=.7\textwidth]{src/estrutura_grafo_1.PNG}
+    \caption{Estrutura da pilha do grafo}
+    \label{fig:estrutura 1}
+\end{figure}
+\vfill
+
+\newpage
 
 Portanto, a implementação é construída de maneira a não apenas gerar as árvores e calcular as profundidades, mas também simular a dinâmica de crescimento dessas árvores binomiais sob diferentes condições, explorando a variação desses parâmetros.
 
+\subsection*{matemática}
+% Resultados e discussão
+A árvore binomial é uma estrutura combinatória comumente usada em algoritmos e estruturas de dados, especialmente em contextos como heaps binomiais. Para compreender o uso de progressão geométrica e indução finita em árvores binomiais, é útil revisar o conceito básico dessas árvores e como essas duas ferramentas matemáticas são aplicadas nelas.
+
+\subsubsection*{Progressão Geométrica}
+
+A progressão geométrica aparece na análise das árvores binomiais devido ao padrão de crescimento exponencial na quantidade de nós. Como mencionado, uma árvore binomial de ordem \( k \) possui \( 2^k \) nós. Ao observar diferentes ordens \( k \), o número de nós em cada ordem segue uma progressão geométrica com razão \( 2 \):
+\begin{itemize}
+    \item \( B_0 \) tem \( 1 = 2^0 \) nó,
+    \item \( B_1 \) tem \( 2 = 2^1 \) nós,
+    \item \( B_2 \) tem \( 4 = 2^2 \) nós,
+\end{itemize} 
+E assim por diante.
+
+Se estivermos lidando com uma coleção de árvores binomiais (como em um heap binomial), o número total de nós segue a soma de uma progressão geométrica. Por exemplo, para uma coleção de árvores binomiais \( B_0, B_1, \ldots, B_k \), o número total de nós seria:
+
+\[
+S = 2^0 + 2^1 + 2^2 + \dots + 2^k = 2^{k+1} - 1
+\]
+
+Essa soma é a fórmula clássica da soma de uma progressão geométrica com razão 2.
+
+\subsubsection{Indução Finita}
+
+A indução finita (ou indução matemática) é uma técnica útil para provar propriedades sobre árvores binomiais, especialmente relacionadas ao número de nós, altura e estrutura recursiva. Ela é comumente usada para provar que uma árvore binomial de ordem \( k \) tem exatamente \( 2^k \) nós e altura \( k \).
+
+\subsubsection{Exemplo de Prova por Indução:}
+Provar: Uma árvore binomial \( B_k \) tem \( 2^k \) nós.
+
+1. Base da Indução: Para \( k = 0 \), \( B_0 \) é uma árvore com 1 nó, e \( 2^0 = 1 \). Logo, a base está correta.
+
+2. Hipótese de Indução: Suponha que para alguma ordem \( k = n \), a árvore binomial \( B_n \) tem \( 2^n \) nós.
+
+3. Passo de Indução: Mostre que a árvore binomial \( B_{n+1} \) tem \( 2^{n+1} \) nós. Pela definição de uma árvore binomial, \( B_{n+1} \) é composta por duas árvores \( B_n \), conectadas por uma raiz. Cada \( B_n \) tem \( 2^n \) nós pela hipótese de indução. Assim, o número total de nós em \( B_{n+1} \) é:
+
+\[
+2^n + 2^n = 2 \cdot 2^n = 2^{n+1}
+\]
+
+Portanto, a propriedade é válida para \( n+1 \), e a indução está concluída.
+
+Então temos, \[ a_0 = 1 \]\[ a_{n-1} = a_n \cdot (qtd.filho \cdot prob)^n \] \[ qtd_{filhos} = n_{max} \] \[ C = qtd_{filhos} \cdot prob \] \[ prob = p \] \[ profundidade = d_{max} \]
+Usando Indução Finita: \[ a_n = C^{\frac{n(n+1)}{2}} \]
+
 % Resultados e discussão
 \chapter{Resultados e discussão}
+Testes e resultados
+
+Dentre os resultados, obtivemos diversos casos interessantes que nos ajudaram a compreender alguns aspectos da árvore binária implementada.
+
+Dentre os testes, notamos a importância da variável P (probabilidade), tendo em vista a mudança que isso produz no resultado da média da profundidade
+
+Outro grande aspecto, foi o tamanho da árvore, conforme aumentamos os parâmetros, ela cresce de forma muito rápida, de tal forma, que após certo ponto, não há como alocar memória suficiente.
+
+Por fim, observamos que  conforme o número de filhos aumenta, a árvore se torna mais esparsa.
 
 % Conclusão
 \chapter{Conclusão}
@@ -160,8 +251,13 @@ Apesar dessas dificuldades, nosso algoritmo se comportou de forma esperada em ce
 
 % Referências bibliográficas
 \printbibliography % Para imprimir a bibliografia
+\url{www.de.ufpb.br/~tarciana/MPIE/Aula7.pdf}\\
+\url{www.inf.ufsc.br/~andre.zibetti/probabilidade/aproximacao-binomial-poisson-pela-normal.html}\\
+\url{www.scielo.br/j/pope/a/xyvK4fCGFR6g9s76W5FjJsB/#:~:text=Uma%20%C3%A1rvore%20binomial%20%C3%A9%20recombinante,por%20um%20movimento%20de%20subida}
 
+Fontes de imagens:\\
+\url{www.inf.ufsc.br/~andre.zibetti/probabilidade/aproximacao-binomial-poisson-pela-normal.html}
 
-%Imagens da Introdução: Geradas com código no repositório: \href{https://github.com/FelipeMDB-UNESP/Grafos.git}{\cite{felipemdb2024}}.
+Imagens da Introdução: Geradas com código no repositório:\\ \url{https://github.com/FelipeMDB-UNESP/Grafos}
 
 \end{document}
