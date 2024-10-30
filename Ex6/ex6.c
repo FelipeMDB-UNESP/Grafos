@@ -288,82 +288,7 @@ void imprimir_lista_arquivo(p_lista list, FILE *arq) {
 }
 #pragma endregion lista
 
-#pragma region clique
-
-/*
-Função para checar se todos os elementos da lista possuem o vértice inserido
-como vizinho.
-
-Parâmetros:
-Matriz* grafo -> ponteiro da matriz de adjascências do grafo.
-p_lista* list -> Ponteiro do ponteiro da lista.
-int vertice -> Vértice do grafo.
-
-Retorno:
-Booleano contendo verdadeiro ou falso para a busca.
-*/
-bool conectado(Matriz *grafo, p_lista list, int vertice) {
-
-  while (list != NULL) {
-
-    if (!(grafo->matriz[vertice][list->item] ||
-          grafo->matriz[list->item][vertice]))
-      return false;
-
-    list = list->prox;
-  }
-  return true;
-}
-
-/*
-Função para encontrar o subgrafo completo maximal que contém o vértice dado.
-
-Parâmetros:
-Matriz* grafo -> ponteiro da matriz de adjascências do grafo.
-int vertice -> Vértice do grafo.
-
-Retorno:
-Ponteiro para a lista contendo os vértices do clique.
-*/
-p_lista clique_maximal(Matriz *grafo, int vertice) {
-
-  p_lista list = criar_lista();
-  inserir_lista(&list, vertice);
-
-  for (int item = 0; item < grafo->n; item++) {
-
-    if (item != vertice && conectado(grafo, list, item))
-      inserir_lista(&list, item);
-  }
-  return list;
-}
-
-#pragma endregion clique
-
 #pragma region interação usuário
-
-/*
-Função para imprimir o resultado do clique maximal em um arquivo.
-
-Parâmetros:
-p_lista list -> Ponteiro da lista.
-*/
-void imprimir_resultado_arquivo(p_lista list) {
-
-  char buffer[32];
-
-  printf("\nDigite o nome do arquivo texto a exportar os dados (adicionar .txt "
-         "no fim):\n");
-  scanf(" %s", buffer);
-
-  FILE *teste = fopen(buffer, "a+");
-
-  fprintf(teste,
-          "\nLista dos vértices do clique maximal %d:", contador_cliques);
-  imprimir_lista_arquivo(list, teste);
-
-  fclose(teste);
-}
 
 /*
 Função que solicita ao usuário o preenchimento da probabilidade e da orientação
@@ -423,38 +348,6 @@ void solicitar_ao_usuario(float *prob, bool *orientado, int *qtd_vertices) {
 }
 
 /*
-Função que solicita ao usuário o nome do arquivo a ser carregado
-
-Parâmetros:
-float *prob -> ponteiro para se armazenar a probabilidade de cada aresta.
-bool *orientado -> ponteiro para se armazenar a orientação do grafo.
-*/
-void solicitar_ao_arquivo(float *prob, bool *orientado, int *qtd_vertices) {
-
-  char buffer[16];
-
-  printf("\nDigite o nome do arquivo texto a extrair os dados:\n");
-  scanf(" %s", buffer);
-
-  FILE *teste = fopen(buffer, "r+");
-  if (teste == NULL) {
-    printf("Falha ao abrir o arquivo.\n");
-    exit(1);
-  }
-
-  fgets(buffer, 16, teste);
-  *prob = atof(buffer);
-
-  fgets(buffer, 16, teste);
-  *orientado = atoi(buffer) ? true : false;
-
-  fgets(buffer, 16, teste);
-  *qtd_vertices = atoi(buffer);
-
-  fclose(teste);
-}
-
-/*
 Função para preenchimento manual das arestas de um grafo.
 
 Parâmetros:
@@ -489,53 +382,6 @@ void preencher_manualmente(bool orientado, Matriz *grafo) {
       }
     }
   }
-}
-
-/*
-Função para fazer um teste completo aleatório. Cria arquivos de entrada e saída
-usados.
-
-Parâmetros:
-bool *orientado -> booleano que informa se a matriz é orientada ou não.
-float *prob -> probabilidade de cada aresta.
-int *qtd_vertices -> quantidade de vertices do grafo.
-*/
-void caso_teste(bool *orientado, float *prob, int *qtd_vertices) {
-
-  srand(time(NULL));
-
-  *orientado = rand() % 2 ? true : false;
-  *prob = ((1.0 * (rand() % 101)) / (100.0));
-  *qtd_vertices = rand() % 20 + 1;
-
-  char buffer[64];
-  contador_cliques++;
-
-  sprintf(buffer, "Entrada%d.txt", contador_cliques);
-  FILE *entrada = fopen(buffer, "w");
-
-  sprintf(buffer, "%.2f\n%d\n%d\n", *prob, (*orientado ? 1 : 0), *qtd_vertices);
-  fprintf(entrada, "%s", buffer);
-  fclose(entrada);
-
-  Matriz *grafo = inicializar_matriz(*qtd_vertices);
-  grafo->n = *qtd_vertices;
-  gerar_grafo(grafo, *orientado, (int)((*prob) * 100));
-
-  int vertice = (rand() % (*qtd_vertices));
-  p_lista list = clique_maximal(grafo, vertice);
-
-  sprintf(buffer, "Saida%d.txt", contador_cliques);
-  FILE *saida = fopen(buffer, "w");
-
-  fprintf(saida, "Lista dos vértices do clique maximal %d:", contador_cliques);
-  imprimir_lista_arquivo(list, saida);
-
-  imprimir_grafo_arquivo(grafo, saida);
-
-  fclose(saida);
-  liberar_matriz(grafo);
-  liberar_lista(&list);
 }
 
 /*
@@ -582,6 +428,109 @@ int menu() {
 }
 
 #pragma endregion interação usuário
+
+#pragma region euler_hierholzer
+
+// Função para verificar se o grafo é conexo usando busca em profundidade (DFS)
+void dfs(Grafo* grafo, int v, int* visitado) {
+    visitado[v] = 1;
+    for (int i = 0; i < grafo->n; i++) {
+        if (grafo->adj[v][i] > 0 && !visitado[i]) {
+            dfs(grafo, i, visitado);
+        }
+    }
+}
+
+int eh_conexo(Grafo* grafo) {
+    int* visitado = (int*)calloc(grafo->n, sizeof(int));
+    dfs(grafo, 0, visitado);
+    for (int i = 0; i < grafo->n; i++) {
+        if (!visitado[i]) {
+            free(visitado);
+            return 0;
+        }
+    }
+    free(visitado);
+    return 1;
+}
+
+int tem_graus_pares(Grafo* grafo) {
+    for (int i = 0; i < grafo->n; i++) {
+        int grau = 0;
+        for (int j = 0; j < grafo->n; j++) {
+            grau += grafo->adj[i][j];
+        }
+        if (grau % 2 != 0) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+// Função para adicionar uma aresta ao grafo
+void adicionar_aresta(Grafo* grafo, int u, int v) {
+    grafo->adj[u][v]++;
+    grafo->adj[v][u]++;
+}
+
+// Função para fazer a eulerização do grafo
+void eulerizar(Grafo* grafo) {
+    for (int i = 0; i < grafo->n; i++) {
+        int grau = 0;
+        for (int j = 0; j < grafo->n; j++) {
+            grau += grafo->adj[i][j];
+        }
+        if (grau % 2 != 0) {
+            for (int j = i + 1; j < grafo->n; j++) {
+                int grau_j = 0;
+                for (int k = 0; k < grafo->n; k++) {
+                    grau_j += grafo->adj[j][k];
+                }
+                if (grau_j % 2 != 0) {
+                    adicionar_aresta(grafo, i, j);
+                    break;
+                }
+            }
+        }
+    }
+}
+
+// Função para encontrar o ciclo Euleriano usando o algoritmo de Hierholzer
+void hierholzer(Grafo* grafo, int start) {
+    int* stack = (int*)malloc(grafo->n * sizeof(int));
+    int* cycle = (int*)malloc(grafo->n * sizeof(int));
+    int top = 0, cycle_index = 0;
+
+    stack[top++] = start;
+
+    while (top > 0) {
+        int v = stack[top - 1];
+        int i;
+        for (i = 0; i < grafo->n; i++) {
+            if (grafo->adj[v][i] > 0) {
+                stack[top++] = i;
+                grafo->adj[v][i]--;
+                grafo->adj[i][v]--;
+                break;
+            }
+        }
+        if (i == grafo->n) {
+            cycle[cycle_index++] = v;
+            top--;
+        }
+    }
+
+    printf("Ciclo Euleriano: ");
+    for (int i = cycle_index - 1; i >= 0; i--) {
+        printf("%d ", cycle[i] + 1);
+    }
+    printf("\n");
+
+    free(stack);
+    free(cycle);
+}
+
+#pragma endregion euler_hierholzer
 
 int main() {
 
