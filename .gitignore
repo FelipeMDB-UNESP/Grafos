@@ -1,0 +1,15 @@
+*.exe
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.synctex(busy)
+*.toc
+*.vscode
+*.blg
+*.bbl
+*.xml
+*.bcf
+*.bbl
+*.code-workspace
+.venv
