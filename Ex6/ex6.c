@@ -432,16 +432,16 @@ int menu() {
 #pragma region euler_hierholzer
 
 // Função para verificar se o grafo é conexo usando busca em profundidade (DFS)
-void dfs(Grafo* grafo, int v, int* visitado) {
+void dfs(Matriz* grafo, int v, int* visitado) {
     visitado[v] = 1;
     for (int i = 0; i < grafo->n; i++) {
-        if (grafo->adj[v][i] > 0 && !visitado[i]) {
+        if (grafo->matriz[v][i] > 0 && !visitado[i]) {
             dfs(grafo, i, visitado);
         }
     }
 }
 
-int eh_conexo(Grafo* grafo) {
+int eh_conexo(Matriz* grafo) {
     int* visitado = (int*)calloc(grafo->n, sizeof(int));
     dfs(grafo, 0, visitado);
     for (int i = 0; i < grafo->n; i++) {
@@ -454,11 +454,11 @@ int eh_conexo(Grafo* grafo) {
     return 1;
 }
 
-int tem_graus_pares(Grafo* grafo) {
+int tem_graus_pares(Matriz* grafo) {
     for (int i = 0; i < grafo->n; i++) {
         int grau = 0;
         for (int j = 0; j < grafo->n; j++) {
-            grau += grafo->adj[i][j];
+            grau += grafo->matriz[i][j];
         }
         if (grau % 2 != 0) {
             return 0;
@@ -468,23 +468,23 @@ int tem_graus_pares(Grafo* grafo) {
 }
 
 // Função para adicionar uma aresta ao grafo
-void adicionar_aresta(Grafo* grafo, int u, int v) {
-    grafo->adj[u][v]++;
-    grafo->adj[v][u]++;
+void adicionar_aresta(Matriz* grafo, int u, int v) {
+    grafo->matriz[u][v]++;
+    grafo->matriz[v][u]++;
 }
 
 // Função para fazer a eulerização do grafo
-void eulerizar(Grafo* grafo) {
+void eulerizar(Matriz* grafo) {
     for (int i = 0; i < grafo->n; i++) {
         int grau = 0;
         for (int j = 0; j < grafo->n; j++) {
-            grau += grafo->adj[i][j];
+            grau += grafo->matriz[i][j];
         }
         if (grau % 2 != 0) {
             for (int j = i + 1; j < grafo->n; j++) {
                 int grau_j = 0;
                 for (int k = 0; k < grafo->n; k++) {
-                    grau_j += grafo->adj[j][k];
+                    grau_j += grafo->matriz[j][k];
                 }
                 if (grau_j % 2 != 0) {
                     adicionar_aresta(grafo, i, j);
@@ -496,7 +496,7 @@ void eulerizar(Grafo* grafo) {
 }
 
 // Função para encontrar o ciclo Euleriano usando o algoritmo de Hierholzer
-void hierholzer(Grafo* grafo, int start) {
+void hierholzer(Matriz* grafo, int start) {
     int* stack = (int*)malloc(grafo->n * sizeof(int));
     int* cycle = (int*)malloc(grafo->n * sizeof(int));
     int top = 0, cycle_index = 0;
@@ -507,10 +507,10 @@ void hierholzer(Grafo* grafo, int start) {
         int v = stack[top - 1];
         int i;
         for (i = 0; i < grafo->n; i++) {
-            if (grafo->adj[v][i] > 0) {
+            if (grafo->matriz[v][i] > 0) {
                 stack[top++] = i;
-                grafo->adj[v][i]--;
-                grafo->adj[i][v]--;
+                grafo->matriz[v][i]--;
+                grafo->matriz[i][v]--;
                 break;
             }
         }
