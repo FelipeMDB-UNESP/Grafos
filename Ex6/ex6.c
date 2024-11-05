@@ -552,10 +552,8 @@ int main() {
       solicitar_ao_usuario(&prob, &orientado, &qtd_vertices);
       break;
     case 2:
-      solicitar_ao_arquivo(&prob, &orientado, &qtd_vertices);
       break;
     case 3:
-      caso_teste(&orientado, &prob, &qtd_vertices);
       break;
     case 4:
       if (qtd_vertices != -1) {
@@ -580,22 +578,8 @@ int main() {
       }
       break;
     case 6:
-      if (grafo != NULL) {
-
-        do {
-          printf("\nDigite o número do vértice (entre 1 e %d): ", grafo->n);
-          scanf(" %d", &vertice);
-
-        } while (vertice < 1 || vertice > grafo->n);
-
-        list = clique_maximal(grafo, vertice - 1);
-        contador_cliques++;
-      } else {
-        printf("\nCrie o grafo primeiro.\n");
-      }
       break;
     case 7:
-      imprimir_resultado_arquivo(list);
       break;
     case 8:
       printf("\nOs vértices do último clique gerado são: ");
