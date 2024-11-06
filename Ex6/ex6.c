@@ -454,7 +454,7 @@ int eh_conexo(Matriz* grafo) {
     return 1;
 }
 
-int tem_graus_pares(Matriz* grafo) {
+int todos_graus_pares(Matriz* grafo) {
     for (int i = 0; i < grafo->n; i++) {
         int grau = 0;
         for (int j = 0; j < grafo->n; j++) {
