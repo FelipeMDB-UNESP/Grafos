@@ -412,14 +412,21 @@ int menu() {
   int opcao;
 
   do {
+    // printf(
+    //     "\n\n+-------------------Menu---------------------+\n|1 - Inserir "
+    //     "dados                           \n|2 - Carregar dados                "
+    //     "          \n|3 - Criar caso de teste completo(RECOMENDADO)\n|4 - "
+    //     "Inserir grafo manualmente               \n|5 - Aleatorizar grafo     "
+    //     "                  \n|6 - Procurar clique maximal de um vertice   "
+    //     "                        \n|7 - Salvar resultado em um arquivo                        \n|8 - Imprimir "
+    //     "resultado na tela(Execute opcao 6 antes)              \n|0 - Sair                           "
+    //     "         \n+--------------------------------------------+\n");
+
     printf(
         "\n\n+-------------------Menu---------------------+\n|1 - Inserir "
-        "dados                           \n|2 - Carregar dados                "
-        "          \n|3 - Criar caso de teste completo(RECOMENDADO)\n|4 - "
-        "Inserir grafo manualmente               \n|5 - Aleatorizar grafo     "
-        "                  \n|6 - Procurar clique maximal de um vertice   "
-        "                        \n|7 - Salvar resultado em um arquivo                        \n|8 - Imprimir "
-        "resultado na tela(Execute opcao 6 antes)              \n|0 - Sair                           "
+        "dados                           \n|2 - Aleatorizar grafo     "
+        "                  \n|3 - Hipotese de Hierholzer   "
+        "                        \n|0 - Sair                           "
         "         \n+--------------------------------------------+\n");
     scanf(" %d", &opcao);
   } while (opcao < 0 || opcao > 8);
@@ -519,20 +526,20 @@ void hierholzer(Matriz* grafo, int start) {
             top--;
         }
     }
-
+    
     printf("Ciclo Euleriano: ");
     for (int i = cycle_index - 1; i >= 0; i--) {
         printf("%d ", cycle[i] + 1);
     }
     printf("\n");
-
+    printf("checkpoint10");
     free(stack);
     free(cycle);
 }
 
 #pragma endregion euler_hierholzer
 
-int main() {
+int main() { 
 
   Matriz *grafo = NULL;
   p_lista list = NULL;
@@ -548,24 +555,11 @@ int main() {
     caso = menu();
 
     switch (caso) {
-    case 1:
+    case 1: // Inserir dados
       solicitar_ao_usuario(&prob, &orientado, &qtd_vertices);
       break;
-    case 2:
-      break;
-    case 3:
-      break;
-    case 4:
-      if (qtd_vertices != -1) {
-        if (grafo == NULL)
-          grafo = inicializar_matriz(qtd_vertices);
-
-        preencher_manualmente(orientado, grafo);
-      } else {
-        printf("\nInsira os dados primeiro.\n");
-      }
-      break;
-    case 5:
+     
+    case 2: // Aleatorizar grafo
       if (qtd_vertices != -1) {
 
         if (grafo == NULL) {
@@ -576,14 +570,21 @@ int main() {
       } else {
         printf("\nInsira os dados primeiro.\n");
       }
-      break;
-    case 6:
-      break;
-    case 7:
-      break;
-    case 8:
-      printf("\nOs vértices do último clique gerado são: ");
-      imprimir_lista(list);
+      break; 
+    case 3: // Checar hipótese de hierholzer
+      if (!eh_conexo(grafo)) {
+          printf("O grafo não eh conexo e, portanto, nao possui um ciclo Euleriano!\n");
+      } else { 
+          if (todos_graus_pares(grafo)) {
+              printf("O grafo eh conexo e todos os vertices tem grau par. Um ciclo Euleriano pode ser encontrado.\n");
+              hierholzer(grafo, 0);
+          } else {
+              printf("O grafo eh conexo, mas nem todos os vertices tem grau par. Realizando a eulerizacao do grafo...\n");
+              eulerizar(grafo);
+              printf("Eulerizacao concluida. Agora, todos os vertices tem grau par!\n"); 
+              hierholzer(grafo, 0); // Executa o algoritmo de Hierholzer após a eulerização
+          }
+      }
       break;
     case 0:
       if (contador_cliques > 0)
@@ -595,4 +596,5 @@ int main() {
     }
   }
   return 0;
+  
 }
