@@ -403,6 +403,43 @@ void remover_todas_repeticoes(p_lista_dupla *lista) {
     }
 }
 
+void remover_repeticoes_arestas(p_lista_dupla *lista) {
+    if (*lista == NULL) return;
+
+    p_lista_dupla atual = *lista;
+
+    // Percorre cada elemento da lista
+    while (atual != NULL && atual->prox != NULL) {
+        p_lista_dupla comparador = atual->prox;
+        
+        // Percorre todos os elementos após o "atual"
+        while (comparador != NULL && comparador->prox != NULL) {
+            if (atual->item == comparador->prox->item && atual->prox->item == comparador->item) {
+                // Se encontrar uma aresta duplicada, remove-a
+                p_lista_dupla temp1 = comparador;
+                p_lista_dupla temp2 = comparador->prox;
+                
+                // Ajusta os ponteiros para "pular" a aresta duplicada
+                if (temp1->ant != NULL) {
+                    temp1->ant->prox = temp2->prox;
+                }
+                if (temp2->prox != NULL) {
+                    temp2->prox->ant = temp1->ant;
+                }
+
+                comparador = temp2->prox; // Avança o comparador
+                free(temp1); // Libera o primeiro elemento da aresta duplicada
+                free(temp2); // Libera o segundo elemento da aresta duplicada
+            } else {
+                // Avança o comparador se não houver duplicação
+                comparador = comparador->prox;
+            }
+        }
+        
+        // Avança para o próximo elemento da lista
+        atual = atual->prox;
+    }
+}
 
 #pragma endregion lista dupla
 
@@ -417,7 +454,9 @@ void hierholzer(Matriz* grafo, int start) {
     // Inicializa os graus dos vértices
     for (int i = 0; i < grafo->n; i++) {
         for (int j = 0; j < grafo->n; j++) {
-            vetor_graus[i] += grafo->matriz[i][j];
+            if (grafo->matriz[i][j] > 0) {
+                vetor_graus[i] += grafo->matriz[i][j];
+            }
         }
     }
 
@@ -506,8 +545,13 @@ void hierholzer(Matriz* grafo, int start) {
         liberar_lista_dupla(&H);
     }
 
-    // Remover duplas repetidas consecutivas
-    remover_todas_repeticoes(&C);
+    // Remover todas as repetições de arestas
+    remover_repeticoes_arestas(&C);
+
+    // Verifica se o ciclo retorna ao vértice inicial
+    if (C->item != inicio) {
+        inserir_lista_dupla(&C, inicio);
+    }
 
     // Imprimir o ciclo Euleriano
     printf("Ciclo Euleriano: ");
