@@ -407,6 +407,10 @@ void Ore() {
 
 }
 
+void Fecho_Hamiltoniano() {
+    
+}
+
 void Bondy_Chvatl() {
 
 }
