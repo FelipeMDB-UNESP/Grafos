@@ -31,6 +31,23 @@ int* criar_vetor(int n) {
 }
 
 /*
+Função responsável por trocar as posições de um vetor.
+
+Parâmetros:
+int* vetor -> ponteiro do vetor a ser manipulado
+int num1 -> numero de uma das posições do vetor
+int num2 -> numero de uma das posições do vetor
+
+Retorno: void
+*/
+void troca_lugares(int* vetor, int num1, int num2) {
+
+    int aux = num1;
+    vetor[num1] = num2;
+    vetor[num2] = aux;
+}
+
+/*
 Função responsável por liberar o espaço alocado a um vetor.
 
 Parâmetros:
@@ -183,6 +200,33 @@ int desenfileirar(p_fila f) {
     }
     return INT_MIN;
 }
+
+bool remover_item(p_fila f, int k) {
+
+    DADO* atual = f->saida;
+    DADO* anterior = NULL;
+
+    while (atual != NULL) {
+
+        if (atual->dado == k) {
+            
+            if (anterior != NULL){
+                
+                anterior->proximo = atual->proximo;
+                free(atual);
+
+            } else {
+                desenfileirar(f);
+            }
+
+            return true;
+        }
+
+        anterior = atual;
+        atual = atual->proximo;
+    }
+    return false;
+}
 #pragma endregion filas
 
 #pragma region matrizes
@@ -309,6 +353,50 @@ void gerar_grafo(Grafo grafo, bool orientado, float probabilidade) {
             }
         }
     }
+}
+
+void gerar_grafo_hamiltoniano(Grafo grafo, bool orientado, float probabilidade) {
+
+    gerar_grafo(grafo, orientado, probabilidade);
+
+    srand(time(NULL));
+    int* ciclo = criar_vetor(grafo->n);
+
+    for(int i = 0; i<grafo->n; i++) {
+        ciclo[i]=i;
+    }
+
+    if(!orientado) {
+
+        troca_lugares(ciclo, 0, rand()%(grafo->n));
+
+        for(int i = 1; i<grafo->n; i++) {
+            
+            troca_lugares(ciclo, i, rand()%(grafo->n - i) + i);
+
+            if (!(grafo->matriz[ciclo[i-1]][ciclo[i]])) {
+
+                grafo->matriz[ciclo[i-1]][ciclo[i]] = rand()%10+1;
+                grafo->matriz[ciclo[i]][ciclo[i-1]] = grafo->matriz[ciclo[i-1]][ciclo[i]];
+                grafo->grau[ciclo[i-1]] ++;
+                grafo->grau[ciclo[i]] ++;
+                remover_item(grafo->lista_n_adjascencia[ciclo[i-1]], ciclo[i]);
+                remover_item(grafo->lista_n_adjascencia[ciclo[i]], ciclo[i-1]);
+            }
+        }
+
+        if (!(grafo->matriz[ciclo[grafo->n -1]][ciclo[0]])) {
+
+            grafo->matriz[ciclo[grafo->n -1]][ciclo[0]] = rand()%10+1;
+            grafo->matriz[ciclo[0]][ciclo[grafo->n -1]] = grafo->matriz[ciclo[grafo->n -1]][ciclo[0]];
+            grafo->grau[ciclo[grafo->n -1]] ++;
+            grafo->grau[ciclo[0]] ++;
+            remover_item(grafo->lista_n_adjascencia[ciclo[grafo->n -1]], ciclo[0]);
+            remover_item(grafo->lista_n_adjascencia[ciclo[0]], ciclo[grafo->n -1]);
+        }
+
+    }
+    liberar_vetor(ciclo);
 }
 
 #pragma endregion grafo
