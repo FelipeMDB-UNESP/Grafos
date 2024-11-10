@@ -399,4 +399,16 @@ void gerar_grafo_hamiltoniano(Grafo grafo, bool orientado, float probabilidade) 
     liberar_vetor(ciclo);
 }
 
+void Dirac() {
+
+}
+
+void Ore() {
+
+}
+
+void Bondy_Chvatl() {
+
+}
+
 #pragma endregion grafo
