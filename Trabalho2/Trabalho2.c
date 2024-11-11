@@ -26,7 +26,7 @@ int* vetor -> vetor dinamicamente alocado
 */
 int* criar_vetor(int n) {
 
-    int* vetor = (int*)malloc(sizeof(int) * n);
+    int* vetor = (int*)calloc(n, sizeof(int));
     return vetor;
 }
 
@@ -276,6 +276,29 @@ Matriz* inicializar_matriz(int qtd_vertices){
     return matricial;
 }
 
+Matriz* copiar_matriz(Matriz* matricial) {
+
+    Matriz* copia = inicializar_matriz(matricial->n);
+    DADO* aux;
+
+    for(int i = 0; i< copia->n; i++) {
+
+        copia->grau[i] = matricial->grau[i];
+
+        aux = matricial->lista_n_adjascencia[i]->saida;
+        while(aux !=NULL) {
+            enfileirar(copia->lista_n_adjascencia[i], aux->dado);
+            aux = aux->proximo;
+        }
+
+        for(int j = 0; j< copia->n; j++) {
+            copia->matriz[i][j] = matricial->matriz[i][j];
+        }
+    }
+
+    return copia;
+}
+
 /*
 Função que libera o espaço dinamicamente alocado para uma matriz, incluindo todos os dados armazenados nela.
 
@@ -399,20 +422,75 @@ void gerar_grafo_hamiltoniano(Grafo grafo, bool orientado, float probabilidade) 
     liberar_vetor(ciclo);
 }
 
-void Dirac() {
-
-}
-
-void Ore() {
-
-}
-
-void Fecho_Hamiltoniano() {
+bool Dirac(Grafo grafo) {
     
+    for (int i = 0; i< grafo->n; i++) {
+        if (grafo->grau[i] < grafo->n / 2)
+            return false;
+    }
+    return true;
 }
 
-void Bondy_Chvatl() {
+bool Ore(Grafo grafo) {
 
+    DADO* aux;
+
+    for (int i = 0; i<grafo->n; i++) {
+
+        aux = grafo->lista_n_adjascencia[i]->saida;
+
+        while(aux!=NULL) {
+            if (grafo->grau[i] + grafo->grau[aux->dado] < grafo->n)
+                return false;
+            aux = aux->proximo;
+        }
+    }
+    return true;
+}
+
+Grafo Fecho_Hamiltoniano(Grafo grafo) {
+
+    Grafo fecho_hamiltoniano = copiar_matriz(grafo);
+    srand(time(NULL));
+    int aux;
+
+    for (int i = 0; i<fecho_hamiltoniano->n; i++) {
+
+        
+        while (fecho_hamiltoniano->lista_n_adjascencia[i]->saida != NULL) {
+
+            aux = desenfileirar(fecho_hamiltoniano->lista_n_adjascencia[i]);
+            fecho_hamiltoniano[i][aux] = rand()%10+1;
+            fecho_hamiltoniano[aux][i] = fecho_hamiltoniano[i][aux];
+            fecho_hamiltoniano->grau[i]++;
+            fecho_hamiltoniano->grau[aux]++;
+
+            if(Ore(fecho_hamiltoniano))
+                return fecho_hamiltoniano;
+        }
+    }
+    liberar_matriz(fecho_hamiltoniano);
+    return NULL;
+}
+
+bool Bondy_Chvatl(Grafo grafo) {
+
+    Grafo fecho_hamiltoniano = Fecho_Hamiltoniano(grafo);
+
+    if (fecho_hamiltoniano == NULL)
+        return false;
+
+    for (int i = 0; i<grafo->n; i++) {
+        for (int j = i+1; j<grafo->n; i++) {
+
+            if(! (fecho_hamiltoniano->matriz[i][j])) {
+                liberar_matriz(fecho_hamiltoniano);
+                return false;
+            }
+        }
+    }
+    liberar_matriz(fecho_hamiltoniano);
+    return true;
 }
 
 #pragma endregion grafo
