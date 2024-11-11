@@ -626,6 +626,8 @@ void visualizar_grafo_e_informacoes(Grafo grafo, bool salvar_em_arquivo, char* n
 
 #pragma endregion grafo
 
+#pragma region main
+//TO DO: adicionar opcao HELP ME para explicar coisas que talvez nao estejam tão claras.
 int main() {
     int opcao;
     Grafo grafo = NULL;
@@ -768,3 +770,5 @@ int main() {
         }
     }
 }
+
+#pragma endregion main
