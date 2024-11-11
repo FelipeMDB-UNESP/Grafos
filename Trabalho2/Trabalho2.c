@@ -526,7 +526,7 @@ bool bondy_chvatal(Grafo fecho) {
         return false;
 
     for (int i = 0; i<fecho->n; i++) {
-        for (int j = i+1; j<fecho->n; i++) {
+        for (int j = i+1; j<fecho->n; j++) {
 
             if(! (fecho->matriz[i][j])) {
                 return false;
@@ -638,23 +638,20 @@ void testes_e_salvar_resultados(bool salvar_em_arquivo, bool hamiltoniano, bool 
     }
 
     FILE *output = salvar_em_arquivo ? file : stdout;
-    fprintf(output,"Dirac; Ore; Bondy_Chvatl\n");
+    fprintf(output,"n,prob,Dirac,Ore,Bondy_Chvatl\n");
+    size_t atual = time(NULL);
+    printf("Inicio: %ld", time(NULL) - atual);
 
-    int nValues[10] = {6, 8, 10, 12, 15, 20, 30, 40, 50, 100};
-    float pValues[10] = {0, 0.1, 0.25, 0.3, 0.4, 0.5, 0.6, 0.75, 0.9, 1};
-
-    for (size_t i = 0; i < 10; i++)
-    {
-        fprintf(output,"%F\n");
-    }
-    
-
+    int nValues[] = {6, 8, 10, 12, 15, 20, 30, 40, 50, 100, 250, 500, 1000};
+    float pValues[] = {0, 0.1, 0.25, 0.3, 0.4, 0.5, 0.6, 0.75, 0.9, 1};
+ 
     int n;
     int i, j, k;
     float probabilidade;
 
-    for ( k = 0; k < 10; k++)
+    for ( k = 0; k < 13; k++)
     {   
+        printf("\nInicio: %ld", time(NULL) - atual);
         n = nValues[k]; 
         for ( j = 0; j < 10; j++)
         {
@@ -677,6 +674,8 @@ void testes_e_salvar_resultados(bool salvar_em_arquivo, bool hamiltoniano, bool 
                         fecho_hamiltoniano(grafo);
                     }
                 } 
+                fprintf(output,"%d,", n);
+                fprintf(output,"%.2f,", probabilidade);
                 if (dirac(grafo)) {
                     fprintf(output,"1");
                 } else {
@@ -694,7 +693,7 @@ void testes_e_salvar_resultados(bool salvar_em_arquivo, bool hamiltoniano, bool 
                 } else {
                     fprintf(output,"0");
                 } 
-                fprintf(output,",\n");
+                fprintf(output,"\n");
             }  
         } 
     } 
