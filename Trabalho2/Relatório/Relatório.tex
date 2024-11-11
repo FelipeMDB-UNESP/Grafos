@@ -1,0 +1,226 @@
+\documentclass[12pt, openright, oneside, a4paper, chapter=TITLE, section=TITLE, subsection=TITLE, subsubsection=TITLE, brazil]{abntex2}
+
+% Pacotes básicos
+\usepackage{graphicx} % Inclusão de gráficos
+
+\usepackage[table,xcdraw]{xcolor} % tabelasz
+\usepackage{booktabs}
+% pasta de figuras
+\graphicspath{{figuras/}}
+% extensões permitidas
+\DeclareGraphicsExtensions{.pdf,.eps,.svg,.png,.jpg,.bmp}
+
+\usepackage{microtype} % para melhorias de justificação
+\usepackage{amsmath,amssymb,unicode-math} % escrita matematica
+\usepackage{verbatim}
+
+% para incluir páginas pdf diretamente no documento
+\usepackage{pdfpages}
+\usepackage{csquotes}
+
+% Opção 2: notas explicativas no sistema autor-data
+\usepackage[backend=biber,
+% configuracoes do estilo abnt
+style=abnt,
+sccite, % sobrenomes em caixa alta
+ittitles, % Titulos em italico
+citecount, % contar o número de citações
+scbib, % biliografia em caixa alta
+justify,
+noslsn,
+repeatfields,
+sorting=nty, % ordem alfabetica
+]{biblatex}
+
+% ARQUIVO COM AS REFERÊNCIAS BIBLIOGRAFICAS
+\addbibresource{referencias.bib}
+
+% ---
+% Personalização do estilo biblatex-abnt - por Danny A. V Tonidandel
+% Adequa as urls de acordo com normas 6023:2018
+\DeclareFieldFormat{url}{\bibstring{urlfrom}\addcolon\addspace \url{#1}}%
+\DeclareFieldFormat{urldate}{\bibstring{urlseen}\addcolon\addspace #1}%
+
+% Reseta contadores das notas de rodapé em cada capítulo
+\makeatletter
+\@addtoreset{footnote}{chapter}
+\makeatother
+
+% Pacotes adicionais, usados apenas no âmbito do Modelo Canônico do abnteX2 - podem ser removidos
+% ---
+% Pacotes adicionais, usados no anexo do modelo de folha de identificação
+% ---
+% Tabelas
+\usepackage{supertabular}
+\usepackage{multicol}
+\usepackage{multirow}
+
+
+
+\usepackage{lipsum}
+
+
+
+
+% Informações de dados para CAPA e FOLHA DE ROSTO
+\titulo{Relatório sobre Grafos Hamiltonianos}
+\autor{
+André Luis Dias Nogueira\\
+Felipe Melchior de Britto\\
+Rafael Daiki Kaneko\\
+Ryan Hideki Tadeo Guimarães\\
+Vitor Marchini Rolisola}
+\local{Rio Claro}
+\data{\the\year}
+\orientador{Prof. Emílio Bergamim Júnior}
+\instituicao{UNIVERSIDADE ESTADUAL PAULISTA}
+\tipotrabalho{Relatório Acadêmico}
+\preambulo{Este relatório apresenta a implementação de testes para verificar se grafos aleatórios satisfazem os teoremas hamiltonianos de Dirac, Ore e Bondy-Chvatl, utilizando modelos de grafos com ciclo inicial e arestas adicionadas com probabilidade p. A análise foi realizada para diferentes valores de N e p, com resultados apresentados em gráficos e tabelas.}
+% Configurações de aparência do PDF final
+
+% alterando o aspecto da cor azul
+%\definecolor{blue}{RGB}{41,5,195}
+
+% informações do PDF
+\makeatletter
+\hypersetup{
+     	%pagebackref=true,
+		pdftitle={\@title},
+		pdfauthor={\@author},
+    	pdfsubject={\imprimirpreambulo},
+	    pdfcreator={LaTeX with abnTeX2},
+		pdfkeywords={ufop}{latex}{abntex}{decat}{monografia},
+		colorlinks=true,       		% false: boxed links; true: colored links
+    	linkcolor=blue,          	% color of internal links
+    	citecolor=blue,        		% color of links to bibliography
+    	filecolor=magenta,      		% color of file links
+		urlcolor=blue,
+		%bookmarksdepth=4
+}
+\makeatother
+
+% Espaçamentos entre linhas e parágrafos
+% O tamanho do parágrafo é dado por:
+\setlength{\parindent}{1.3cm}
+% Controle do espaçamento entre um parágrafo e outro:
+\setlength{\parskip}{0.2cm}  % tente também \onelineskip
+
+% compila o indice
+\makeindex
+
+% Início do documento
+\begin{document}
+
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing
+
+% ----------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% ----------------------------------------------------------
+% \pretextual
+
+% ---
+% Capa
+% ---
+%\imprimircapa
+\begin{capa}
+    \thispagestyle{empty}
+    \centering
+    \vspace*{1cm}
+
+    \begin{minipage}{0.2\linewidth}
+        \centering
+        \includegraphics[width=3cm]{src/unesp.jpg}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}{0.6\linewidth}
+        \centering
+        {\large \imprimirinstituicao} \\
+        {\large ``J\'ulio de Mesquita Filho''} \\
+        {\large Instituto de Geociências e Ciências Exatas} \\
+        {\large DEMAC} \\
+        {\large Ciências da Computação}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}{0.2\linewidth}
+        \centering
+        \includegraphics[width=2.1cm]{src/igce.jpg}
+    \end{minipage}
+
+    \vspace*{1cm}
+    {\ABNTEXchapterfont\large\imprimirautor}
+    \vspace*{\fill}
+
+    {\ABNTEXchapterfont\bfseries \large \imprimirtitulo}
+    \vspace*{\fill}
+
+    {\large\imprimirtipotrabalho}
+    \vspace*{\fill}
+
+    {\large\imprimirlocal}, {\large\imprimirdata}
+    \vspace*{1cm}
+\end{capa}
+
+% Folha de rosto
+\imprimirfolhaderosto*
+
+% RESUMO
+\setlength{\absparsep}{18pt} % ajusta o espaçamento dos parágrafos do resumo
+\begin{resumo}
+ \lipsum[1-4]
+
+ \textbf{Palavras-chaves}: latex. abntex. editoração de texto.
+\end{resumo}
+
+
+% SUMÁRIO
+%\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents*
+%\cleardoublepage
+% ---
+% Comando para resetar contadores das notas de rodapé
+%\makeatletter
+%\@addtoreset{footnote}{chapter}
+%\makeatother
+
+% ----------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% ----------------------------------------------------------
+
+% INTRODUÇÃO
+\chapter[Introdução]{Introdução}
+A Teoria dos Grafos é uma área essencial da matemática discreta, com aplicações em diversos campos, incluindo ciência da computação, logística, redes de comunicação, biologia computacional e pesquisa operacional. Um conceito particularmente relevante nessa teoria é o de ciclos hamiltonianos, onde se busca um percurso cíclico que passa por todos os vértices de um grafo exatamente uma vez. Grafos que contêm tais ciclos são denominados \textbf{grafos hamiltonianos} e têm implicações práticas em problemas de otimização, como o problema do caixeiro viajante e o roteamento de redes, onde se procura uma rota eficiente que minimize o custo de deslocamento.
+
+\section{Justificativas e Relevância}
+O estudo de grafos hamiltonianos ganha importância na medida em que muitos problemas complexos podem ser simplificados pela verificação de hamiltonianidade em suas representações gráficas. Contudo, a determinação exata da presença de ciclos hamiltonianos é um problema computacionalmente difícil (NP-completo). Para contornar essa dificuldade, a teoria propõe critérios suficientes de hamiltonianidade, que, embora não garantam uma solução exata para todos os grafos, oferecem maneiras eficientes de inferir a presença de ciclos hamiltonianos em grafos que satisfaçam certas condições. Os teoremas de \textbf{Dirac}, \textbf{Ore} e \textbf{Bondy-Chvátal} são três desses critérios, cada um propondo condições suficientes que, quando satisfeitas, garantem a hamiltonianidade do grafo. A relevância desses teoremas está no potencial de reduzir significativamente a complexidade do problema da hamiltonianidade, o que tem implicações diretas em áreas como o planejamento urbano e a configuração de redes, onde rotas e conexões precisam ser eficientes e bem estruturadas.
+
+Explorar e comparar os modelos de grafos que satisfaçam esses teoremas em condições variáveis de conexão oferece uma base empírica valiosa para avaliar a aplicabilidade e a robustez de cada critério. Esse estudo também contribui para uma melhor compreensão dos modelos aleatórios de grafos, que frequentemente são usados para simular redes reais, onde a distribuição de conexões segue padrões probabilísticos.
+
+\section{Metodologia}
+A metodologia proposta para este estudo envolve a implementação de um conjunto de testes para verificar se um grafo dado satisfaz os critérios de hamiltonianidade estabelecidos pelos teoremas de Dirac, Ore e Bondy-Chvátal. Para isso, serão aplicados algoritmos específicos para cada teorema:
+\begin{enumerate}
+    \item Teste de Dirac: Será verificado se todos os vértices de um grafo possuem grau $\delta \geq \frac{n}{2}$, sendo $n$ o número de vértices do grafo.
+    \item Teste de Ore: Para cada par de vértices não adjacentes $u$ e $v$, será avaliado se a soma dos graus $d(u) + d(v) \geq n$.
+    \item Teste de Bondy-Chvátal: Utilizando o método de fechamento do grafo, serão inseridas arestas entre vértices não adjacentes sempre que a soma de seus graus seja pelo menos $n$, e em seguida, será avaliado se o grafo resultante é hamiltoniano.
+\end{enumerate}
+Os testes serão aplicados a grafos gerados aleatoriamente de acordo com dois modelos:
+\begin{itemize}
+    \item Modelo Cíclico-Aleatório: Um grafo inicialmente configurado como um ciclo simples de $N$ vértices (o que garante que ele seja hamiltoniano) e, em seguida, arestas adicionais são inseridas entre pares de vértices com uma probabilidade $p$.
+    \item Modelo de Erdos-Renyi: Cada par de vértices recebe uma aresta com uma probabilidade fixa $p$, sem uma configuração inicial de ciclo, resultando em grafos com conectividade aleatória.
+\end{itemize}
+Para cada combinação de $N$ (número de vértices) e $p$ (probabilidade de conexão), serão gerados dez grafos aleatórios. Cada grafo será submetido aos três testes, e os resultados serão organizados em tabelas e gráficos, comparando a frequência com que cada teorema é satisfeito em cada modelo.
+
+\section{Objetivos}
+Este estudo possui os seguintes objetivos principais:
+\begin{enumerate}
+    \item Explorar a Aplicabilidade dos Teoremas de Dirac, Ore e Bondy-Chvátal: Aprofundar a compreensão dos critérios de hamiltonianidade em grafos aleatórios, identificando em que circunstâncias cada teorema é aplicável.
+    \item Desenvolver Testes Computacionais para Verificação da Hamiltonianidade: Implementar algoritmos que verifiquem a conformidade de grafos com os três teoremas, de modo a avaliar a eficiência de cada critério como indicador de hamiltonianidade.
+    \item Comparar Modelos de Grafos Aleatórios: Examinar a eficácia dos modelos cíclico-aleatório e Erdos-Renyi na produção de grafos que satisfaçam os critérios de hamiltonianidade, e comparar as taxas de grafos hamiltonianos produzidos por cada modelo para diferentes valores de $N$ e $p$.
+\end{enumerate}
+Este estudo pretende fornecer uma visão prática e teórica sobre os critérios hamiltonianos, contribuindo para o entendimento de sua aplicabilidade e oferecendo uma base empírica para o uso desses critérios na análise e simulação de redes complexas.
+
+\chapter{Desenvolvimento}
+
+\printindex
+
+\end{document}
