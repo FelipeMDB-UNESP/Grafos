@@ -334,7 +334,6 @@ int probabilidade -> probabilidade de cada aresta.
 void gerar_grafo(Grafo grafo, bool orientado, float probabilidade) {
     
     int porcentagem = (int) (100*probabilidade);
-    srand(time(NULL));
 
     if (!orientado) {   //garante espelhamento 
         for (int i = 0; i < grafo->n; i++) {
@@ -392,7 +391,6 @@ void gerar_grafo_hamiltoniano(Grafo grafo, bool orientado, float probabilidade) 
 
     gerar_grafo(grafo, orientado, probabilidade);
 
-    srand(time(NULL));
     int* ciclo = criar_vetor(grafo->n);
 
     for(int i = 0; i<grafo->n; i++) {
@@ -488,7 +486,6 @@ Grafo -> ponteiro para o grafo com fecho hamiltoniano.
 Grafo fecho_hamiltoniano(Grafo grafo) {
 
     Grafo fecho_hamiltoniano = copiar_matriz(grafo);
-    srand(time(NULL));
     int aux;
 
     for (int i = 0; i<fecho_hamiltoniano->n; i++) {
@@ -639,6 +636,7 @@ int main() {
     static int orientado = false;
 
     while (true) {
+        srand(time(NULL));  //garantir boa aleatorizacao
         printf("+-------------------Menu---------------------+\n");
         printf("Escolha uma opcao:\n");
         printf("1. Gerar Grafo\n");
