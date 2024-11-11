@@ -544,6 +544,8 @@ void visualizar_grafo(Grafo grafo, bool salvar_em_arquivo) {
     if (salvar_em_arquivo) fclose(file);
 }
 
+#pragma endregion grafo
+
 int main() {
     int opcao;
     Grafo grafo = NULL;
