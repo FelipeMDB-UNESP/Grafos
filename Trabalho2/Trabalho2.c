@@ -35,15 +35,14 @@ Função responsável por trocar as posições de um vetor.
 
 Parâmetros:
 int* vetor -> ponteiro do vetor a ser manipulado
-int num1 -> numero de uma das posições do vetor
-int num2 -> numero de uma das posições do vetor
+int num1 -> indice de uma das posições do vetor
+int num2 -> indice de uma das posições do vetor
 
 Retorno: void
 */
 void troca_lugares(int* vetor, int num1, int num2) {
-
-    int aux = num1;
-    vetor[num1] = num2;
+    int aux = vetor[num1];
+    vetor[num1] = vetor[num2];
     vetor[num2] = aux;
 }
 
@@ -243,7 +242,7 @@ typedef struct matricial {
     int n;          //linhas
     int **matriz; //ponteiro para matriz
     int *grau;   //ponteiro para vetor com o grau dos vértices
-    int *lista_n_adjascencia; //ponteiro para vetor da lista de não adjascência
+    p_fila *lista_n_adjascencia; //ponteiro para vetor da lista de não adjascência
 }Matriz;
 
 
@@ -460,8 +459,8 @@ Grafo Fecho_Hamiltoniano(Grafo grafo) {
         while (fecho_hamiltoniano->lista_n_adjascencia[i]->saida != NULL) {
 
             aux = desenfileirar(fecho_hamiltoniano->lista_n_adjascencia[i]);
-            fecho_hamiltoniano[i][aux] = rand()%10+1;
-            fecho_hamiltoniano[aux][i] = fecho_hamiltoniano[i][aux];
+            fecho_hamiltoniano->matriz[i][aux] = rand()%10+1;
+            fecho_hamiltoniano->matriz[aux][i] = fecho_hamiltoniano->matriz[i][aux];
             fecho_hamiltoniano->grau[i]++;
             fecho_hamiltoniano->grau[aux]++;
 
@@ -493,4 +492,169 @@ bool Bondy_Chvatl(Grafo grafo) {
     return true;
 }
 
-#pragma endregion grafo
+/*
+Função para visualizar a estrutura do grafo.
+
+Parâmetros:
+Grafo grafo -> ponteiro para o grafo a ser visualizado.
+bool salvar_em_arquivo -> booleano que indica se deve salvar em arquivo ou imprimir no console.
+*/
+void visualizar_grafo(Grafo grafo, bool salvar_em_arquivo) {
+    FILE *file = NULL;
+    if (salvar_em_arquivo) {
+        file = fopen("grafo.txt", "w");
+        if (file == NULL) {
+            printf("Erro ao abrir o arquivo para escrita.\n");
+            return;
+        }
+    }
+
+    FILE *output = salvar_em_arquivo ? file : stdout;
+
+    if (grafo == NULL) {
+        fprintf(output, "Grafo nao existe.\n");
+        if (salvar_em_arquivo) fclose(file);
+        return;
+    }
+
+    fprintf(output, "Matriz de Adjacencia:\n");
+    for (int i = 0; i < grafo->n; i++) {
+        for (int j = 0; j < grafo->n; j++) {
+            fprintf(output, "%d ", grafo->matriz[i][j]);
+        }
+        fprintf(output, "\n");
+    }
+
+    fprintf(output, "\nGraus dos vertices:\n");
+    for (int i = 0; i < grafo->n; i++) {
+        fprintf(output, "Vértice %d: %d\n", i, grafo->grau[i]);
+    }
+
+    fprintf(output, "\nListas de Nao Adjacencia:\n");
+    for (int i = 0; i < grafo->n; i++) {
+        fprintf(output, "Vértice %d: ", i);
+        DADO* aux = grafo->lista_n_adjascencia[i]->saida;
+        while (aux != NULL) {
+            fprintf(output, "%d ", aux->dado);
+            aux = aux->proximo;
+        }
+        fprintf(output, "\n");
+    }
+
+    if (salvar_em_arquivo) fclose(file);
+}
+
+int main() {
+    int opcao;
+    Grafo grafo = NULL;
+    int n;
+    float probabilidade;
+    static int orientado = false;
+
+    while (true) {
+        printf("+-------------------Menu---------------------+\n");
+        printf("Escolha uma opcao:\n");
+        printf("1. Gerar Grafo\n");
+        printf("2. Gerar Grafo Hamiltoniano\n");
+        printf("3. Verificar Teorema de Dirac\n");
+        printf("4. Verificar Teorema de Ore\n");
+        printf("5. Verificar Fecho Hamiltoniano\n");
+        printf("6. Verificar Bondy-Chvatal\n");
+        printf("7. Visualizar Grafo\n");
+        printf("0. Sair\n");
+        printf("+--------------------------------------------+\n");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                if(grafo) {
+                    liberar_matriz(grafo);
+                    printf("Grafo anterior existente foi excluido!\n");
+                }
+                printf("Digite o numero de vertices: ");
+                scanf("%d", &n);
+                printf("Digite a probabilidade de aresta (0 a 1): ");
+                scanf("%f", &probabilidade);
+                grafo = inicializar_matriz(n);
+                gerar_grafo(grafo, orientado, probabilidade);
+                printf("Grafo gerado com sucesso!\n");
+                break;
+            case 2:
+                if(grafo) {
+                    liberar_matriz(grafo);
+                    printf("Grafo anterior existente foi excluido!\n");
+                }
+                printf("Digite o numero de vertices: ");
+                scanf("%d", &n);
+                printf("Digite a probabilidade de aresta (0 a 1): ");
+                scanf("%f", &probabilidade);
+                grafo = inicializar_matriz(n);
+                gerar_grafo_hamiltoniano(grafo, orientado, probabilidade);
+                printf("Grafo Hamiltoniano gerado com sucesso!\n");
+                break;
+            case 3:
+                if(grafo == NULL) {
+                    printf("Gere um grafo primeiro!\n");
+                    break;
+                }
+                if (Dirac(grafo)) {
+                    printf("O grafo satisfaz o Teorema de Dirac.\n");
+                } else {
+                    printf("O grafo nao satisfaz o Teorema de Dirac.\n");
+                }
+                break;
+            case 4:
+                if(grafo == NULL) {
+                    printf("Gere um grafo primeiro!\n");
+                    break;
+                }
+                if (Ore(grafo)) {
+                    printf("O grafo satisfaz o Teorema de Ore.\n");
+                } else {
+                    printf("O grafo nao satisfaz o Teorema de Ore.\n");
+                }
+                break;
+            case 5:
+                if(grafo == NULL) {
+                    printf("Gere um grafo primeiro!\n");
+                    break;
+                }
+                if (Fecho_Hamiltoniano(grafo)) {
+                    printf("O grafo possui Fecho Hamiltoniano.\n");
+                } else {
+                    printf("O grafo nao possui Fecho Hamiltoniano.\n");
+                }
+                break;
+            case 6:
+                if(grafo == NULL) {
+                    printf("Gere um grafo primeiro!\n");
+                    break;
+                }
+                if (Bondy_Chvatl(grafo)) {
+                    printf("O grafo satisfaz o Teorema de Bondy-Chvatal.\n");
+                } else {
+                    printf("O grafo nao satisfaz o Teorema de Bondy-Chvatal.\n");
+                }
+                break;
+            case 7:
+                if(grafo == NULL) {
+                    printf("Gere um grafo primeiro!\n");
+                    break;
+                }
+                printf("Deseja salvar em arquivo? (1 - Sim, 0 - Nao): ");
+                int salvar;
+                scanf("%d", &salvar);
+                visualizar_grafo(grafo, salvar);
+                if (salvar) {
+                    printf("Grafo salvo em 'grafo.txt'.\n");
+                }
+                break;
+            case 0:
+                liberar_matriz(grafo);
+                return 0;
+            default:
+                printf("Opção invalida!\n");
+                break;
+        }
+    }
+}
