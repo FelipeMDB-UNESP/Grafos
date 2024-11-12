@@ -85,7 +85,7 @@ Vitor Marchini Rolisola}
 \orientador{Prof. Emílio Bergamim Júnior}
 \instituicao{UNIVERSIDADE ESTADUAL PAULISTA}
 \tipotrabalho{Relatório Acadêmico}
-\preambulo{Este relatório apresenta a implementação de testes para verificar se grafos aleatórios satisfazem os teoremas hamiltonianos de Dirac, Ore e Bondy-Chvatl, utilizando modelos de grafos com ciclo inicial e arestas adicionadas com probabilidade p. A análise foi realizada para diferentes valores de N e p, com resultados apresentados em gráficos e tabelas.}
+\preambulo{Este relatório apresenta a implementação de testes para verificar se grafos aleatórios satisfazem os teoremas hamiltonianos de Dirac, Ore e Bondy-Chvátal, utilizando modelos de grafos com ciclo inicial e arestas adicionadas com probabilidade p. A análise foi realizada para diferentes valores de N e p, com resultados apresentados em gráficos e tabelas.}
 % Configurações de aparência do PDF final
 
 % alterando o aspecto da cor azul
@@ -178,9 +178,9 @@ Vitor Marchini Rolisola}
 % RESUMO
 \setlength{\absparsep}{18pt} % ajusta o espaçamento dos parágrafos do resumo
 \begin{resumo}
- \lipsum[1-4]
+Este trabalho tem como objetivo de realizar a análise de grafos hamiltonianos por meio da implementação e avaliação dos teoremas de Dirac, Ore e Bondy-Chvátal. Foi aplicado esses critérios em grafos aleatórios gerados a partir de dois modelos principais: o modelo Cíclico-Aleatório, que inicia com um ciclo hamiltoniano e incrementa conexões com uma probabilidade $p$, e o modelo de Erdos-Renyi, onde cada par de vértices recebe uma aresta com probabilidade fixa. Foram gerados grafos aleatórios para diferentes combinações de $N$ (número de vértices) e $p$, e aplicados testes para determinar a conformidade com os teoremas citados. Também foi desenvolvido um programa para realizar a automação desses testes e gerar os resultados apresentados neste trabalho. Os resultados, apresentados em gráficos e tabelas, demonstram a eficácia de cada teorema e modelo na identificação de grafos hamiltonianos, oferecendo uma análise empírica sobre a aplicabilidade desses critérios em redes complexas.
 
- \textbf{Palavras-chaves}: latex. abntex. editoração de texto.
+ \textbf{Palavras-chaves}: grafos hamiltonianos, teorema de Dirac, teorema de Ore, teorema de Bondy-Chvátal, modelo de Erdos-Renyi, teoria dos grafos.
 \end{resumo}
 
 
@@ -557,7 +557,7 @@ bool bondy_chvatal(Grafo fecho) {
 }
 \end{minted}
 \end{codebox}
-A quarta região, \textbf{grafo}, foca em operações específicas de grafos. Inclui funções para gerar um gráfico aleatório \highlighttext{($gerar\_grafo$)}, gerar um gráfico hamiltoniano \highlighttext{($gerar\_grafo\_hamiltoniano$)}, verificar se um gráfico satisfaz o teorema de Dirac \highlighttext{($dirac$)}, verificar se um gráfico satisfaz o teorema de Ore \highlighttext{($ore$)}, gerar um fechamento hamiltoniano de um gráfico \highlighttext{($fecho\_hamiltoniano$)} e verificar se um gráfico satisfaz o teorema de Bondy-Chvatal \highlighttext{($bondy\_chvatal$)}. Além disso, inclui funções para imprimir o gráfico em um arquivo \highlighttext{($imprimir\_grafo\_arquivo$)} e visualizar o gráfico e suas informações \highlighttext{($visualizar\_grafo\_e\_informacoes$)}.
+A quarta região, \textbf{grafo}, foca em operações específicas de grafos. Inclui funções para gerar um gráfico aleatório \highlighttext{($gerar\_grafo$)}, gerar um gráfico hamiltoniano \highlighttext{($gerar\_grafo\_hamiltoniano$)}, verificar se um gráfico satisfaz o teorema de Dirac \highlighttext{($dirac$)}, verificar se um gráfico satisfaz o teorema de Ore \highlighttext{($ore$)}, gerar um fechamento hamiltoniano de um gráfico \highlighttext{($fecho\_hamiltoniano$)} e verificar se um gráfico satisfaz o teorema de Bondy-Chvátal \highlighttext{($bondy\_chvatal$)}. Além disso, inclui funções para imprimir o gráfico em um arquivo \highlighttext{($imprimir\_grafo\_arquivo$)} e visualizar o gráfico e suas informações \highlighttext{($visualizar\_grafo\_e\_informacoes$)}.
 
 \subsection{REGIÃO FINAL (MAIN)}
 \begin{codebox}
