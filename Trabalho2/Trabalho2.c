@@ -526,7 +526,7 @@ bool bondy_chvatal(Grafo fecho) {
         return false;
 
     for (int i = 0; i<fecho->n; i++) {
-        for (int j = i+1; j<fecho->n; i++) {
+        for (int j = i+1; j<fecho->n; j++) {
 
             if(! (fecho->matriz[i][j])) {
                 return false;
@@ -626,6 +626,81 @@ void visualizar_grafo_e_informacoes(Grafo grafo, bool salvar_em_arquivo, char* n
 
 #pragma endregion grafo
 
+void testes_e_salvar_resultados(bool salvar_em_arquivo, bool hamiltoniano, bool converter) {
+    FILE *file = NULL;
+    Grafo grafo = NULL;
+    if (salvar_em_arquivo) {
+        file = fopen("grafo.csv", "w");
+        if (file == NULL) {
+            printf("Erro ao abrir o arquivo para escrita.\n");
+            return;
+        }
+    }
+
+    FILE *output = salvar_em_arquivo ? file : stdout;
+    fprintf(output,"n,prob,Dirac,Ore,Bondy_Chvatl\n");
+    size_t atual = time(NULL);
+    printf("Inicio: %ld", time(NULL) - atual);
+
+    int nValues[] = {6, 8, 10, 12, 15, 20, 30, 40, 50, 100, 250, 500, 1000};
+    float pValues[] = {0, 0.1, 0.25, 0.3, 0.4, 0.5, 0.6, 0.75, 0.9, 1};
+ 
+    int n;
+    int i, j, k;
+    float probabilidade;
+
+    for ( k = 0; k < 13; k++)
+    {   
+        printf("\nInicio: %ld", time(NULL) - atual);
+        n = nValues[k]; 
+        for ( j = 0; j < 10; j++)
+        {
+            probabilidade = pValues[j];
+            // fprintf(output,"n: %d,", n); 
+            // fprintf(output,"probabilidade: %f\n", probabilidade); 
+
+            for ( i = 0; i < 10; i++)
+            {
+                if(grafo) {
+                    liberar_matriz(grafo); 
+                }
+                bool orientado = false; 
+                grafo = inicializar_matriz(n);
+                if(hamiltoniano){
+                    gerar_grafo_hamiltoniano(grafo, orientado, probabilidade);
+                }else{
+                    gerar_grafo(grafo, orientado, probabilidade);
+                    if (converter){
+                        fecho_hamiltoniano(grafo);
+                    }
+                } 
+                fprintf(output,"%d,", n);
+                fprintf(output,"%.2f,", probabilidade);
+                if (dirac(grafo)) {
+                    fprintf(output,"1");
+                } else {
+                    fprintf(output,"0");
+                }
+                fprintf(output,",");
+                if (ore(grafo)) {
+                    fprintf(output,"1");
+                } else {
+                    fprintf(output,"0");
+                }
+                fprintf(output,",");
+                if (bondy_chvatal(grafo)) {
+                    fprintf(output,"1");
+                } else {
+                    fprintf(output,"0");
+                } 
+                fprintf(output,"\n");
+            }  
+        } 
+    } 
+
+    if (salvar_em_arquivo) fclose(file);
+}
+
 #pragma region main
 //TO DO: adicionar opcao HELP ME para explicar coisas que talvez nao estejam tão claras.
 int main() {
@@ -649,6 +724,9 @@ int main() {
         printf("6. Gerar Fecho Hamiltoniano\n");
         printf("7. Visualizar Grafo\n");
         printf("8. Visualizar o Fecho Hamiltoniano\n");
+        printf("9. Geracao de Testes\n");
+        printf("10. Geracao de Testes (Hamiltoniano)\n");
+        printf("11. Geracao de Testes (Conversao pra Fechos Hamiltonianos)\n");
         printf("0. Sair\n");
         printf("+--------------------------------------------+\n");
         scanf("%d", &opcao);
@@ -744,21 +822,14 @@ int main() {
                     printf("Grafo salvo em 'grafo.txt'.\n");
                 }
                 break;
-            case 8:
-                if(ore(grafo)){
-                    printf("O próprio grafo já é um fecho hamiltoniano.\n");
-                    break;
-                }
-                if(fecho == NULL) {
-                    printf("Gere um fecho primeiro!\n");
-                    break;
-                }
-                printf("Deseja salvar em arquivo? (1 - Sim, 0 - Nao): ");
-                scanf("%d", &salvar);
-                visualizar_grafo_e_informacoes(fecho, salvar, "fecho.txt");
-                if (salvar) {
-                    printf("Grafo salvo em 'fecho.txt'.\n");
-                }
+            case 9: // Grafo normal
+                 testes_e_salvar_resultados(true, false, false);
+                break;
+            case 10: // Hamiltoniano
+                 testes_e_salvar_resultados(true, true, false);
+                break;
+            case 11: // Normal convertido em fecho hamiltoniano
+                 testes_e_salvar_resultados(true, true, true);
                 break;
             case 0:
                 liberar_matriz(grafo);
