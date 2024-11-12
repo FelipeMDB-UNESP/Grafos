@@ -14,6 +14,13 @@
 \usepackage{amsmath,amssymb,unicode-math} % escrita matematica
 \usepackage{verbatim}
 
+\usepackage{minted}
+\usemintedstyle{tango} % Escolhe um estilo, similar ao Markdown
+\usepackage{mdframed}
+\newenvironment{codebox}%
+  {\begin{mdframed}[backgroundcolor=gray!5, linecolor=gray, roundcorner=5pt]}%
+  {\end{mdframed}}
+
 % para incluir páginas pdf diretamente no documento
 \usepackage{pdfpages}
 \usepackage{csquotes}
@@ -54,11 +61,14 @@ sorting=nty, % ordem alfabetica
 \usepackage{supertabular}
 \usepackage{multicol}
 \usepackage{multirow}
-
-
-
 \usepackage{lipsum}
 
+\usepackage{tcolorbox}
+
+% Define o estilo de highlight como o do Markdown
+\newtcbox{\highlighttext}{on line, 
+    box align=base, colframe=white, colback=lightgray!30,
+    arc=5pt, boxrule=0pt, boxsep=0pt, left=1pt, right=1pt, top=1pt, bottom=1pt}
 
 
 
@@ -110,6 +120,7 @@ Vitor Marchini Rolisola}
 
 % Início do documento
 \begin{document}
+\sloppy
 
 % Retira espaço extra obsoleto entre as frases.
 \frenchspacing
@@ -199,16 +210,31 @@ Explorar e comparar os modelos de grafos que satisfaçam esses teoremas em condi
 \section{Metodologia}
 A metodologia proposta para este estudo envolve a implementação de um conjunto de testes para verificar se um grafo dado satisfaz os critérios de hamiltonianidade estabelecidos pelos teoremas de Dirac, Ore e Bondy-Chvátal. Para isso, serão aplicados algoritmos específicos para cada teorema:
 \begin{enumerate}
-    \item Teste de Dirac: Será verificado se todos os vértices de um grafo possuem grau $\delta \geq \frac{n}{2}$, sendo $n$ o número de vértices do grafo.
-    \item Teste de Ore: Para cada par de vértices não adjacentes $u$ e $v$, será avaliado se a soma dos graus $d(u) + d(v) \geq n$.
-    \item Teste de Bondy-Chvátal: Utilizando o método de fechamento do grafo, serão inseridas arestas entre vértices não adjacentes sempre que a soma de seus graus seja pelo menos $n$, e em seguida, será avaliado se o grafo resultante é hamiltoniano.
+    \item \textbf{Teste de Dirac}: Será verificado se todos os vértices de um grafo possuem grau $\delta \geq \frac{n}{2}$, sendo $n$ o número de vértices do grafo.
+    \item \textbf{Teste de Ore}: Para cada par de vértices não adjacentes $u$ e $v$, será avaliado se a soma dos graus $d(u) + d(v) \geq n$.
+    \item \textbf{Teste de Bondy-Chvátal}: Utilizando o método de fechamento do grafo, serão inseridas arestas entre vértices não adjacentes sempre que a soma de seus graus seja pelo menos $n$, e em seguida, será avaliado se o grafo resultante é hamiltoniano.
 \end{enumerate}
 Os testes serão aplicados a grafos gerados aleatoriamente de acordo com dois modelos:
 \begin{itemize}
-    \item Modelo Cíclico-Aleatório: Um grafo inicialmente configurado como um ciclo simples de $N$ vértices (o que garante que ele seja hamiltoniano) e, em seguida, arestas adicionais são inseridas entre pares de vértices com uma probabilidade $p$.
-    \item Modelo de Erdos-Renyi: Cada par de vértices recebe uma aresta com uma probabilidade fixa $p$, sem uma configuração inicial de ciclo, resultando em grafos com conectividade aleatória.
+    \item \textbf{Modelo Cíclico-Aleatório}: Um grafo inicialmente configurado como um ciclo simples de $N$ vértices (o que garante que ele seja hamiltoniano) e, em seguida, arestas adicionais são inseridas entre pares de vértices com uma probabilidade $p$.
+    \item \textbf{Modelo de Erdos-Renyi}: Cada par de vértices recebe uma aresta com uma probabilidade fixa $p$, sem uma configuração inicial de ciclo, resultando em grafos com conectividade aleatória.
 \end{itemize}
 Para cada combinação de $N$ (número de vértices) e $p$ (probabilidade de conexão), serão gerados dez grafos aleatórios. Cada grafo será submetido aos três testes, e os resultados serão organizados em tabelas e gráficos, comparando a frequência com que cada teorema é satisfeito em cada modelo.
+
+\subsection{Teorema de Dirac}
+O Teorema de Dirac, um dos primeiros critérios suficientes para a hamiltonianidade, postula que um grafo simples com $n \geq 3$ vértices é hamiltoniano se todos os seus vértices possuem grau $d(v) \geq n/2$. Esse teorema baseia-se na premissa de que, quando cada vértice possui um número mínimo de conexões, o grafo torna-se suficientemente "denso" para conter um ciclo hamiltoniano. O Teorema de Dirac é relevante por sua simplicidade e pela garantia que fornece em grafos densos, mas aplica-se apenas a grafos onde o grau de cada vértice atinge um limite mínimo específico.
+
+\subsection{Teorema de Ore}
+O Teorema de Ore amplia a condição de Dirac ao considerar pares de vértices não adjacentes. Segundo esse teorema, se em um grafo simples com $n \geq 3$ vértices a soma dos graus de cada par de vértices não adjacentes $u$ e $v$ satisfaz $d(u) + d(v) \geq n$, então o grafo é hamiltoniano. Ao incluir pares de vértices não conectados diretamente, o Teorema de Ore apresenta uma condição menos restritiva, aplicando-se a uma gama mais ampla de grafos e oferecendo uma abordagem mais geral para verificar a hamiltonianidade.
+
+\subsection{Teorema de Bondy-Chvátal}
+O Teorema de Bondy-Chvátal propõe uma abordagem iterativa para verificar a hamiltonianidade, conhecida como operação de fechamento do grafo. Esse teorema afirma que um grafo $G$ com $n$ vértices é hamiltoniano se e somente se seu fechamento $G^{*}$ for hamiltoniano, onde $G^{*}$ é obtido ao adicionar arestas entre pares de vértices não adjacentes $u$ e $v$ sempre que $d(u) + d(v) \geq n$. Essa condição permite construir um grafo equivalente em termos de hamiltonianidade ao adicionar conexões entre pares de vértices conforme necessário, simplificando o problema ao permitir uma verificação gradativa.
+
+\subsection{Modelo Cíclico-Aleatório}
+No modelo cíclico-aleatório, inicia-se com um ciclo simples de $N$ vértices, o que garante que o grafo possui um ciclo hamiltoniano desde o início. Em seguida, são adicionadas arestas aleatórias entre pares de vértices não adjacentes com uma probabilidade $p$. Esse modelo permite que o grafo mantenha um ciclo básico enquanto aumenta gradualmente a conectividade, possibilitando a análise da transição de grafos com hamiltonianidade garantida para grafos mais complexos e densamente conectados.
+
+\subsection{Modelo de Erdos-Renyi}
+O modelo de Erdos-Renyi, proposto por Paul Erdős e Alfréd Rényi, é um dos modelos mais tradicionais para a geração de grafos aleatórios. Nesse modelo, cada par de vértices em um grafo recebe uma aresta com uma probabilidade fixa $p$, resultando em grafos com distribuição de conexões aleatória e sem uma estrutura cíclica inicial. Esse modelo é amplamente utilizado para estudar propriedades estatísticas de grafos e para modelar redes complexas onde as conexões entre vértices ocorrem de maneira independente e sem padrões definidos.
 
 \section{Objetivos}
 Este estudo possui os seguintes objetivos principais:
@@ -219,8 +245,424 @@ Este estudo possui os seguintes objetivos principais:
 \end{enumerate}
 Este estudo pretende fornecer uma visão prática e teórica sobre os critérios hamiltonianos, contribuindo para o entendimento de sua aplicabilidade e oferecendo uma base empírica para o uso desses critérios na análise e simulação de redes complexas.
 
-\chapter{Desenvolvimento}
+\chapter{Implementação}
+A implementação deste projeto consiste na criação de um algoritmo para verificar se um grafo satisfaz os três teoremas hamiltonianos: Dirac, Ore e Bondy-Chvátal. Além disso, foi desenvolvido um script em Python para automatizar a geração e análise dos resultados.
+
+\section{Código Principal}
+O código principal, escrito em linguagem C, está organizado em várias seções, cada uma dedicada a funcionalidades específicas relacionadas à geração, manipulação e análise de grafos, com relação aos ciclos hamiltonianos.
+
+\subsection{PRIMEIRA REGIÃO (VETORES)}
+\begin{codebox}
+\begin{minted}[linenos, breaklines]{C}
+int *criar_vetor(int n) {
+    int *vetor = (int *)calloc(n, sizeof(int));
+    return vetor;
+}
+
+void troca_lugares(int *vetor, int num1, int num2) {
+    int aux = vetor[num1];
+    vetor[num1] = vetor[num2];
+    vetor[num2] = aux;
+}
+
+void liberar_vetor(int *vetor) {
+    free(vetor);
+}
+\end{minted}
+\end{codebox}
+A primeira região, \textbf{vetores}, contém funções para gerenciamento de array dinâmico \highlighttext{($vetor$)}. Inclui funções para criar um vetor \highlighttext{($criar\_vetor$)}, trocar elementos dentro de um vetor \highlighttext{($troca\_lugares$)} e liberar a memória alocada para um vetor \highlighttext{($liberar\_vetor$)}.
+
+\subsection{SEGUNDA REGIÃO (FILAS)}
+\begin{codebox}
+\begin{minted}[linenos, breaklines]{C}
+typedef struct dado {
+    int dado;
+    struct dado *proximo;
+} DADO;
+
+typedef struct {
+    DADO *entrada;
+    DADO *saida;
+} Fila;
+
+typedef Fila *p_fila;
+
+p_fila criar_fila() {
+    p_fila f = malloc(sizeof(Fila));
+    f->entrada = NULL;
+    f->saida = NULL;
+    return f;
+}
+
+int fila_vazia(p_fila f) {
+    return (f->saida == NULL);
+}
+
+void esvaziar_fila(p_fila f) {
+    DADO *aux;
+    while (!fila_vazia(f)) {
+        aux = f->saida;
+        f->saida = f->saida->proximo;
+        free(aux);
+    }
+    f->entrada = NULL;
+}
+
+void liberar_fila(p_fila f) {
+    DADO *aux;
+    while (!fila_vazia(f)) {
+        aux = f->saida;
+        f->saida = f->saida->proximo;
+        free(aux);
+    }
+    free(f);
+}
+
+void enfileirar(p_fila f, int k) {
+    DADO *aux = malloc(sizeof(DADO));
+    aux->dado = k;
+    aux->proximo = NULL;
+    if (!fila_vazia(f)) {
+        f->entrada->proximo = aux;
+        f->entrada = aux;
+    } else {
+        f->entrada = aux;
+        f->saida = aux;
+    }
+}
+
+int desenfileirar(p_fila f) {
+    DADO *aux;
+    int i;
+    if (!fila_vazia(f)) {
+        aux = f->saida;
+        if (f->entrada != f->saida) {
+            f->saida = f->saida->proximo;
+        } else {
+            f->entrada = NULL;
+            f->saida = NULL;
+        }
+        i = aux->dado;
+        free(aux);
+        return i;
+    }
+    return INT_MIN;
+}
+
+bool remover_item(p_fila f, int k) {
+    DADO *atual = f->saida;
+    DADO *anterior = NULL;
+    while (atual != NULL) {
+        if (atual->dado == k) {
+            if (anterior != NULL) {
+                anterior->proximo = atual->proximo;
+                free(atual);
+            } else {
+                desenfileirar(f);
+            }
+            return true;
+        }
+        anterior = atual;
+        atual = atual->proximo;
+    }
+    return false;
+}
+\end{minted}
+\end{codebox}
+A segunda região, \textbf{filas}, define e gerencia uma estrutura de dados de fila \highlighttext{($FIFO$)}. Inclui a definição da estrutura \highlighttext{($DADO$)}, que representa um elemento na fila, e a estrutura Fila, que representa a própria fila. As funções nesta região incluem criar uma fila \highlighttext{($criar\_fila$)}, verificar se uma fila está vazia \highlighttext{($fila\_vazia$)}, esvaziar uma fila \highlighttext{($esvaziar\_fila$)}, liberar a fila \highlighttext{($liberar\_fila$)}, enfileirar \highlighttext{($enfileirar$)}, desenfileirar \highlighttext{($desenfileirar$)} e remover um item específico da fila \highlighttext{($remover\_item$)}.
+
+\subsection{TERCEIRA REGIÃO (MATRIZES)}
+\begin{codebox}
+\begin{minted}[linenos, breaklines]{C}
+typedef struct matricial {
+    int n; // linhas
+    int **matriz; // ponteiro para matriz
+    int *grau; // ponteiro para vetor com o grau dos vértices
+    p_fila *lista_n_adjascencia; // ponteiro para vetor da lista de não adjascência
+} Matriz;
+
+Matriz *inicializar_matriz(int qtd_vertices) {
+    Matriz *matricial = (Matriz *)malloc(sizeof(Matriz));
+    int **matriz_adjascencia = (int **)malloc(qtd_vertices * sizeof(int *));
+    for (int i = 0; i < qtd_vertices; i++) {
+        matriz_adjascencia[i] = (int *)malloc(qtd_vertices * sizeof(int));
+    }
+    matricial->n = qtd_vertices;
+    matricial->matriz = matriz_adjascencia;
+    matricial->lista_n_adjascencia = malloc(sizeof(p_fila) * qtd_vertices);
+    for (int i = 0; i < qtd_vertices; i++) {
+        matricial->lista_n_adjascencia[i] = criar_fila();
+    }
+    matricial->grau = criar_vetor(qtd_vertices);
+    return matricial;
+}
+
+Matriz *copiar_matriz(Matriz *matricial) {
+    Matriz *copia = inicializar_matriz(matricial->n);
+    DADO *aux;
+    for (int i = 0; i < copia->n; i++) {
+        copia->grau[i] = matricial->grau[i];
+        aux = matricial->lista_n_adjascencia[i]->saida;
+        while (aux != NULL) {
+            enfileirar(copia->lista_n_adjascencia[i], aux->dado);
+            aux = aux->proximo;
+        }
+        for (int j = 0; j < copia->n; j++) {
+            copia->matriz[i][j] = matricial->matriz[i][j];
+        }
+    }
+    return copia;
+}
+
+void liberar_matriz(Matriz *matricial) {
+    for (int i = 0; i < matricial->n; i++) {
+        free(matricial->matriz[i]);
+        liberar_fila(matricial->lista_n_adjascencia[i]);
+    }
+    liberar_vetor(matricial->grau);
+    free(matricial->lista_n_adjascencia);
+    free(matricial->matriz);
+    free(matricial);
+}
+\end{minted}
+\end{codebox}
+A terceira região, \textbf{matrizes}, lida com operações de matriz, especificamente para representar grafos. Ela define a estrutura Matriz, que inclui a matriz de adjacência, o grau de vértices e uma lista de vértices não adjacentes. As funções nesta região incluem inicializar uma matriz \highlighttext{($inicializar\_matriz$)}, copiar uma matriz \highlighttext{($copiar\_matriz$)} e liberar a memória alocada para uma matriz \highlighttext{($liberar\_matriz$)}.
+
+\subsection{QUARTA REGIÃO (GRAFOS)}
+\begin{codebox}
+\begin{minted}[linenos, breaklines]{C}
+typedef Matriz *Grafo;
+
+void gerar_grafo(Grafo grafo, bool orientado, float probabilidade) {
+    int porcentagem = (int)(100 * probabilidade);
+    if (!orientado) { // garante espelhamento
+        for (int i = 0; i < grafo->n; i++) {
+            for (int j = i; j < grafo->n; j++) {
+                if (i != j) { // evitar ligacoes proprias
+                    grafo->matriz[i][j] = (rand() % 100 < porcentagem) ? 1 : 0; // pesos entre 1 e 0 (tem ou nao tem)
+                    grafo->matriz[j][i] = grafo->matriz[i][j];
+                    if (grafo->matriz[i][j]) {
+                        grafo->grau[i]++;
+                        grafo->grau[j]++;
+                    } else {
+                        enfileirar(grafo->lista_n_adjascencia[i], j);
+                        enfileirar(grafo->lista_n_adjascencia[j], i);
+                    }
+                } else {
+                    grafo->matriz[i][j] = 0; // falso para quando for a diagonal principal
+                }
+            }
+        }
+    } else {
+        for (int i = 0; i < grafo->n; i++) {
+            for (int j = 0; j < grafo->n; j++) {
+                if (i != j) { // evitar ligacoes proprias
+                    grafo->matriz[i][j] = (rand() % 100 < porcentagem) ? 1 : 0; // pesos entre 1 e 0 (tem ou nao tem)
+                    if (grafo->matriz[i][j]) {
+                        grafo->grau[i]++;
+                    } else {
+                        enfileirar(grafo->lista_n_adjascencia[i], j);
+                    }
+                } else {
+                    grafo->matriz[i][j] = 0; // falso para quando for a diagonal principal
+                }
+            }
+        }
+    }
+}
+
+void gerar_grafo_hamiltoniano(Grafo grafo, bool orientado, float probabilidade) {
+    gerar_grafo(grafo, orientado, probabilidade);
+    int *ciclo = criar_vetor(grafo->n);
+    for (int i = 0; i < grafo->n; i++) {
+        ciclo[i] = i;
+    }
+    if (!orientado) {
+        troca_lugares(ciclo, 0, rand() % (grafo->n));
+        for (int i = 1; i < grafo->n; i++) {
+            troca_lugares(ciclo, i, rand() % (grafo->n - i) + i);
+            if (!(grafo->matriz[ciclo[i - 1]][ciclo[i]])) {
+                grafo->matriz[ciclo[i - 1]][ciclo[i]] = 1;
+                grafo->matriz[ciclo[i]][ciclo[i - 1]] = grafo->matriz[ciclo[i - 1]][ciclo[i]];
+                grafo->grau[ciclo[i - 1]]++;
+                grafo->grau[ciclo[i]]++;
+                remover_item(grafo->lista_n_adjascencia[ciclo[i - 1]], ciclo[i]);
+                remover_item(grafo->lista_n_adjascencia[ciclo[i]], ciclo[i - 1]);
+            }
+        }
+        if (!(grafo->matriz[ciclo[grafo->n - 1]][ciclo[0]])) {
+            grafo->matriz[ciclo[grafo->n - 1]][ciclo[0]] = 1;
+            grafo->matriz[ciclo[0]][ciclo[grafo->n - 1]] = grafo->matriz[ciclo[grafo->n - 1]][ciclo[0]];
+            grafo->grau[ciclo[grafo->n - 1]]++;
+            grafo->grau[ciclo[0]]++;
+            remover_item(grafo->lista_n_adjascencia[ciclo[grafo->n - 1]], ciclo[0]);
+            remover_item(grafo->lista_n_adjascencia[ciclo[0]], ciclo[grafo->n - 1]);
+        }
+    }
+    liberar_vetor(ciclo);
+}
+
+bool dirac(Grafo grafo) {
+
+    for (int i = 0; i < grafo->n; i++) {
+        if (grafo->grau[i] < grafo->n / 2)
+            return false;
+    }
+    return true;
+}
+
+bool ore(Grafo grafo) {
+    DADO *aux;
+    for (int i = 0; i < grafo->n; i++) {
+        aux = grafo->lista_n_adjascencia[i]->saida;
+        while (aux != NULL) {
+            if (grafo->grau[i] + grafo->grau[aux->dado] < grafo->n)
+                return false;
+            aux = aux->proximo;
+        }
+    }
+    return true;
+}
+
+Grafo fecho_hamiltoniano(Grafo grafo) {
+    Grafo fecho_hamiltoniano = copiar_matriz(grafo);
+    int aux;
+    for (int i = 0; i < fecho_hamiltoniano->n; i++) {
+        while (fecho_hamiltoniano->lista_n_adjascencia[i]->saida != NULL) {
+            if (ore(fecho_hamiltoniano))
+                return fecho_hamiltoniano;
+            aux = desenfileirar(fecho_hamiltoniano-> lista_n_adjascencia[i]);
+            fecho_hamiltoniano->matriz[i][aux] = 1;
+            fecho_hamiltoniano->matriz[aux][i] = fecho_hamiltoniano->matriz[i][aux];
+            fecho_hamiltoniano->grau[i]++;
+            fecho_hamiltoniano->grau[aux]++;
+        }
+    }
+    liberar_matriz(fecho_hamiltoniano);
+    return NULL;
+}
+
+bool bondy_chvatal(Grafo fecho) {
+    if (fecho == NULL)
+        return false;
+    for (int i = 0; i < fecho->n; i++) {
+        for (int j = i + 1; j < fecho->n; i++) {
+
+            if (!(fecho->matriz[i][j])) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+\end{minted}
+\end{codebox}
+A quarta região, \textbf{grafo}, foca em operações específicas de grafos. Inclui funções para gerar um gráfico aleatório \highlighttext{($gerar\_grafo$)}, gerar um gráfico hamiltoniano \highlighttext{($gerar\_grafo\_hamiltoniano$)}, verificar se um gráfico satisfaz o teorema de Dirac \highlighttext{($dirac$)}, verificar se um gráfico satisfaz o teorema de Ore \highlighttext{($ore$)}, gerar um fechamento hamiltoniano de um gráfico \highlighttext{($fecho\_hamiltoniano$)} e verificar se um gráfico satisfaz o teorema de Bondy-Chvatal \highlighttext{($bondy\_chvatal$)}. Além disso, inclui funções para imprimir o gráfico em um arquivo \highlighttext{($imprimir\_grafo\_arquivo$)} e visualizar o gráfico e suas informações \highlighttext{($visualizar\_grafo\_e\_informacoes$)}.
+
+\subsection{REGIÃO FINAL (MAIN)}
+\begin{codebox}
+\begin{minted}[linenos, breaklines]{C}
+int main() {
+    int opcao, n, salvar;
+    Grafo grafo=NULL, grafo=NULL;
+    float probabilidade;
+    static int orientado = false;
+    while (true) {
+        srand(time(NULL)); // garantir boa aleatorizacao
+        printf("+-------------------Menu---------------------+\n");
+        printf("Escolha uma opcao:\n");
+        printf("1. Gerar Grafo\n");
+        printf("2. Gerar Grafo Hamiltoniano\n");
+        printf("3. Verificar Teorema de Dirac\n");
+        printf("4. Verificar Teorema de Ore\n");
+        printf("5. Verificar Bondy-Chvatal\n");
+        printf("6. Gerar Fecho Hamiltoniano\n");
+        printf("7. Visualizar Grafo\n");
+        printf("8. Visualizar o Fecho Hamiltoniano\n");
+        printf("0. Sair\n");
+        printf("+--------------------------------------------+\n");
+        scanf("%d", &opcao);
+        switch (opcao) {
+        case 1:
+            if (grafo) {
+                liberar_matriz(grafo);
+                printf("Grafo anterior existente foi excluido!\n");
+            }
+            printf("Digite o numero de vertices: ");
+            scanf("%d", &n);
+            printf("Digite a probabilidade de aresta (0 a 1): ");
+            scanf("%f", &probabilidade);
+            grafo = inicializar_matriz(n);
+            gerar_grafo(grafo, orientado, probabilidade);
+            printf("Grafo gerado com sucesso!\n");
+            break;
+        case 2:
+            ...
+            printf("Digite o numero de vertices: ");
+            scanf("%d", &n);
+            printf("Digite a probabilidade de aresta (0 a 1): ");
+            scanf("%f", &probabilidade);
+            grafo = inicializar_matriz(n);
+            gerar_grafo_hamiltoniano(grafo, orientado, probabilidade);
+            printf("Grafo Hamiltoniano gerado com sucesso!\n");
+            break;
+        case 3:
+            ...
+            if (dirac(grafo)) {
+                printf("O grafo satisfaz o Teorema de Dirac.\n");
+            } else {
+                printf("O grafo NAO satisfaz o Teorema de Dirac.\n");
+            }
+            break;
+        case 4:
+            ...
+            if (ore(grafo)) {
+                printf("O grafo satisfaz o Teorema de Ore.\n");
+            } else {
+                printf("O grafo NAO satisfaz o Teorema de Ore.\n");
+            }
+            break;
+        case 5:
+            ...
+            if (ore(grafo)) {
+                fecho = grafo;
+            }
+            if (bondy_chvatal(fecho)) {
+                printf("O fecho hamiltoniano satisfaz o Teorema de Bondy-Chvatal.\n");
+            } else {
+                printf("O fecho hamiltoniano NAO satisfaz o Teorema de Bondy-Chvatal.\n");
+            }
+            break;
+        case 6:
+            ...
+            if (ore(grafo)) {
+                printf("O grafo já possui um fecho hamiltoniano.\n");
+            } else {
+                fecho = fecho_hamiltoniano(grafo);
+                if (fecho != NULL) {
+                    printf("Um fecho hamiltoniano para o grafo foi gerado!\n");
+                } else {
+                    printf("Não foi possível modificar o grafo.\n");
+                }
+            }
+            break;
+        case 7:
+            ...
+        case 8:
+            if (ore(grafo)) {
+                printf("O próprio grafo já é um fecho hamiltoniano.\n");
+                break;
+            }
+            ...
+        ...
+        }
+    }
+}
+\end{minted}
+\end{codebox}
+A região final, \textbf{main}, contém a função \highlighttext{($main$)} que fornece uma interface orientada a menu para o usuário interagir com o programa. O usuário pode gerar grafos, verificar vários teoremas, gerar fechamentos hamiltonianos e visualizar os grafos. A função principal manipula a entrada do usuário, chama as funções apropriadas com base na escolha do usuário e garante o gerenciamento de memória adequado ao liberar recursos alocados antes de sair.
+
+\section{Automação para testes}
 
 \printindex
-
 \end{document}
