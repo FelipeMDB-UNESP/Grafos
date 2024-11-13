@@ -640,7 +640,7 @@ void testes_e_salvar_resultados(bool salvar_em_arquivo, bool hamiltoniano, bool 
     FILE *output = salvar_em_arquivo ? file : stdout;
     fprintf(output,"n,prob,Dirac,Ore,Bondy_Chvatl\n");
     size_t atual = time(NULL);
-    printf("Inicio: %ld", time(NULL) - atual);
+    //printf("Inicio: %ld", time(NULL) - atual);
 
     int nValues[] = {6, 8, 10, 12, 15, 20, 30, 40, 50, 100, 250, 500, 1000};
     float pValues[] = {0, 0.1, 0.25, 0.3, 0.4, 0.5, 0.6, 0.75, 0.9, 1};
@@ -651,7 +651,7 @@ void testes_e_salvar_resultados(bool salvar_em_arquivo, bool hamiltoniano, bool 
 
     for ( k = 0; k < 13; k++)
     {   
-        printf("\nInicio: %ld", time(NULL) - atual);
+        //printf("\nInicio: %ld", time(NULL) - atual);
         n = nValues[k]; 
         for ( j = 0; j < 10; j++)
         {
