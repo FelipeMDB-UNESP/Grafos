@@ -124,169 +124,7 @@ void gerar_grafo(Matriz *matricial, bool orientado, int probabilidade) {
   }
 }
 
-/*
-Função para imprimir o grafo num dado arquivo.
-
-Parâmetros:
-Matriz* grafo -> ponteiro de grafo para acessar a matriz de adjascência.
-FILE* arq -> Ponteiro de arquivo.
-*/
-void imprimir_grafo_arquivo(Matriz *grafo, FILE *arq) {
-
-  fputc('\n', arq);
-
-  fputc('+', arq);
-  for (int l = 0; l < grafo->n; l++) {
-    fputc('-', arq);
-    fputc('-', arq);
-    fputc('-', arq);
-    fputc('+', arq);
-  }
-  fputc('\n', arq);
-
-  for (int i = 0; i < grafo->n; i++) {
-
-    fputc('|', arq);
-
-    for (int j = 0; j < grafo->n; j++) {
-
-      fprintf(arq, " %d |", grafo->matriz[i][j]);
-    }
-    fputc('\n', arq);
-
-    fputc('+', arq);
-    for (int l = 0; l < grafo->n; l++) {
-      fputc('-', arq);
-      fputc('-', arq);
-      fputc('-', arq);
-      fputc('+', arq);
-    }
-    fputc('\n', arq);
-  }
-}
-
 #pragma endregion grafo_aleatorio
-
-#pragma region lista
-
-/*Definição da struct usada na lista.
-
-Campos:
-int item -> Inteiro armazenado na lista.
-struct lista *prox -> ponteiro para o próximo elemento da lista.*/
-typedef struct lista {
-  int item;
-  struct lista *prox;
-} LISTA;
-
-/*Apelido para o ponteiro da lista.*/
-typedef LISTA *p_lista;
-
-/*
-Função para inicializacao de uma lista.
-
-Retorno:
-Um ponteiro vazio.
-*/
-p_lista criar_lista() {
-
-  p_lista list = NULL;
-  return list;
-}
-
-/*
-Função para inserir um elemento na lista.
-
-Parâmetros:
-p_lista* list -> Ponteiro do ponteiro da lista.
-int item -> Número a ser inserido na lista.
-*/
-void inserir_lista(p_lista *list, int item) {
-
-  p_lista aux = (p_lista)malloc(sizeof(LISTA));
-  aux->item = item;
-  aux->prox = *list;
-  *list = aux; // realiza alteração do topo da lista sem retornar valor
-}
-
-/*
-Função para remover um elemento na lista.
-
-Parâmetros:
-p_lista* list -> Ponteiro do ponteiro da lista.
-
-Retorno:
-Item retirado.
-*/
-int retirar_lista(p_lista *list) {
-
-  int item;
-  p_lista aux;
-
-  item = (*list)->item;
-  aux = (*list)->prox;
-
-  free(*list);
-  *list = aux; // realiza alteração do topo da lista sem retornar valor
-
-  return item;
-}
-
-/*
-Função para desfazer a lista.
-
-Parâmetros:
-p_lista* list -> Ponteiro do ponteiro da lista.
-*/
-void liberar_lista(p_lista *list) {
-
-  p_lista aux;
-
-  while (*list != NULL) {
-    aux = *list;
-    *list = aux->prox;
-    free(aux);
-  }
-}
-
-/*
-Função para imprimir os itens da lista.
-
-Parâmetros:
-p_lista list -> Ponteiro da lista.
-*/
-void imprimir_lista(p_lista list) {
-
-  printf("\nLista:");
-
-  while (list != NULL) {
-    printf(" %d", list->item);
-    list = list->prox;
-  }
-
-  putchar('\n');
-  putchar('\n');
-}
-
-/*
-Função para imprimir os itens da lista em um arquivo txt.
-
-Parâmetros:
-p_lista list -> Ponteiro da lista.
-FILE* arq -> Ponteiro do arquivo.
-*/
-void imprimir_lista_arquivo(p_lista list, FILE *arq) {
-
-  fprintf(arq, "\nLista:");
-
-  while (list != NULL) {
-    fprintf(arq, " %d", list->item);
-    list = list->prox;
-  }
-
-  fputc('\n', arq);
-}
-#pragma endregion lista
 
 #pragma region interação usuário
 
@@ -297,6 +135,7 @@ via prompt
 Parâmetros:
 float *prob -> ponteiro para se armazenar a probabilidade de cada aresta.
 bool *orientado -> ponteiro para se armazenar a orientação do grafo.
+int *qtd_vertices -> ponteiro para se armazenar a quantidade de vértices.
 */
 void solicitar_ao_usuario(float *prob, bool *orientado, int *qtd_vertices) {
 
@@ -304,7 +143,7 @@ void solicitar_ao_usuario(float *prob, bool *orientado, int *qtd_vertices) {
 
     printf(
         "\nDigite a probabilidade de existencia das arestas (entre 0 e 1): ");
-    if (scanf(" %f", prob) != 1) { // Verificação do retorno de clae
+    if (scanf(" %f", prob) != 1) { // Verificação do retorno de scanf
       printf("\nErro ao ler a probabilidade.\n");
       exit(1);
     }
@@ -315,28 +154,13 @@ void solicitar_ao_usuario(float *prob, bool *orientado, int *qtd_vertices) {
 
   } while ((*prob < 0 || *prob > 1));
 
-  int aux;
-  do {
-
-    printf("\nDigite 1 se o grafo for orientado, e 0 caso contrário: ");
-    if (scanf(" %d", &aux) != 1) { // Verificação do retorno de scanf
-      printf("\nErro ao ler a orientação.\n");
-      exit(1);
-    }
-
-    if ((aux) != 0 && (aux) != 1) {
-      printf("\nDigite uma opção valida.\n");
-    }
-
-  } while ((aux) != 0 && (aux) != 1);
-
-  *orientado = aux ? true : false;
+  *orientado = false; // nesse exercicio os grafos nao sao orientados
 
   do {
 
-    printf("\nDigite a quantidade de vértices do grafo: ");
+    printf("\nDigite a quantidade de vertices do grafo: ");
     if (scanf(" %d", qtd_vertices) != 1) { // Verificação do retorno de scanf
-      printf("\nErro ao ler a quantidade de vértices.\n");
+      printf("\nErro ao ler a quantidade de vertices.\n");
       exit(1);
     }
 
@@ -385,23 +209,6 @@ void preencher_manualmente(bool orientado, Matriz *grafo) {
 }
 
 /*
-Procedimento para desfazer os arquivos de teste gerados nos casos de teste.
-*/
-void deletar_arquivos_caso_teste() {
-
-  char buffer[64];
-
-  for (int i = contador_cliques; i > 0; i--) {
-
-    sprintf(buffer, "Entrada%d.txt", i);
-    remove(buffer);
-
-    sprintf(buffer, "Saida%d.txt", i);
-    remove(buffer);
-  }
-}
-
-/*
 Procedimento que cria a interface básica para o usuário interagir com o
 programa.
 
@@ -412,36 +219,44 @@ int menu() {
   int opcao;
 
   do {
+    // printf(
+    //     "\n\n+-------------------Menu---------------------+\n|1 - Inserir "
+    //     "dados                           \n|2 - Carregar dados                "
+    //     "          \n|3 - Criar caso de teste completo(RECOMENDADO)\n|4 - "
+    //     "Inserir grafo manualmente               \n|5 - Aleatorizar grafo     "
+    //     "                  \n|6 - Procurar clique maximal de um vertice   "
+    //     "                        \n|7 - Salvar resultado em um arquivo                        \n|8 - Imprimir "
+    //     "resultado na tela(Execute opcao 6 antes)              \n|0 - Sair                           "
+    //     "         \n+--------------------------------------------+\n");
+
     printf(
         "\n\n+-------------------Menu---------------------+\n|1 - Inserir "
-        "dados                           \n|2 - Carregar dados                "
-        "          \n|3 - Criar caso de teste completo(RECOMENDADO)\n|4 - "
-        "Inserir grafo manualmente               \n|5 - Aleatorizar grafo     "
-        "                  \n|6 - Procurar clique maximal de um vertice   "
-        "                        \n|7 - Salvar resultado em um arquivo                        \n|8 - Imprimir "
-        "resultado na tela(Execute opcao 6 antes)              \n|0 - Sair                           "
+        "dados                           \n|2 - Aleatorizar grafo     "
+        "                  \n|3 - Hipotese de Hierholzer   "
+        "                        \n|4 - Visualizar matriz de adjacencias"
+        "                        \n|0 - Sair                           "
         "         \n+--------------------------------------------+\n");
     scanf(" %d", &opcao);
-  } while (opcao < 0 || opcao > 8);
+  } while (opcao < 0 || opcao > 4);
 
   return opcao;
 }
 
 #pragma endregion interação usuário
 
-#pragma region euler_hierholzer
+#pragma region eulerizacao
 
 // Função para verificar se o grafo é conexo usando busca em profundidade (DFS)
-void dfs(Grafo* grafo, int v, int* visitado) {
+void dfs(Matriz* grafo, int v, int* visitado) {
     visitado[v] = 1;
     for (int i = 0; i < grafo->n; i++) {
-        if (grafo->adj[v][i] > 0 && !visitado[i]) {
+        if (grafo->matriz[v][i] > 0 && !visitado[i]) {
             dfs(grafo, i, visitado);
         }
     }
 }
 
-int eh_conexo(Grafo* grafo) {
+int eh_conexo(Matriz* grafo) {
     int* visitado = (int*)calloc(grafo->n, sizeof(int));
     dfs(grafo, 0, visitado);
     for (int i = 0; i < grafo->n; i++) {
@@ -454,11 +269,11 @@ int eh_conexo(Grafo* grafo) {
     return 1;
 }
 
-int tem_graus_pares(Grafo* grafo) {
+int todos_graus_pares(Matriz* grafo) {
     for (int i = 0; i < grafo->n; i++) {
         int grau = 0;
         for (int j = 0; j < grafo->n; j++) {
-            grau += grafo->adj[i][j];
+            grau += grafo->matriz[i][j];
         }
         if (grau % 2 != 0) {
             return 0;
@@ -468,23 +283,23 @@ int tem_graus_pares(Grafo* grafo) {
 }
 
 // Função para adicionar uma aresta ao grafo
-void adicionar_aresta(Grafo* grafo, int u, int v) {
-    grafo->adj[u][v]++;
-    grafo->adj[v][u]++;
+void adicionar_aresta(Matriz* grafo, int u, int v) {
+    grafo->matriz[u][v]++;
+    grafo->matriz[v][u]++;
 }
 
 // Função para fazer a eulerização do grafo
-void eulerizar(Grafo* grafo) {
+void eulerizar(Matriz* grafo) {
     for (int i = 0; i < grafo->n; i++) {
         int grau = 0;
         for (int j = 0; j < grafo->n; j++) {
-            grau += grafo->adj[i][j];
+            grau += grafo->matriz[i][j];
         }
         if (grau % 2 != 0) {
             for (int j = i + 1; j < grafo->n; j++) {
                 int grau_j = 0;
                 for (int k = 0; k < grafo->n; k++) {
-                    grau_j += grafo->adj[j][k];
+                    grau_j += grafo->matriz[j][k];
                 }
                 if (grau_j % 2 != 0) {
                     adicionar_aresta(grafo, i, j);
@@ -495,50 +310,283 @@ void eulerizar(Grafo* grafo) {
     }
 }
 
+#pragma endregion eulerizacao
+
+
+#pragma regio lista dupla
+
+typedef struct lista_dupla {
+    int item;
+    struct lista_dupla *prox;
+    struct lista_dupla *ant;
+} LISTA_DUPLA;
+
+typedef LISTA_DUPLA *p_lista_dupla;
+
+p_lista_dupla criar_lista_dupla() {
+    return NULL;
+}
+
+void inserir_lista_dupla(p_lista_dupla *lista, int item) {
+    p_lista_dupla aux = (p_lista_dupla)malloc(sizeof(LISTA_DUPLA));
+    aux->item = item;
+    aux->prox = *lista;
+    aux->ant = NULL;
+    if (*lista != NULL) {
+        (*lista)->ant = aux;
+    }
+    *lista = aux;
+}
+
+void remover_lista_dupla(p_lista_dupla *lista, p_lista_dupla elem) {
+    if (elem->ant != NULL) {
+        elem->ant->prox = elem->prox;
+    } else {
+        *lista = elem->prox;
+    }
+    if (elem->prox != NULL) {
+        elem->prox->ant = elem->ant;
+    }
+    free(elem);
+}
+
+void liberar_lista_dupla(p_lista_dupla *lista) {
+    p_lista_dupla aux;
+    while (*lista != NULL) {
+        aux = *lista;
+        *lista = aux->prox;
+        free(aux);
+    }
+}
+
+void imprimir_lista_dupla(p_lista_dupla lista) {
+    while (lista != NULL) {
+        printf("%d ", lista->item);
+        lista = lista->prox;
+    }
+    printf("\n");
+}
+
+void remover_todas_repeticoes(p_lista_dupla *lista) {
+    if (*lista == NULL) return;
+
+    p_lista_dupla atual = *lista;
+
+    // Percorre cada elemento da lista
+    while (atual != NULL) {
+        p_lista_dupla comparador = atual->prox;
+        
+        // Percorre todos os elementos após o "atual"
+        while (comparador != NULL) {
+            if (comparador->item == atual->item) {
+                // Se encontrar um elemento duplicado, remove-o
+                p_lista_dupla temp = comparador;
+                
+                // Ajusta os ponteiros para "pular" o elemento duplicado
+                if (temp->ant != NULL) {
+                    temp->ant->prox = temp->prox;
+                }
+                if (temp->prox != NULL) {
+                    temp->prox->ant = temp->ant;
+                }
+
+                comparador = temp->prox; // Avança o comparador
+                free(temp); // Libera o elemento duplicado
+            } else {
+                // Avança o comparador se não houver duplicação
+                comparador = comparador->prox;
+            }
+        }
+        
+        // Avança para o próximo elemento da lista
+        atual = atual->prox;
+    }
+}
+
+void remover_repeticoes_arestas(p_lista_dupla *lista) {
+    if (*lista == NULL) return;
+
+    p_lista_dupla atual = *lista;
+
+    // Percorre cada elemento da lista
+    while (atual != NULL && atual->prox != NULL) {
+        p_lista_dupla comparador = atual->prox;
+        
+        // Percorre todos os elementos após o "atual"
+        while (comparador != NULL && comparador->prox != NULL) {
+            if (atual->item == comparador->prox->item && atual->prox->item == comparador->item) {
+                // Se encontrar uma aresta duplicada, remove-a
+                p_lista_dupla temp1 = comparador;
+                p_lista_dupla temp2 = comparador->prox;
+                
+                // Ajusta os ponteiros para "pular" a aresta duplicada
+                if (temp1->ant != NULL) {
+                    temp1->ant->prox = temp2->prox;
+                }
+                if (temp2->prox != NULL) {
+                    temp2->prox->ant = temp1->ant;
+                }
+
+                comparador = temp2->prox; // Avança o comparador
+                free(temp1); // Libera o primeiro elemento da aresta duplicada
+                free(temp2); // Libera o segundo elemento da aresta duplicada
+            } else {
+                // Avança o comparador se não houver duplicação
+                comparador = comparador->prox;
+            }
+        }
+        
+        // Avança para o próximo elemento da lista
+        atual = atual->prox;
+    }
+}
+
+#pragma endregion lista dupla
+
+#pragma region hierholzer
+
 // Função para encontrar o ciclo Euleriano usando o algoritmo de Hierholzer
-void hierholzer(Grafo* grafo, int start) {
-    int* stack = (int*)malloc(grafo->n * sizeof(int));
-    int* cycle = (int*)malloc(grafo->n * sizeof(int));
-    int top = 0, cycle_index = 0;
+void hierholzer(Matriz* grafo, int start) {
+    p_lista_dupla C = criar_lista_dupla();
+    p_lista_dupla H = criar_lista_dupla();
+    int* vetor_graus = (int*)calloc(grafo->n, sizeof(int));
 
-    stack[top++] = start;
+    // Inicializa os graus dos vértices
+    for (int i = 0; i < grafo->n; i++) {
+        for (int j = 0; j < grafo->n; j++) {
+            if (grafo->matriz[i][j] > 0) {
+                vetor_graus[i] += grafo->matriz[i][j];
+            }
+        }
+    }
 
-    while (top > 0) {
-        int v = stack[top - 1];
-        int i;
-        for (i = 0; i < grafo->n; i++) {
-            if (grafo->adj[v][i] > 0) {
-                stack[top++] = i;
-                grafo->adj[v][i]--;
-                grafo->adj[i][v]--;
+    // Passo 1: Escolha qualquer vértice v ∈ V
+    int v = start;
+
+    // Passo 2: Construa um ciclo C a partir do vértice v
+    int inicio = v;
+    inserir_lista_dupla(&C, v);
+    while (true) {
+        int u = -1;
+        for (int i = 0; i < grafo->n; i++) {
+            if (grafo->matriz[v][i] > 0) {
+                u = i;
                 break;
             }
         }
-        if (i == grafo->n) {
-            cycle[cycle_index++] = v;
-            top--;
+        if (u == -1) break;
+        inserir_lista_dupla(&C, u);
+        grafo->matriz[v][u]--;
+        grafo->matriz[u][v]--;
+        vetor_graus[v]--;
+        vetor_graus[u]--;
+        v = u;
+    }
+    // Verifica se o ciclo retorna ao vértice inicial
+    if (v != inicio) {
+        inserir_lista_dupla(&C, inicio);
+    }
+
+    // Passo 3: A1 ← A \ C
+    // Passo 4: K ← (V, A1)
+    // A1 é representado pela matriz de adjacência atualizada
+
+    // Passo 5: enquanto A1 ≠ ∅ faça
+    while (true) {
+        bool arestas_restantes = false;
+        for (int i = 0; i < grafo->n; i++) {
+            if (vetor_graus[i] > 0) {
+                arestas_restantes = true;
+                break;
+            }
         }
+        if (!arestas_restantes) break;
+
+        // Passo 6: Escolha um vértice v tal que d(v) > 0 e v ∈ C
+        p_lista_dupla elem = C;
+        while (elem != NULL) {
+            if (vetor_graus[elem->item] > 0) {
+                v = elem->item;
+                break;
+            }
+            elem = elem->prox;
+        }
+
+        // Passo 7: Construa um ciclo H a partir do vértice v
+        inserir_lista_dupla(&H, v);
+        while (true) {
+            int u = -1;
+            for (int i = 0; i < grafo->n; i++) {
+                if (grafo->matriz[v][i] > 0) {
+                    u = i;
+                    break;
+                }
+            }
+            if (u == -1) break;
+            inserir_lista_dupla(&H, u);
+            grafo->matriz[v][u]--;
+            grafo->matriz[u][v]--;
+            vetor_graus[v]--;
+            vetor_graus[u]--;
+            v = u;
+        }
+
+        // Passo 8: A1 ← A1 \ H
+        // A1 é representado pela matriz de adjacência atualizada
+
+        // Passo 9: C ← H ∪ C
+        p_lista_dupla temp = H;
+        while (temp != NULL) {
+            inserir_lista_dupla(&C, temp->item);
+            temp = temp->prox;
+        }
+
+        // Passo 10: H ← ∅
+        liberar_lista_dupla(&H);
     }
 
+    // Remover todas as repetições de arestas
+    remover_repeticoes_arestas(&C);
+
+    // Verifica se o ciclo retorna ao vértice inicial
+    if (C->item != inicio) {
+        inserir_lista_dupla(&C, inicio);
+    }
+
+    // Imprimir o ciclo Euleriano
     printf("Ciclo Euleriano: ");
-    for (int i = cycle_index - 1; i >= 0; i--) {
-        printf("%d ", cycle[i] + 1);
-    }
-    printf("\n");
+    imprimir_lista_dupla(C);
 
-    free(stack);
-    free(cycle);
+    // Liberar memória
+    liberar_lista_dupla(&C);
+    liberar_lista_dupla(&H);
+    free(vetor_graus);
 }
 
-#pragma endregion euler_hierholzer
+#pragma endregion hierholzer
 
-int main() {
+/*
+Função para visualizar a matriz de adjacências do grafo.
+
+Parâmetros:
+Matriz* grafo -> ponteiro de grafo para acessar a matriz de adjacência.
+*/
+void visualizar_matriz(Matriz *grafo) {
+    for (int i = 0; i < grafo->n; i++) {
+        for (int j = 0; j < grafo->n; j++) {
+            printf("%d ", grafo->matriz[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+#pragma region main
+
+int main() { 
 
   Matriz *grafo = NULL;
-  p_lista list = NULL;
   bool orientado = false;
   float prob = -1.0;
-  int vertice = -1;
   int qtd_vertices = -1;
   contador_cliques = 0;
   int caso;
@@ -548,26 +596,11 @@ int main() {
     caso = menu();
 
     switch (caso) {
-    case 1:
+    case 1: // Inserir dados
       solicitar_ao_usuario(&prob, &orientado, &qtd_vertices);
       break;
-    case 2:
-      solicitar_ao_arquivo(&prob, &orientado, &qtd_vertices);
-      break;
-    case 3:
-      caso_teste(&orientado, &prob, &qtd_vertices);
-      break;
-    case 4:
-      if (qtd_vertices != -1) {
-        if (grafo == NULL)
-          grafo = inicializar_matriz(qtd_vertices);
-
-        preencher_manualmente(orientado, grafo);
-      } else {
-        printf("\nInsira os dados primeiro.\n");
-      }
-      break;
-    case 5:
+     
+    case 2: // Aleatorizar grafo
       if (qtd_vertices != -1) {
 
         if (grafo == NULL) {
@@ -578,37 +611,52 @@ int main() {
       } else {
         printf("\nInsira os dados primeiro.\n");
       }
-      break;
-    case 6:
-      if (grafo != NULL) {
+      break; 
+    case 3: // Checar hipótese de hierholzer
+      if (grafo == NULL) {
 
-        do {
-          printf("\nDigite o número do vértice (entre 1 e %d): ", grafo->n);
-          scanf(" %d", &vertice);
-
-        } while (vertice < 1 || vertice > grafo->n);
-
-        list = clique_maximal(grafo, vertice - 1);
-        contador_cliques++;
+          printf("\nInsira os dados e aleatorize o grafo primeiro (opcoes 1 e 2).\n");
       } else {
-        printf("\nCrie o grafo primeiro.\n");
+          if (!eh_conexo(grafo)) {
+
+              printf("O grafo nao eh conexo e, portanto, nao possui um ciclo Euleriano!\n");
+          } else { 
+              if (todos_graus_pares(grafo)) {
+
+                  printf("O grafo eh conexo e todos os vertices tem grau par. Um ciclo Euleriano pode ser encontrado.\n");
+                  hierholzer(grafo, 0);
+              } else {
+                
+                  printf("O grafo eh conexo, mas nem todos os vertices tem grau par. Realizando a eulerizacao do grafo...\n");
+                  eulerizar(grafo);
+                  
+                  printf("\nMatriz de adjacencias apos eulerizacao:\n");
+                  visualizar_matriz(grafo);
+
+                  printf("Eulerizacao concluida. Agora, todos os vertices tem grau par!\n"); 
+                  hierholzer(grafo, 0); // Executa o algoritmo de Hierholzer após a eulerização
+              }
+          }
       }
       break;
-    case 7:
-      imprimir_resultado_arquivo(list);
-      break;
-    case 8:
-      printf("\nOs vértices do último clique gerado são: ");
-      imprimir_lista(list);
+    case 4: // Visualizar matriz de adjacências
+      if (grafo == NULL) {
+
+          printf("\nInsira os dados e aleatorize o grafo primeiro (opcoes 1 e 2).\n");
+      } else {
+
+          visualizar_matriz(grafo);
+      }
       break;
     case 0:
-      if (contador_cliques > 0)
-        deletar_arquivos_caso_teste();
+
       liberar_matriz(grafo);
-      liberar_lista(&list);
       exit(0);
       break;
     }
   }
   return 0;
+  
 }
+
+#pragma endregion main

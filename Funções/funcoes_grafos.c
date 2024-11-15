@@ -66,6 +66,9 @@ void liberar_matriz(Matriz* matricial){
 #pragma endregion matrizes
 
 #pragma region grafo_aleatorio
+
+typedef Matriz* Grafo;
+
 /*
 Função para gerar um grafo com arestas aleatórias.
 
@@ -74,29 +77,30 @@ Matriz* matricial -> ponteiro de matriz para se gerar as arestas.
 bool orientado -> booleano que informa se a matriz é orientada ou não.
 int probabilidade -> probabilidade de cada aresta.
 */
-void gerar_grafo(Matriz* matricial, bool orientado, int probabilidade) {
+void gerar_grafo(Grafo grafo, bool orientado, float probabilidade) {
     
-    
+    int porcentagem = (int) (100*probabilidade);
+    srand(time(NULL));
+
     if (!orientado) {   //garante espelhamento 
-        for (int i = 0; i < matricial->n; i++) {
-            for (int j = i; j < matricial->n; j++) {
+        for (int i = 0; i < grafo->n; i++) {
+            for (int j = i; j < grafo->n; j++) {
                 if (i != j) {                          //evitar ligacoes proprias
-                    srand(time(NULL));
-                    matricial->matriz[i][j] = (rand() % 100 < probabilidade) ? (rand() % 10 + 1) : 0;//random de números entre 0 e 99 (resto da divisao por 100)
-                    matricial->matriz[j][i] = matricial->matriz[i][j];
+                    grafo->matriz[i][j] = (rand() % 100 < porcentagem) ? (rand() % 10 + 1) : 0;//random de números entre 0 e 99 (resto da divisao por 100)
+                    grafo->matriz[j][i] = grafo->matriz[i][j];
                     
                 } else {
-                    matricial->matriz[i][j] = 0;       //falso para quando for a diagonal principal       
+                    grafo->matriz[i][j] = 0;       //falso para quando for a diagonal principal       
                 }
             }
         }
     } else {
-        for (int i = 0; i < matricial->n; i++) {
-            for (int j = 0; j < matricial->n; j++) {
+        for (int i = 0; i < grafo->n; i++) {
+            for (int j = 0; j < grafo->n; j++) {
                 if (i != j) {                          //evitar ligacoes proprias
-                    matricial->matriz[i][j] = (rand() % 100 < probabilidade) ? 1  * (rand() % 10 + 1) : 0;//random de números entre 0 e 99 (resto da divisao por 100)
+                    grafo->matriz[i][j] = (rand() % 100 < porcentagem) ? (rand() % 10 + 1) : 0;//random de números entre 0 e 99 (resto da divisao por 100)
                 } else {
-                    matricial->matriz[i][j] = 0;       //falso para quando for a diagonal principal       
+                    grafo->matriz[i][j] = 0;       //falso para quando for a diagonal principal       
                 }
             }
         }

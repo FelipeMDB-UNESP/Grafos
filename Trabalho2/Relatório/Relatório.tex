@@ -1,0 +1,926 @@
+\documentclass[12pt, openright, oneside, a4paper, chapter=TITLE, section=TITLE, subsection=TITLE, subsubsection=TITLE, brazil]{abntex2}
+
+% Pacotes básicos
+\usepackage{graphicx} % Inclusão de gráficos
+
+\usepackage[table,xcdraw]{xcolor} % tabelasz
+\usepackage{booktabs}
+% pasta de figuras
+\graphicspath{{figuras/}}
+% extensões permitidas
+\DeclareGraphicsExtensions{.pdf,.eps,.svg,.png,.jpg,.bmp}
+
+\usepackage{microtype} % para melhorias de justificação
+\usepackage{amsmath,amssymb,unicode-math} % escrita matematica
+\usepackage{verbatim}
+
+\usepackage{minted}
+\usemintedstyle{tango} % Escolhe um estilo, similar ao Markdown
+\usepackage{mdframed}
+\newenvironment{codebox}%
+  {\begin{mdframed}[backgroundcolor=gray!5, linecolor=gray, roundcorner=5pt]}%
+  {\end{mdframed}}
+
+% para incluir páginas pdf diretamente no documento
+\usepackage{pdfpages}
+\usepackage{csquotes}
+
+%para criar graficos a partir de CSV
+%\usepackage{pgfplots}
+%\pgfplotsset{compat=1.18}
+%\usepackage{filecontents}
+
+% Opção 2: notas explicativas no sistema autor-data
+\usepackage[backend=biber,style=abnt,sccite,ittitles,citecount,scbib,justify,noslsn,repeatfields,sorting=nty]{biblatex}
+
+% ARQUIVO COM AS REFERÊNCIAS BIBLIOGRAFICAS
+\addbibresource{referencias.bib}
+
+% ---
+% Personalização do estilo biblatex-abnt - por Danny A. V Tonidandel
+% Adequa as urls de acordo com normas 6023:2018
+\DeclareFieldFormat{url}{\bibstring{urlfrom}\addcolon\addspace \url{#1}}%
+\DeclareFieldFormat{urldate}{\bibstring{urlseen}\addcolon\addspace #1}%
+
+% Reseta contadores das notas de rodapé em cada capítulo
+\makeatletter
+\@addtoreset{footnote}{chapter}
+\makeatother
+
+% Pacotes adicionais, usados apenas no âmbito do Modelo Canônico do abnteX2 - podem ser removidos
+% ---
+% Pacotes adicionais, usados no anexo do modelo de folha de identificação
+% ---
+% Tabelas
+\usepackage{supertabular}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{tcolorbox}
+
+% Define o estilo de highlight como o do Markdown
+\newtcbox{\highlighttext}{on line, 
+    box align=base, colframe=white, colback=lightgray!30,
+    arc=5pt, boxrule=0pt, boxsep=0pt, left=1pt, right=1pt, top=1pt, bottom=1pt}
+
+
+
+% Informações de dados para CAPA e FOLHA DE ROSTO
+\titulo{Relatório sobre Grafos Hamiltonianos}
+\autor{
+André Luis Dias Nogueira\\
+Felipe Melchior de Britto\\
+Rafael Daiki Kaneko\\
+Ryan Hideki Tadeo Guimarães\\
+Vitor Marchini Rolisola}
+\local{Rio Claro}
+\data{\the\year}
+\orientador{Prof. Emílio Bergamim Júnior}
+\instituicao{UNIVERSIDADE ESTADUAL PAULISTA}
+\tipotrabalho{Relatório Acadêmico}
+\preambulo{Este relatório apresenta a implementação de testes para verificar se grafos aleatórios satisfazem os teoremas hamiltonianos de Dirac, Ore e Bondy-Chvátal, utilizando modelos de grafos com ciclo inicial e arestas adicionadas com probabilidade p. A análise foi realizada para diferentes valores de N e p, com resultados apresentados em gráficos e tabelas.}
+% Configurações de aparência do PDF final
+
+% alterando o aspecto da cor azul
+%\definecolor{blue}{RGB}{41,5,195}
+
+% informações do PDF
+\makeatletter
+\hypersetup{
+     	%pagebackref=true,
+		pdftitle={\@title},
+		pdfauthor={\@author},
+    	pdfsubject={\imprimirpreambulo},
+	    pdfcreator={LaTeX with abnTeX2},
+		pdfkeywords={ufop}{latex}{abntex}{decat}{monografia},
+		colorlinks=true,       		% false: boxed links; true: colored links
+    	linkcolor=blue,          	% color of internal links
+    	citecolor=blue,        		% color of links to bibliography
+    	filecolor=magenta,      		% color of file links
+		urlcolor=blue,
+		%bookmarksdepth=4
+}
+\makeatother
+
+% Espaçamentos entre linhas e parágrafos
+% O tamanho do parágrafo é dado por:
+\setlength{\parindent}{1.25cm}
+% Controle do espaçamento entre um parágrafo e outro:
+\setlength{\parskip}{0.2cm}  % tente também \onelineskip
+
+% compila o indice
+\makeindex
+
+% Início do documento
+\begin{document}
+\sloppy
+
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing
+
+% ----------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% ----------------------------------------------------------
+% \pretextual
+
+% ---
+% Capa
+% ---
+%\imprimircapa
+\begin{capa}
+    \thispagestyle{empty}
+    \centering
+    \vspace*{1cm}
+
+    \begin{minipage}{0.2\linewidth}
+        \centering
+        \includegraphics[width=3cm]{src/unesp.jpg}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}{0.6\linewidth}
+        \centering
+        {\large \imprimirinstituicao} \\
+        {\large ``J\'ulio de Mesquita Filho''} \\
+        {\large Instituto de Geociências e Ciências Exatas} \\
+        {\large DEMAC} \\
+        {\large Ciências da Computação}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}{0.2\linewidth}
+        \centering
+        \includegraphics[width=2.1cm]{src/igce.jpg}
+    \end{minipage}
+
+    \vspace*{1cm}
+    {\ABNTEXchapterfont\large\imprimirautor}
+    \vspace*{\fill}
+
+    {\ABNTEXchapterfont\bfseries \large \imprimirtitulo}
+    \vspace*{\fill}
+
+    {\large\imprimirtipotrabalho}
+    \vspace*{\fill}
+
+    {\large\imprimirlocal}, {\large\imprimirdata}
+    \vspace*{1cm}
+\end{capa}
+
+% Folha de rosto
+\imprimirfolhaderosto*
+
+% RESUMO
+\setlength{\absparsep}{18pt} % ajusta o espaçamento dos parágrafos do resumo
+\begin{resumo}
+Este trabalho tem como objetivo de realizar a análise de grafos hamiltonianos por meio da implementação e avaliação dos teoremas de Dirac, Ore e Bondy-Chvátal. Foi aplicado esses critérios em grafos aleatórios gerados a partir de dois modelos principais: o modelo Cíclico-Aleatório, que inicia com um ciclo hamiltoniano e incrementa conexões com uma probabilidade $p$, e o modelo de Erdos-Renyi, onde cada par de vértices recebe uma aresta com probabilidade fixa. Foram gerados grafos aleatórios para diferentes combinações de $N$ (número de vértices) e $p$, e aplicados testes para determinar a conformidade com os teoremas citados. Também foi desenvolvido um programa para realizar a automação desses testes e gerar os resultados apresentados neste trabalho. Os resultados, apresentados em gráficos e tabelas, demonstram a eficácia de cada teorema e modelo na identificação de grafos hamiltonianos, oferecendo uma análise empírica sobre a aplicabilidade desses critérios em redes complexas.
+
+ \textbf{Palavras-chaves}: grafos hamiltonianos, teorema de Dirac, teorema de Ore, teorema de Bondy-Chvátal, modelo de Erdos-Renyi, teoria dos grafos.
+\end{resumo}
+
+
+% SUMÁRIO
+%\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents*
+%\cleardoublepage
+% ---
+% Comando para resetar contadores das notas de rodapé
+%\makeatletter
+%\@addtoreset{footnote}{chapter}
+%\makeatother
+
+% ----------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% ----------------------------------------------------------
+
+% INTRODUÇÃO
+\chapter[Introdução]{Introdução}
+
+\hspace{1.25cm}A Teoria dos Grafos é uma área essencial da matemática discreta, com aplicações em diversos campos, incluindo ciência da computação, logística, redes de comunicação, biologia computacional e pesquisa operacional. Um conceito particularmente relevante nessa teoria é o de ciclos hamiltonianos, onde se busca um percurso cíclico que passa por todos os vértices de um grafo exatamente uma vez. Grafos que contêm tais ciclos são denominados \textbf{grafos hamiltonianos} e têm implicações práticas em problemas de otimização, como o problema do caixeiro viajante e o roteamento de redes, onde se procura uma rota eficiente que minimize o custo de deslocamento.
+
+\section{Justificativas e Relevância}
+
+\hspace{1.25cm}O estudo de grafos hamiltonianos ganha importância na medida em que muitos problemas complexos podem ser simplificados pela verificação de hamiltonianidade em suas representações gráficas. Contudo, a determinação exata da presença de ciclos hamiltonianos é um problema computacionalmente difícil (NP-completo). Para contornar essa dificuldade, a teoria propõe critérios suficientes de hamiltonianidade, que, embora não garantam uma solução exata para todos os grafos, oferecem maneiras eficientes de inferir a presença de ciclos hamiltonianos em grafos que satisfaçam certas condições. Os teoremas de \textbf{Dirac}, \textbf{Ore} e \textbf{Bondy-Chvátal} são três desses critérios, cada um propondo condições suficientes que, quando satisfeitas, garantem a hamiltonianidade do grafo. A relevância desses teoremas está no potencial de reduzir significativamente a complexidade do problema da hamiltonianidade, o que tem implicações diretas em áreas como o planejamento urbano e a configuração de redes, onde rotas e conexões precisam ser eficientes e bem estruturadas.
+
+Explorar e comparar os modelos de grafos que satisfaçam esses teoremas em condições variáveis de conexão oferece uma base empírica valiosa para avaliar a aplicabilidade e a robustez de cada critério. Esse estudo também contribui para uma melhor compreensão dos modelos aleatórios de grafos, que frequentemente são usados para simular redes reais, onde a distribuição de conexões segue padrões probabilísticos.
+
+\section{Metodologia}
+
+\hspace{1.25cm}A metodologia proposta para este estudo envolve a implementação de um conjunto de testes para verificar se um grafo dado satisfaz os critérios de hamiltonianidade estabelecidos pelos teoremas de Dirac, Ore e Bondy-Chvátal. Para isso, serão aplicados algoritmos específicos para cada teorema:
+\begin{enumerate}
+    \item \textbf{Teste de Dirac}: Será verificado se todos os vértices de um grafo possuem grau $\delta \geq \frac{n}{2}$, sendo $n$ o número de vértices do grafo.
+    \item \textbf{Teste de Ore}: Para cada par de vértices não adjacentes $u$ e $v$, será avaliado se a soma dos graus $d(u) + d(v) \geq n$.
+    \item \textbf{Teste de Bondy-Chvátal}: Utilizando o método de fechamento do grafo, serão inseridas arestas entre vértices não adjacentes sempre que a soma de seus graus seja pelo menos $n$, e em seguida, será avaliado se o grafo resultante é hamiltoniano.
+\end{enumerate}
+Os testes serão aplicados a grafos gerados aleatoriamente de acordo com dois modelos:
+\begin{itemize}
+    \item \textbf{Modelo Cíclico-Aleatório}: Um grafo inicialmente configurado como um ciclo simples de $N$ vértices (o que garante que ele seja hamiltoniano) e, em seguida, arestas adicionais são inseridas entre pares de vértices com uma probabilidade $p$.
+    \item \textbf{Modelo de Erdos-Renyi}: Cada par de vértices recebe uma aresta com uma probabilidade fixa $p$, sem uma configuração inicial de ciclo, resultando em grafos com conectividade aleatória.
+\end{itemize}
+\hspace{1.25cm}Para cada combinação de $N$ (número de vértices) e $p$ (probabilidade de conexão), serão gerados dez grafos aleatórios. Cada grafo será submetido aos três testes, e os resultados serão organizados em tabelas e gráficos, comparando a frequência com que cada teorema é satisfeito em cada modelo.
+
+\subsection{Teorema de Dirac}
+\hspace{1.25cm}O Teorema de Dirac, um dos primeiros critérios suficientes para a hamiltonianidade, postula que um grafo simples com $n \geq 3$ vértices é hamiltoniano se todos os seus vértices possuem grau $d(v) \geq n/2$. Esse teorema baseia-se na premissa de que, quando cada vértice possui um número mínimo de conexões, o grafo torna-se suficientemente "denso" para conter um ciclo hamiltoniano. O Teorema de Dirac é relevante por sua simplicidade e pela garantia que fornece em grafos densos, mas aplica-se apenas a grafos onde o grau de cada vértice atinge um limite mínimo específico.
+
+\subsection{Teorema de Ore}
+\hspace{1.25cm}O Teorema de Ore amplia a condição de Dirac ao considerar pares de vértices não adjacentes. Segundo esse teorema, se em um grafo simples com $n \geq 3$ vértices a soma dos graus de cada par de vértices não adjacentes $u$ e $v$ satisfaz $d(u) + d(v) \geq n$, então o grafo é hamiltoniano. Ao incluir pares de vértices não conectados diretamente, o Teorema de Ore apresenta uma condição menos restritiva, aplicando-se a uma gama mais ampla de grafos e oferecendo uma abordagem mais geral para verificar a hamiltonianidade.
+
+\subsection{Teorema de Bondy-Chvátal}
+\hspace{1.25cm}O Teorema de Bondy-Chvátal propõe uma abordagem iterativa para verificar a hamiltonianidade, conhecida como operação de fechamento do grafo. Esse teorema afirma que um grafo $G$ com $n$ vértices é hamiltoniano se e somente se seu fechamento $G^{*}$ for hamiltoniano, onde $G^{*}$ é obtido ao adicionar arestas entre pares de vértices não adjacentes $u$ e $v$ sempre que $d(u) + d(v) \geq n$. Essa condição permite construir um grafo equivalente em termos de hamiltonianidade ao adicionar conexões entre pares de vértices conforme necessário, simplificando o problema ao permitir uma verificação gradativa.
+
+\subsection{Modelo Cíclico-Aleatório}
+\hspace{1.25cm}No modelo cíclico-aleatório, inicia-se com um ciclo simples de $N$ vértices, o que garante que o grafo possui um ciclo hamiltoniano desde o início. Em seguida, são adicionadas arestas aleatórias entre pares de vértices não adjacentes com uma probabilidade $p$. Esse modelo permite que o grafo mantenha um ciclo básico enquanto aumenta gradualmente a conectividade, possibilitando a análise da transição de grafos com hamiltonianidade garantida para grafos mais complexos e densamente conectados.
+
+\subsection{Modelo de Erdos-Renyi}
+\hspace{1.25cm}O modelo de Erdos-Renyi, proposto por Paul Erdős e Alfréd Rényi, é um dos modelos mais tradicionais para a geração de grafos aleatórios. Nesse modelo, cada par de vértices em um grafo recebe uma aresta com uma probabilidade fixa $p$, resultando em grafos com distribuição de conexões aleatória e sem uma estrutura cíclica inicial. Esse modelo é amplamente utilizado para estudar propriedades estatísticas de grafos e para modelar redes complexas onde as conexões entre vértices ocorrem de maneira independente e sem padrões definidos.
+
+\section{Objetivos}
+Este estudo possui os seguintes objetivos principais:
+\begin{enumerate}
+    \item Explorar a Aplicabilidade dos Teoremas de Dirac, Ore e Bondy-Chvátal: Aprofundar a compreensão dos critérios de hamiltonianidade em grafos aleatórios, identificando em que circunstâncias cada teorema é aplicável.
+    \item Desenvolver Testes Computacionais para Verificação da Hamiltonianidade: Implementar algoritmos que verifiquem a conformidade de grafos com os três teoremas, de modo a avaliar a eficiência de cada critério como indicador de hamiltonianidade.
+    \item Comparar Modelos de Grafos Aleatórios: Examinar a eficácia dos modelos cíclico-aleatório e Erdos-Renyi na produção de grafos que satisfaçam os critérios de hamiltonianidade, e comparar as taxas de grafos hamiltonianos produzidos por cada modelo para diferentes valores de $N$ e $p$.
+\end{enumerate}
+\hspace{1.25cm}Este estudo pretende fornecer uma visão prática e teórica sobre os critérios hamiltonianos, contribuindo para o entendimento de sua aplicabilidade e oferecendo uma base empírica para o uso desses critérios na análise e simulação de redes complexas.
+
+\chapter{Implementação}
+\hspace{1.25cm}A implementação deste projeto consiste na criação de um algoritmo para verificar se um grafo satisfaz os três teoremas hamiltonianos: Dirac, Ore e Bondy-Chvátal. Além disso, foi desenvolvido um script com o Jupyter Notebook (Python) para automatizar a geração e análise dos resultados.
+
+\section{Código Principal}
+\hspace{1.25cm}O código principal, escrito em linguagem C, está organizado em várias seções, cada uma dedicada a funcionalidades específicas relacionadas à geração, manipulação e análise de grafos, com relação aos ciclos hamiltonianos.
+
+\subsection{Primeira Região (VETORES)}
+\begin{codebox}
+\begin{minted}[linenos, breaklines]{C}
+int *criar_vetor(int n) {
+    int *vetor = (int *)calloc(n, sizeof(int));
+    return vetor;
+}
+
+void troca_lugares(int *vetor, int num1, int num2) {
+    int aux = vetor[num1];
+    vetor[num1] = vetor[num2];
+    vetor[num2] = aux;
+}
+
+void liberar_vetor(int *vetor) {
+    free(vetor);
+}
+\end{minted}
+\end{codebox}
+\hspace{1.25cm}A primeira região, \textbf{vetores}, contém funções para gerenciamento de array dinâmico \highlighttext{($vetor$)}. Inclui funções para criar um vetor \highlighttext{($criar\_vetor$)}, trocar elementos dentro de um vetor \highlighttext{($troca\_lugares$)} e liberar a memória alocada para um vetor \highlighttext{($liberar\_vetor$)}.
+
+\subsection{Segunda Região (FILAS)}
+\begin{codebox}
+\begin{minted}[linenos, breaklines]{C}
+typedef struct dado {
+    int dado;
+    struct dado *proximo;
+} DADO;
+
+typedef struct {
+    DADO *entrada;
+    DADO *saida;
+} Fila;
+
+typedef Fila *p_fila;
+
+p_fila criar_fila() {
+    p_fila f = malloc(sizeof(Fila));
+    f->entrada = NULL;
+    f->saida = NULL;
+    return f;
+}
+
+int fila_vazia(p_fila f) {
+    return (f->saida == NULL);
+}
+
+void esvaziar_fila(p_fila f) {
+    DADO *aux;
+    while (!fila_vazia(f)) {
+        aux = f->saida;
+        f->saida = f->saida->proximo;
+        free(aux);
+    }
+    f->entrada = NULL;
+}
+
+void liberar_fila(p_fila f) {
+    DADO *aux;
+    while (!fila_vazia(f)) {
+        aux = f->saida;
+        f->saida = f->saida->proximo;
+        free(aux);
+    }
+    free(f);
+}
+
+void enfileirar(p_fila f, int k) {
+    DADO *aux = malloc(sizeof(DADO));
+    aux->dado = k;
+    aux->proximo = NULL;
+    if (!fila_vazia(f)) {
+        f->entrada->proximo = aux;
+        f->entrada = aux;
+    } else {
+        f->entrada = aux;
+        f->saida = aux;
+    }
+}
+
+int desenfileirar(p_fila f) {
+    DADO *aux;
+    int i;
+    if (!fila_vazia(f)) {
+        aux = f->saida;
+        if (f->entrada != f->saida) {
+            f->saida = f->saida->proximo;
+        } else {
+            f->entrada = NULL;
+            f->saida = NULL;
+        }
+        i = aux->dado;
+        free(aux);
+        return i;
+    }
+    return INT_MIN;
+}
+
+bool remover_item(p_fila f, int k) {
+    DADO *atual = f->saida;
+    DADO *anterior = NULL;
+    while (atual != NULL) {
+        if (atual->dado == k) {
+            if (anterior != NULL) {
+                anterior->proximo = atual->proximo;
+                free(atual);
+            } else {
+                desenfileirar(f);
+            }
+            return true;
+        }
+        anterior = atual;
+        atual = atual->proximo;
+    }
+    return false;
+}
+\end{minted}
+\end{codebox}
+\hspace{1.25cm}A segunda região, \textbf{filas}, define e gerencia uma estrutura de dados de fila \highlighttext{($FIFO$)}. Inclui a definição da estrutura \highlighttext{($DADO$)}, que representa um elemento na fila, e a estrutura Fila, que representa a própria fila. As funções nesta região incluem criar uma fila \highlighttext{($criar\_fila$)}, verificar se uma fila está vazia \highlighttext{($fila\_vazia$)}, esvaziar uma fila \highlighttext{($esvaziar\_fila$)}, liberar a fila \highlighttext{($liberar\_fila$)}, enfileirar \highlighttext{($enfileirar$)}, desenfileirar \highlighttext{($desenfileirar$)} e remover um item específico da fila \highlighttext{($remover\_item$)}.
+
+\subsection{Terceira Região (MATRIZES)}
+\begin{codebox}
+\begin{minted}[linenos, breaklines]{C}
+typedef struct matricial {
+    int n; // linhas
+    int **matriz; // ponteiro para matriz
+    int *grau; // ponteiro para vetor com o grau dos vértices
+    p_fila *lista_n_adjascencia; // ponteiro para vetor da lista de não adjascência
+} Matriz;
+
+Matriz *inicializar_matriz(int qtd_vertices) {
+    Matriz *matricial = (Matriz *)malloc(sizeof(Matriz));
+    int **matriz_adjascencia = (int **)malloc(qtd_vertices * sizeof(int *));
+    for (int i = 0; i < qtd_vertices; i++) {
+        matriz_adjascencia[i] = (int *)malloc(qtd_vertices * sizeof(int));
+    }
+    matricial->n = qtd_vertices;
+    matricial->matriz = matriz_adjascencia;
+    matricial->lista_n_adjascencia = malloc(sizeof(p_fila) * qtd_vertices);
+    for (int i = 0; i < qtd_vertices; i++) {
+        matricial->lista_n_adjascencia[i] = criar_fila();
+    }
+    matricial->grau = criar_vetor(qtd_vertices);
+    return matricial;
+}
+
+Matriz *copiar_matriz(Matriz *matricial) {
+    Matriz *copia = inicializar_matriz(matricial->n);
+    DADO *aux;
+    for (int i = 0; i < copia->n; i++) {
+        copia->grau[i] = matricial->grau[i];
+        aux = matricial->lista_n_adjascencia[i]->saida;
+        while (aux != NULL) {
+            enfileirar(copia->lista_n_adjascencia[i], aux->dado);
+            aux = aux->proximo;
+        }
+        for (int j = 0; j < copia->n; j++) {
+            copia->matriz[i][j] = matricial->matriz[i][j];
+        }
+    }
+    return copia;
+}
+
+void liberar_matriz(Matriz *matricial) {
+    for (int i = 0; i < matricial->n; i++) {
+        free(matricial->matriz[i]);
+        liberar_fila(matricial->lista_n_adjascencia[i]);
+    }
+    liberar_vetor(matricial->grau);
+    free(matricial->lista_n_adjascencia);
+    free(matricial->matriz);
+    free(matricial);
+}
+\end{minted}
+\end{codebox}
+\hspace{1.25cm}A terceira região, \textbf{matrizes}, lida com operações de matriz, especificamente para representar grafos. Ela define a estrutura Matriz, que inclui a matriz de adjacência, o grau de vértices e uma lista de vértices não adjacentes. As funções nesta região incluem inicializar uma matriz \highlighttext{($inicializar\_matriz$)}, copiar uma matriz \highlighttext{($copiar\_matriz$)} e liberar a memória alocada para uma matriz \highlighttext{($liberar\_matriz$)}.
+
+\subsection{Quarta Região (GRAFOS)}
+\begin{codebox}
+\begin{minted}[linenos, breaklines]{C}
+typedef Matriz *Grafo;
+
+void gerar_grafo(Grafo grafo, bool orientado, float probabilidade) {
+    int porcentagem = (int)(100 * probabilidade);
+    if (!orientado) { // garante espelhamento
+        for (int i = 0; i < grafo->n; i++) {
+            for (int j = i; j < grafo->n; j++) {
+                if (i != j) { // evitar ligacoes proprias
+                    grafo->matriz[i][j] = (rand() % 100 < porcentagem) ? 1 : 0; // pesos entre 1 e 0 (tem ou nao tem)
+                    grafo->matriz[j][i] = grafo->matriz[i][j];
+                    if (grafo->matriz[i][j]) {
+                        grafo->grau[i]++;
+                        grafo->grau[j]++;
+                    } else {
+                        enfileirar(grafo->lista_n_adjascencia[i], j);
+                        enfileirar(grafo->lista_n_adjascencia[j], i);
+                    }
+                } else {
+                    grafo->matriz[i][j] = 0; // falso para quando for a diagonal principal
+                }
+            }
+        }
+    } else {
+        for (int i = 0; i < grafo->n; i++) {
+            for (int j = 0; j < grafo->n; j++) {
+                if (i != j) { // evitar ligacoes proprias
+                    grafo->matriz[i][j] = (rand() % 100 < porcentagem) ? 1 : 0; // pesos entre 1 e 0 (tem ou nao tem)
+                    if (grafo->matriz[i][j]) {
+                        grafo->grau[i]++;
+                    } else {
+                        enfileirar(grafo->lista_n_adjascencia[i], j);
+                    }
+                } else {
+                    grafo->matriz[i][j] = 0; // falso para quando for a diagonal principal
+                }
+            }
+        }
+    }
+}
+
+void gerar_grafo_hamiltoniano(Grafo grafo, bool orientado, float probabilidade) {
+    gerar_grafo(grafo, orientado, probabilidade);
+    int *ciclo = criar_vetor(grafo->n);
+    for (int i = 0; i < grafo->n; i++) {
+        ciclo[i] = i;
+    }
+    if (!orientado) {
+        troca_lugares(ciclo, 0, rand() % (grafo->n));
+        for (int i = 1; i < grafo->n; i++) {
+            troca_lugares(ciclo, i, rand() % (grafo->n - i) + i);
+            if (!(grafo->matriz[ciclo[i - 1]][ciclo[i]])) {
+                grafo->matriz[ciclo[i - 1]][ciclo[i]] = 1;
+                grafo->matriz[ciclo[i]][ciclo[i - 1]] = grafo->matriz[ciclo[i - 1]][ciclo[i]];
+                grafo->grau[ciclo[i - 1]]++;
+                grafo->grau[ciclo[i]]++;
+                remover_item(grafo->lista_n_adjascencia[ciclo[i - 1]], ciclo[i]);
+                remover_item(grafo->lista_n_adjascencia[ciclo[i]], ciclo[i - 1]);
+            }
+        }
+        if (!(grafo->matriz[ciclo[grafo->n - 1]][ciclo[0]])) {
+            grafo->matriz[ciclo[grafo->n - 1]][ciclo[0]] = 1;
+            grafo->matriz[ciclo[0]][ciclo[grafo->n - 1]] = grafo->matriz[ciclo[grafo->n - 1]][ciclo[0]];
+            grafo->grau[ciclo[grafo->n - 1]]++;
+            grafo->grau[ciclo[0]]++;
+            remover_item(grafo->lista_n_adjascencia[ciclo[grafo->n - 1]], ciclo[0]);
+            remover_item(grafo->lista_n_adjascencia[ciclo[0]], ciclo[grafo->n - 1]);
+        }
+    }
+    liberar_vetor(ciclo);
+}
+
+bool dirac(Grafo grafo) {
+
+    for (int i = 0; i < grafo->n; i++) {
+        if (grafo->grau[i] < grafo->n / 2)
+            return false;
+    }
+    return true;
+}
+
+bool ore(Grafo grafo) {
+    DADO *aux;
+    for (int i = 0; i < grafo->n; i++) {
+        aux = grafo->lista_n_adjascencia[i]->saida;
+        while (aux != NULL) {
+            if (grafo->grau[i] + grafo->grau[aux->dado] < grafo->n)
+                return false;
+            aux = aux->proximo;
+        }
+    }
+    return true;
+}
+
+Grafo fecho_hamiltoniano(Grafo grafo) {
+    Grafo fecho_hamiltoniano = copiar_matriz(grafo);
+    int aux;
+    for (int i = 0; i < fecho_hamiltoniano->n; i++) {
+        while (fecho_hamiltoniano->lista_n_adjascencia[i]->saida != NULL) {
+            if (ore(fecho_hamiltoniano))
+                return fecho_hamiltoniano;
+            aux = desenfileirar(fecho_hamiltoniano-> lista_n_adjascencia[i]);
+            fecho_hamiltoniano->matriz[i][aux] = 1;
+            fecho_hamiltoniano->matriz[aux][i] = fecho_hamiltoniano->matriz[i][aux];
+            fecho_hamiltoniano->grau[i]++;
+            fecho_hamiltoniano->grau[aux]++;
+        }
+    }
+    liberar_matriz(fecho_hamiltoniano);
+    return NULL;
+}
+
+bool bondy_chvatal(Grafo fecho) {
+    if (fecho == NULL)
+        return false;
+    for (int i = 0; i < fecho->n; i++) {
+        for (int j = i + 1; j < fecho->n; i++) {
+
+            if (!(fecho->matriz[i][j])) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+\end{minted}
+\end{codebox}
+\hspace{1.25cm}A quarta região, \textbf{grafo}, foca em operações específicas de grafos. Inclui funções para gerar um gráfico aleatório \highlighttext{($gerar\_grafo$)}, gerar um gráfico hamiltoniano \highlighttext{($gerar\_grafo\_hamiltoniano$)}, verificar se um gráfico satisfaz o teorema de Dirac \highlighttext{($dirac$)}, verificar se um gráfico satisfaz o teorema de Ore \highlighttext{($ore$)}, gerar um fechamento hamiltoniano de um gráfico \highlighttext{($fecho\_hamiltoniano$)} e verificar se um gráfico satisfaz o teorema de Bondy-Chvátal \highlighttext{($bondy\_chvatal$)}. Além disso, inclui funções para imprimir o gráfico em um arquivo \highlighttext{($imprimir\_grafo\_arquivo$)} e visualizar o gráfico e suas informações \highlighttext{($visualizar\_grafo\_e\_informacoes$)}.
+
+\subsection{Região Final (MAIN)}
+\begin{codebox}
+\begin{minted}[linenos, breaklines]{C}
+int main() {
+    int opcao, n, salvar;
+    Grafo grafo=NULL, grafo=NULL;
+    float probabilidade;
+    static int orientado = false;
+    while (true) {
+        srand(time(NULL)); // garantir boa aleatorizacao
+        printf("+-------------------Menu---------------------+\n");
+        printf("Escolha uma opcao:\n");
+        printf("1. Gerar Grafo\n");
+        printf("2. Gerar Grafo Hamiltoniano\n");
+        printf("3. Verificar Teorema de Dirac\n");
+        printf("4. Verificar Teorema de Ore\n");
+        printf("5. Verificar Bondy-Chvatal\n");
+        printf("6. Gerar Fecho Hamiltoniano\n");
+        printf("7. Visualizar Grafo\n");
+        printf("8. Visualizar o Fecho Hamiltoniano\n");
+        printf("0. Sair\n");
+        printf("+--------------------------------------------+\n");
+        scanf("%d", &opcao);
+        switch (opcao) {
+        case 1:
+            if (grafo) {
+                liberar_matriz(grafo);
+                printf("Grafo anterior existente foi excluido!\n");
+            }
+            printf("Digite o numero de vertices: ");
+            scanf("%d", &n);
+            printf("Digite a probabilidade de aresta (0 a 1): ");
+            scanf("%f", &probabilidade);
+            grafo = inicializar_matriz(n);
+            gerar_grafo(grafo, orientado, probabilidade);
+            printf("Grafo gerado com sucesso!\n");
+            break;
+        case 2:
+            ...
+            printf("Digite o numero de vertices: ");
+            scanf("%d", &n);
+            printf("Digite a probabilidade de aresta (0 a 1): ");
+            scanf("%f", &probabilidade);
+            grafo = inicializar_matriz(n);
+            gerar_grafo_hamiltoniano(grafo, orientado, probabilidade);
+            printf("Grafo Hamiltoniano gerado com sucesso!\n");
+            break;
+        case 3:
+            ...
+            if (dirac(grafo)) {
+                printf("O grafo satisfaz o Teorema de Dirac.\n");
+            } else {
+                printf("O grafo NAO satisfaz o Teorema de Dirac.\n");
+            }
+            break;
+        case 4:
+            ...
+            if (ore(grafo)) {
+                printf("O grafo satisfaz o Teorema de Ore.\n");
+            } else {
+                printf("O grafo NAO satisfaz o Teorema de Ore.\n");
+            }
+            break;
+        case 5:
+            ...
+            if (ore(grafo)) {
+                fecho = grafo;
+            }
+            if (bondy_chvatal(fecho)) {
+                printf("O fecho hamiltoniano satisfaz o Teorema de Bondy-Chvatal.\n");
+            } else {
+                printf("O fecho hamiltoniano NAO satisfaz o Teorema de Bondy-Chvatal.\n");
+            }
+            break;
+        case 6:
+            ...
+            if (ore(grafo)) {
+                printf("O grafo já possui um fecho hamiltoniano.\n");
+            } else {
+                fecho = fecho_hamiltoniano(grafo);
+                if (fecho != NULL) {
+                    printf("Um fecho hamiltoniano para o grafo foi gerado!\n");
+                } else {
+                    printf("Não foi possível modificar o grafo.\n");
+                }
+            }
+            break;
+        case 7:
+            ...
+        case 8:
+            if (ore(grafo)) {
+                printf("O próprio grafo já é um fecho hamiltoniano.\n");
+                break;
+            }
+            ...
+        ...
+        }
+    }
+}
+\end{minted}
+\end{codebox}
+\hspace{1.25cm}A região final, \textbf{main}, contém a função \highlighttext{($main$)} que fornece uma interface orientada a menu para o usuário interagir com o programa. O usuário pode gerar grafos, verificar vários teoremas, gerar fechamentos hamiltonianos e visualizar os grafos. A função principal manipula a entrada do usuário, chama as funções apropriadas com base na escolha do usuário e garante o gerenciamento de memória adequado ao liberar recursos alocados antes de sair.
+
+\section{Automação para testes}
+\hspace{1.25cm}Foi desenvolvido um Jupyter Notebook para apoiar a análise exploratória e visualização de dados, utilizando as bibliotecas \highlighttext{pandas}, \highlighttext{matplotlib} e \highlighttext{seaborn}, amplamente empregadas em pesquisa acadêmica e ciência de dados. Este documento descreve cada etapa metodológica, desde a importação e tratamento dos dados até a criação e análise de gráficos, garantindo um fluxo estruturado e intuitivo para o usuário.
+
+\subsection{Importação de Bibliotecas}
+\hspace{1.25cm}As bibliotecas fundamentais para a manipulação e visualização de dados foram importadas na seção inicial do notebook. Dentre elas:
+\begin{itemize}
+    \item \textbf{pandas}: utilizado para a manipulação de dados tabulares e preparação do dataset.
+    \item \textbf{matplotlib}: responsável pela criação de gráficos básicos de forma altamente configurável.
+    \item \textbf{seaborn}: empregado para visualizações mais estilizadas e estatísticas, complementando o \highlighttext{matplotlib} com gráficos mais detalhados e coloridos.
+\end{itemize}
+
+\subsection{Carregamento e Estruturação dos Dados}
+\hspace{1.25cm}A etapa de carregamento de dados é realizada através da função \highlighttext{($read\_csv$)} da biblioteca \highlighttext{pandas}, que permite a leitura de arquivos CSV, principal formato dos conjuntos de dados analisados. O notebook fornece opções para importação tanto local quanto de fontes online, garantindo flexibilidade no processo de obtenção de dados. Após a importação, são apresentados procedimentos para verificar a consistência estrutural do dataset (ex.: tipos de dados e colunas).
+
+\subsection{Tratamento e Limpeza de Dados}
+\hspace{1.25cm}Para assegurar a qualidade dos dados analisados, o notebook inclui etapas de pré-processamento, onde são tratados valores ausentes e duplicados. A estrutura dos dados é ajustada, quando necessário, para manter a coerência e precisão das informações a serem visualizadas. Este tratamento inclui filtragens por critérios específicos e transformações que permitem a análise das variáveis relevantes.
+
+\subsection{Construção e Configuração dos Gráficos}
+\hspace{1.25cm}A seção de criação de gráficos aborda a implementação de diferentes tipos de visualizações, ajustados para evidenciar relações específicas entre as variáveis. Os gráficos principais utilizados no notebook incluem:
+\begin{itemize}
+    \item \textbf{Gráficos de Linha}: aplicados na visualização de séries temporais, permitindo a análise de tendências e variações ao longo do tempo.
+    \item \textbf{Gráficos de Dispersão}: utilizados para investigar correlações entre duas variáveis contínuas, sendo particularmente úteis na observação de padrões de associação.
+    \item \textbf{Gráficos de Barras}: empregados para comparações de valores entre categorias discretas, facilitando a visualização de frequências ou magnitudes.
+\hspace{1.25cm}Cada gráfico é configurado com elementos visuais essenciais (ex.: cores, rótulos de eixos e legendas) para garantir uma interpretação clara e objetiva dos dados. A integração entre \highlighttext{matplotlib} e \highlighttext{seaborn} permite personalizar e aprimorar a apresentação visual, tornando os gráficos mais intuitivos.
+\end{itemize}
+
+\subsection{Análise e Discussão dos Resultados}
+\hspace{1.25cm}Para cada gráfico gerado, o notebook inclui uma seção interpretativa, onde os resultados são discutidos de forma a identificar padrões e observações relevantes. As análises destacam possíveis tendências, sazonalidades e relações entre variáveis, oferecendo subsídios importantes para a validação de hipóteses iniciais e possíveis estudos subsequentes.
+
+% Carrega o conteúdo do CSV
+%pgfplotstableread[col sep=comma]{src/grafico_dados_barras.csv}\datatable
+
+%\begin{figure}
+%    \centering
+%    \begin{tikzpicture}
+%        \begin{axis}[
+%            title={Probabilidades por Critério},
+%            ybar,
+%            bar width=0.6cm,
+%            symbolic x coords={Dirac, Ore, Bondy Chvátal},
+%            xtick=data,
+%            ylabel={Probabilidade},
+%            xlabel={Critério},
+%            ymin=0,
+%            ymax=1,
+%            width=.52cm,
+%            height=8cm,
+%            nodes near coords,
+%            nodes near coords style={font=\small, color=black},
+%            every axis plot/.append style={
+%                fill=blue!40, % Gradiente nas barras
+%                draw=blue!60, % Contorno das barras
+%                rounded corners=2pt % Arredonda os cantos das barras
+%            },
+%            grid=both, % Habilita a grade
+%            minor grid style={dotted, gray!50}, % Estilo da grade menor
+%            major grid style={solid, gray!30} % Estilo da grade maior
+%        ]
+%        \addplot table[x=Criterio,y=Probabilidade] {\datatable};
+%        \end{axis}
+%    \end{tikzpicture}
+%    \caption{Gráfico de Barras dos Critérios e suas Probabilidades}
+%\end{figure}
+
+\chapter{Resultados e Discussão}
+\hspace{1.25cm}Nesta seção, apresentamos os resultados obtidos a partir da análise dos três modelos de grafos gerados: o \textbf{grafo de fecho hamiltoniano}, o \textbf{grafo de Erdos-Renyi} e o \textbf{grafo hamiltoniano inicial}. Para cada grafo, foram aplicados os testes dos teoremas de Dirac, Ore e Bondy-Chvátal. A análise foi conduzida para diferentes valores de \highlighttext{($N$)} (número de vértices) e \highlighttext{($p$)} (probabilidade de conexão), com os resultados sintetizados em gráficos e tabelas.
+
+\section{Análise dos Dados}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{src/GraficoFecho/grafico_heatmap_fecho.png}
+    \caption{Heatmap do grafo de fecho}
+    \label{fig:Heatmap do grafo de fecho}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{src/GraficoHamiltoniano/grafico_heatmap_hamiltoniano.png}
+    \caption{Heatmap do grafo hamiltoniano}
+    \label{fig:Heatmap do grafo hamiltoniano}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{src/GraficoNormal/grafico_heatmap_normal.png}
+    \caption{Heatmap do grafo normal (Erdos-Renyi)}
+    \label{fig:Heatmap do grafo normal (Erdos-Renyi)}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{src/GraficoFecho/GraficodeLinhasFecho/grafico_taxa_sucesso_n_20.png}
+        \caption{Taxa de sucesso no grafo de fecho, variando N}
+        \label{fig:Taxa de sucesso no grafo de fecho, variando N}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{src/GraficoFecho/GraficodeLinhasFecho/grafico_taxa_sucesso_n_250.png}
+        \caption{Taxa de sucesso no grafo de fecho, variando N}
+        \label{fig:Taxa de sucesso no grafo de fecho, variando N250}
+        \end{minipage}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{src/GraficoFecho/GraficosBarraFecho/grafico_taxa_sucesso_p_0.6.png}
+        \caption{Taxa de sucesso no grafo de fecho, variando p}
+        \label{fig:Taxa de sucesso no grafo de fecho, variando p}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{src/GraficoFecho/GraficosBarraFecho/grafico_taxa_sucesso_p_0.9.png}
+        \caption{Taxa de sucesso no grafo de fecho, variando p}
+        \label{fig:Taxa de sucesso no grafo de fecho, variando p.9}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{src/GraficoHamiltoniano/GraficosLinhaHamiltoniano/grafico_taxa_sucesso_n_20.png}
+        \caption{Taxa de sucesso no grafo hamiltoniano, variando N}
+        \label{fig:Taxa de sucesso no grafo hamiltoniano, variando N}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{src/GraficoHamiltoniano/GraficosLinhaHamiltoniano/grafico_taxa_sucesso_n_250.png}
+        \caption{Taxa de sucesso no grafo hamiltoniano, variando N}
+        \label{fig:Taxa de sucesso no grafo hamiltoniano, variando N250}
+        \end{minipage}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{src/GraficoHamiltoniano/GraficosBarraHamiltoniano/grafico_taxa_sucesso_p_0.6.png}
+        \caption{Taxa de sucesso no grafo hamiltoniano, variando p}
+        \label{fig:Taxa de sucesso no grafo hamiltoniano, variando p}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{src/GraficoHamiltoniano/GraficosBarraHamiltoniano/grafico_taxa_sucesso_p_0.9.png}
+        \caption{Taxa de sucesso no grafo hamiltoniano, variando p}
+        \label{fig:Taxa de sucesso no grafo hamiltoniano, variando p.9}
+    \end{minipage}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{src/GraficoNormal/GraficosLinhaNormal/grafico_taxa_sucesso_n_20.png}
+        \caption{Taxa de sucesso no grafo normal, variando N}
+        \label{fig:Taxa de sucesso no grafo normal, variando N}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{src/GraficoNormal/GraficosLinhaNormal/grafico_taxa_sucesso_n_250.png}
+        \caption{Taxa de sucesso no grafo normal, variando N}
+        \label{fig:Taxa de sucesso no grafo normal, variando N250}
+        \end{minipage}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{src/GraficoNormal/GraficosBarraNormal/grafico_taxa_sucesso_p_0.6.png}
+        \caption{Taxa de sucesso no grafo normal, variando p}
+        \label{fig:Taxa de sucesso no grafo normal, variando p.6}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{src/GraficoNormal/GraficosBarraNormal/grafico_taxa_sucesso_p_0.9.png}
+        \caption{Taxa de sucesso no grafo normal, variando p}
+        \label{fig:Taxa de sucesso no grafo normal, variando p.9}
+    \end{minipage}
+\end{figure}
+
+\clearpage
+\section{Discussão dos Resultados}
+\hspace{1.25cm}A análise dos resultados obtidos a partir dos testes aplicados aos diferentes modelos de grafos (fecho hamiltoniano, Erdos-Renyi e hamiltoniano inicial) permitiu identificar padrões e tendências importantes, que foram complementadas pelas visualizações gráficas.
+
+Os gráficos de linha indicaram uma clara correlação positiva entre a probabilidade de conexão (\( p \)) e a taxa de conformidade aos teoremas de Dirac e Ore. À medida que \( p \) aumenta, observa-se um aumento consistente na taxa de sucesso, especialmente para o modelo de fecho hamiltoniano. Este comportamento era esperado, uma vez que o aumento da densidade de arestas tende a aumentar a conectividade do grafo, facilitando a formação de ciclos hamiltonianos.
+
+Os heatmaps fornecem uma representação visual da densidade de conexões para cada modelo. O grafo hamiltoniano apresenta uma alta densidade, especialmente nas regiões centrais, refletindo sua estrutura inicial que garante a existência de um ciclo hamiltoniano. Em contraste, o grafo de Erdos-Renyi, com sua distribuição de arestas puramente aleatória, exibe uma densidade menos uniforme, o que explica a menor conformidade observada nos testes. O grafo de fecho hamiltoniano, por sua vez, mostra um aumento na densidade nas regiões de fechamento, indicando a eficácia da operação de fechamento em aumentar a conectividade.
+
+O grafo hamiltoniano inicial apresentou a maior taxa de conformidade aos teoremas, especialmente aos de Dirac e Ore. Esta superioridade pode ser atribuída à sua construção, que garante um ciclo desde o início, criando uma estrutura propícia para satisfazer os critérios de hamiltonianidade. No entanto, é importante notar que este modelo serve mais como um "caso ideal" e menos como uma representação realista de grafos aleatórios.
+
+O modelo de Erdos-Renyi, apesar de ser amplamente utilizado para simular redes complexas, teve o pior desempenho em termos de conformidade. A ausência de uma estrutura inicial de ciclo e a distribuição aleatória de arestas resultam em grafos menos densos e conectados, o que dificulta a formação de ciclos hamiltonianos, especialmente para valores baixos de \( p \). Estes resultados indicam que o modelo de Erdos-Renyi pode não ser o mais adequado para a geração de grafos hamiltonianos em estudos onde a conectividade é um fator crítico.
+
+O grafo de fecho hamiltoniano, que aplica uma operação de fechamento baseada no Teorema de Ore, apresentou um desempenho intermediário. A operação de fechamento aumentou a conectividade e melhorou a taxa de conformidade, especialmente para valores moderados de \( p \). No entanto, a conformidade com o Teorema de Bondy-Chvátal permaneceu baixa, sugerindo que, embora a operação de fechamento seja eficaz, ela não é suficiente para garantir hamiltonianidade em grafos menos densos.
+
+Os resultados indicam que os Teoremas de Dirac e Ore são menos rigorosos e mais facilmente satisfeitos em grafos com maior densidade de conexões. O Teorema de Bondy-Chvátal, que requer uma análise mais aprofundada da estrutura do grafo, apresentou a menor taxa de conformidade, especialmente para o modelo de Erdos-Renyi. Este comportamento pode ser explicado pelo fato de que este teorema depende de operações iterativas de fechamento, que exigem uma alta conectividade para serem eficazes.
+
+O Teorema de Dirac mostrou-se particularmente eficaz para grafos com alta densidade, como o grafo hamiltoniano inicial, onde todos os vértices possuem grau mínimo elevado. O Teorema de Ore, ao considerar pares de vértices não adjacentes, foi mais abrangente e apresentou melhores resultados em grafos de fecho, onde as arestas adicionais aumentam a conectividade.
+
+Os achados deste estudo sugerem que a escolha do modelo de geração de grafos tem um impacto significativo na conformidade aos critérios de hamiltonianidade. O modelo cíclico-aleatório e o grafo de fecho são opções promissoras para gerar grafos com alta probabilidade de satisfazer os teoremas de Dirac e Ore, especialmente quando a probabilidade de conexão é alta. No entanto, a baixa conformidade ao Teorema de Bondy-Chvátal indica que modelos adicionais ou modificações nos algoritmos de fechamento podem ser necessários para aumentar a probabilidade de satisfazer este critério.
+
+Para estudos futuros, sugere-se a investigação de outros modelos de geração de grafos, como o modelo de Watts-Strogatz ou o modelo Barabási-Albert, que incorporam propriedades de redes reais, como a formação de "pequenos mundos" e conectividade preferencial. Além disso, o desenvolvimento de algoritmos de fechamento mais sofisticados pode contribuir para melhorar a conformidade ao Teorema de Bondy-Chvátal, especialmente em grafos com baixa densidade.
+
+Em resumo, os gráficos e análises apresentadas fornecem uma visão abrangente da conformidade dos diferentes modelos aos teoremas hamiltonianos. O estudo destaca a importância da densidade de conexões e da estrutura inicial do grafo na formação de ciclos hamiltonianos, oferecendo insights valiosos para a modelagem e análise de redes complexas.
+
+\chapter{Conclusão}
+
+Este trabalho realizou uma análise abrangente sobre a hamiltonianidade de grafos aleatórios, aplicando três critérios clássicos: os teoremas de Dirac, Ore e Bondy-Chvátal. Através da implementação computacional e testes empíricos em diferentes modelos de grafos, exploramos como cada teorema se comporta frente a estruturas com variadas densidades e conectividades.
+
+Os resultados mostraram que o \textbf{Teorema de Dirac} apresentou maior eficácia em grafos com alta densidade de arestas, especialmente no modelo cíclico-aleatório, onde todos os vértices possuem, desde o início, um grau relativamente elevado. Este teorema, ao exigir que o grau de cada vértice seja no mínimo a metade do número total de vértices, oferece um critério forte e direto para identificar a hamiltonianidade, mas é limitado a grafos densos e não é adequado para grafos com menor conectividade.
+
+O \textbf{Teorema de Ore}, por sua vez, ampliou a aplicabilidade ao considerar a soma dos graus de pares de vértices não adjacentes. Esta abordagem se mostrou particularmente eficaz no modelo de fecho hamiltoniano, onde a operação de fechamento incrementa a conectividade do grafo, aproximando-o das condições necessárias para satisfazer o teorema. No entanto, em grafos gerados pelo modelo de Erdos-Renyi, a aleatoriedade da distribuição de arestas resultou em uma taxa de conformidade mais baixa, indicindicando que a estrutura inicial do grafo é crucial para satisfazer o critério proposto por Ore. No modelo de Erdos-Renyi, a ausência de uma estrutura cíclica e a distribuição uniforme de arestas tornam menos provável que pares de vértices não adjacentes tenham graus suficientemente altos para cumprir a condição $d(u) + d(v) \geq n$. Isso destaca a importância de uma maior densidade e conectividade para alcançar conformidade com o Teorema de Ore, especialmente em grafos aleatórios, onde as arestas não seguem um padrão estruturado.
+
+O \textbf{Teorema de Bondy-Chvátal} foi o critério mais rigoroso entre os três analisados. Ao exigir uma sequência iterativa de fechamento até que todos os pares de vértices não adjacentes satisfaçam a condição de soma dos graus, este teorema apresentou a menor taxa de conformidade, especialmente em grafos esparsos. Este resultado reflete a complexidade intrínseca do critério, que depende fortemente da densidade e da conectividade global do grafo. Assim, este teorema se mostrou mais adequado para grafos densos e bem conectados, onde a adição de arestas no processo de fechamento é mais eficaz em criar o ciclo hamiltoniano desejado. Em grafos esparsos, a falta de conectividade suficiente torna o fechamento ineficaz, limitando a aplicabilidade prática deste teorema em contextos onde a densidade de arestas é baixa.
+
+\section{Considerações Finais}
+
+Em síntese, este trabalho contribuiu para o entendimento dos critérios de hamiltonianidade em grafos aleatórios, demonstrando como diferentes modelos e teoremas se comportam frente a variações na densidade e estrutura dos grafos. Embora existam limitações inerentes ao uso de modelos aleatórios e critérios clássicos, os resultados obtidos oferecem uma base sólida para futuras investigações e aplicações em redes complexas. Ao explorar novos modelos, algoritmos e aplicações práticas, a pesquisa nesta área pode evoluir significativamente, permitindo a identificação eficiente de ciclos hamiltonianos em grafos de grande escala e alta complexidade, o que é crucial para diversas áreas, como otimização de redes de transporte, análise de redes sociais e resolução de problemas logísticos complexos. Essas direções apontam para um campo fértil de estudo, onde avanços teóricos e práticos podem convergir para desenvolver métodos robustos e escaláveis, aprimorando a compreensão e a aplicabilidade dos conceitos de hamiltonianidade em cenários reais.
+
+Este estudo fornece um ponto de partida valioso para aqueles que buscam compreender a complexa dinâmica da hamiltonianidade em grafos, abrindo caminho para novas descobertas e avanços na teoria dos grafos e suas aplicações.
+\printindex
+
+\chapter*{Referências}
+
+\noindent
+BONDY, J. A.; MURTY, U. S. R. \textbf{Graph Theory}. 1. ed. Berlin, Heidelberg: Springer, 2008. ISBN 978-1-84628-970-5. Disponível em: \url{https://doi.org/10.1007/978-1-84628-970-5}.
+
+\noindent
+DIRAC, G. A. Some Theorems on Abstract Graphs. \textit{Proceedings of the London Mathematical Society}, v. 3, n. 1, p. 69-81, 1952. DOI: \url{https://doi.org/10.1112/plms/s3-2.1.69}.
+
+\noindent
+ORE, Oystein. Note on Hamilton Circuits. \textit{The American Mathematical Monthly}, v. 67, n. 1, p. 55-58, 1960. DOI: \url{https://doi.org/10.2307/2308931}.
+
+\noindent
+BOLLOBÁS, Béla. \textbf{Random Graphs}. 2. ed. Cambridge: Cambridge University Press, 2001. ISBN 978-0521797221. Disponível em: \url{https://doi.org/10.1017/CBO9780511814068}.
+
+\noindent
+WATTS, Duncan J.; STROGATZ, Steven H. Collective Dynamics of 'Small-World' Networks. \textit{Nature}, v. 393, p. 440-442, 1998. DOI: \url{https://doi.org/10.1038/30918}.
+
+\noindent
+BARABÁSI, Albert-László; ALBERT, Réka. Emergence of Scaling in Random Networks. \textit{Science}, v. 286, p. 509-512, 1999. DOI: \url{https://doi.org/10.1126/science.286.5439.509}.
+
+\noindent
+WEST, Douglas B. \textbf{Introduction to Graph Theory}. 2. ed. Prentice Hall, 2001. ISBN 978-0130144003.
+
+\noindent
+BONDY, J. A.; CHVÁTAL, V. A Method in Graph Theory. \textit{Discrete Mathematics}, v. 15, p. 111-135, 1976. DOI: \url{https://doi.org/10.1016/0012-365X(76)90030-2}.
+
+%https://www.ibilce.unesp.br/Home/Departamentos/MatematicaAplicada/docentes/socorro/grafoshamiltonianos.pdf 
+%https://pt.wikipedia.org/wiki/Caminho_hamiltoniano
+%https://www.researchgate.net/figure/Erdos-Renyi-model-generation-of-random-%network-N-10-vertices-with-probability-p-0_fig2_330369123
+%https://malbarbo.pro.br/arquivos/2013/5189/ademir-pcv.pdf
+%http://www2.ic.uff.br/~fabio/conceitos-basicos-em-grafos.pdf
+
+%\printbibliograpy
+\end{document}
